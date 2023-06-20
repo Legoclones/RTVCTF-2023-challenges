@@ -1,0 +1,40 @@
+.lanstartend input[disabled]{
+  background-color: #d5dade!important;
+  /* border: 1px solid #b5bdc3!important; */
+  border-color: #b5bdc3!important;
+  opacity: 1!important;
+  color: #666;
+}
+
+.is-successvpnserve {
+  background-color: #ecffee;
+}
+
+.is-errorvpnserve {
+  background: #fff2f2;
+}
+.lanstartend .has-success{
+  background: #ecffee!important;
+}
+.lanstartend .has-error{
+  background: #fff2f2!important;
+}
+
+
+#iphoverStatus > input {
+  border-color: #ccc!important;
+}
+#iphoverStatus > input:hover {
+  border-color: #595e7c!important;
+}
+#iphoverStatus > input:disabled {
+  border-color: #ccc!important;
+}
+#vpnipv6iphoverStatus {
+  position: relative;
+}
+.vpnserver-ipv6-tip {
+  position: absolute;
+  left: -16px;
+  top: 10px;
+}

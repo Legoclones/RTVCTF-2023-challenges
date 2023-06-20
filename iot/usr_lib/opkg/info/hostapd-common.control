@@ -1,0 +1,11 @@
+Package: hostapd-common
+Version: 2019-08-08-ca8c2bd2-7
+Depends: libc
+Source: package/network/services/hostapd
+SourceName: hostapd-common
+License: BSD-3-Clause
+Section: net
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 7437
+Description:  hostapd/wpa_supplicant common support files

@@ -1,0 +1,33 @@
+<div class="row" >
+    <div class="col-lg-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                <h4 style="display:inline-block;width: 57%;">
+                    <span class="circle active"></span>
+                    <span>{{ t('Network Diagnostics') }}</span>
+                </h4>
+            </div>
+            <div class="panel-body panel-status ">
+                <span class="list-group-item slider-btn-inlist clearfix ">
+                    <div class=" input-group " id="inputDNS1Check">
+                        <gl-input placeholder="e.g. google.com | 192.168.1.1" v-model='pingValue' :disabled="isDisabled"></gl-input>
+                        <span class="input-group-addon btn  btn-default" @click="pingIp" style="min-width: 100px;" :disabled="isDisabled">{{ t('Ping') }}</span>
+                    </div>
+                </span>
+                <span class="list-group-item slider-btn-inlist clearfix ">
+                    <div class=" input-group " id="inputDNS1Check">
+                        <gl-input placeholder="e.g. google.com | 192.168.1.1" v-model='traceValue' :disabled="isDisabled"></gl-input>
+                        <span class="input-group-addon btn  btn-default" @click="pingTraceRoute" style="min-width: 100px;" :disabled="isDisabled">{{ t('Traceroute') }}</span>
+                    </div>
+                </span>
+                <span class="diagnostics" v-if="isDisabled">
+                    <gl-loading ></gl-loading>
+                    {{ t('Waitting for command to complete.') }}
+                </span>
+                <pre v-if="pingResult != '' && !isDisabled">
+                    {{pingResult}}
+                </pre>
+            </div>
+        </div>
+    </div>
+</div>

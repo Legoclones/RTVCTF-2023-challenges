@@ -1,0 +1,3 @@
+/etc/config/dnscrypt-proxy
+/usr/sbin/dnscrypt-proxy
+/etc/init.d/dnscrypt-proxy

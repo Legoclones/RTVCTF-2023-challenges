@@ -1,0 +1,9 @@
+Package: kmod-shortcut-fe
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c)
+Source: package/gl.router/fast-path/shortcut-fe
+SourceName: kmod-shortcut-fe
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 13633
+Description:  Kernel driver for SFE

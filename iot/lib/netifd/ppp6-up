@@ -1,0 +1,55 @@
+#!/bin/sh
+PPP_IFNAME="$1"
+LLREMOTE="$5"
+PPP_IPPARAM="$6"
+
+. /lib/netifd/netifd-proto.sh
+proto_init_update "$IFNAME" 1 1
+proto_set_keep 1
+
+ipv6_enabled=`uci get glipv6.globals.enabled 2>/dev/null`
+ipv6_wan_interface=`uci get glipv6.wan.interface 2>/dev/null`
+modem_bus=`uci get glconfig.modem.bus | sed 's/-/_/g' 2>/dev/null`
+ipv6_pppoe=`uci get network.wan.proto 2>/dev/null`
+
+if [ "$ipv6_enabled" = "1" -a "$ipv6_wan_interface" = "modem_$modem_bus" ];then
+	[ -n "$LLREMOTE" ] && proto_add_ipv6_route "::0" 0 "$LLREMOTE" "" "" ""
+	proto_send_update "$PPP_IPPARAM"
+	exit
+fi
+
+if [ "$ipv6_enabled" = "1" -a "$ipv6_wan_interface" = "wan" -a "$ipv6_pppoe" = "pppoe" ];then
+	for i in `seq 1 $(ip -6 route | grep "default via" | wc -l)`
+	do
+		ip -6 route del `ip -6 route | grep "default via" | sed 's/proto.*//' | head -n 1` 2>/dev/null
+	done
+	[ -n "$LLREMOTE" ] && proto_add_ipv6_route "::0" 0 "$LLREMOTE" "" "" ""
+fi
+
+[ -n "$PPP_IPPARAM" ] && {
+	[ -n "$LLLOCAL" ] && proto_add_ipv6_address "$LLLOCAL" 128
+}
+proto_send_update "$PPP_IPPARAM"
+
+[ -d /etc/ppp/ip-up.d ] && {
+	for SCRIPT in /etc/ppp/ip-up.d/*
+	do
+		[ -x "$SCRIPT" ] && "$SCRIPT" "$@"
+	done
+}
+
+exit
+if [ -n "$AUTOIPV6" ]; then
+	ZONE=$(fw3 -q network $PPP_IPPARAM 2>/dev/null)
+
+	json_init
+	json_add_string name "${PPP_IPPARAM}_6"
+	json_add_string ifname "@$PPP_IPPARAM"
+	json_add_string proto "dhcpv6"
+	[ -n "$ZONE" ] && json_add_string zone "$ZONE"
+	[ -n "$EXTENDPREFIX" ] && json_add_string extendprefix 1
+	[ -n "$IP6TABLE" ] && json_add_string ip6table $IP6TABLE
+	[ -n "$PEERDNS" ] && json_add_boolean peerdns $PEERDNS
+	json_close_object
+	ubus call network add_dynamic "$(json_dump)"
+fi

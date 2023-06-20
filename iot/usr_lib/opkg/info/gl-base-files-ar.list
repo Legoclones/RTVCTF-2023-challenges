@@ -1,0 +1,12 @@
+/rootfs-overlay/etc/fw_env.config
+/rootfs-overlay/sbin/sysupgrade
+/rootfs-overlay/usr/bin/gl_led
+/rootfs-overlay/etc/init.d/network
+/rootfs-overlay/etc/init.d/mount_usdk
+/rootfs-overlay/etc/hotplug.d/block/11-mount
+/rootfs-overlay/etc/rc.button/BTN_7
+/rootfs-overlay/etc/rc.button/BTN_8
+/rootfs-overlay/etc/init.d/gl_led
+/rootfs-overlay/etc/config/glconfig
+/rootfs-overlay/etc/config/samba
+/rootfs-overlay/etc/init.d/init_gpio

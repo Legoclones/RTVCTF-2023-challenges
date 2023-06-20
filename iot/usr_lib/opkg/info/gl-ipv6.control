@@ -1,0 +1,9 @@
+Package: gl-ipv6
+Version: 3.0.26-1
+Depends: libc, gl-util, kmod-ipt-nat6
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-ipv6
+SourceName: gl-ipv6
+Section: base
+Architecture: mips_24kc
+Installed-Size: 20888
+Description:  ipv6 function for gl-inet.

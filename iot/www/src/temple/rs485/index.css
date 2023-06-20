@@ -1,0 +1,91 @@
+.hotspot-list>.list-group-item>.text-left,
+#spanBlock {
+    padding: 10px 0;
+}
+.hotspot-list>.list-group-item>.pull-right>input,
+.hotspot-list>.list-group-item>.pull-right>.range>output {
+    font-size: 13px;
+}
+
+@media screen and (max-width:768px) {
+  .hotspot-list>.list-group-item>.text-left,
+  #spanBlock {
+      padding: 2px;
+  }
+  .panel-body {
+      padding: 0 15px;
+  }
+  .mqttautonn {
+    height: 72px;
+  }
+  .mqttautonn .text-left {
+      display: block!important;
+  }
+  .mqttautonn .btn-toggler-right {
+    float: none!important;
+    display: inline-block;
+    margin-top: 8px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.rs485-reg-len .gl-input > input{
+    width: 80px!important;
+    padding: 0 12px;
+}
+.rs485-reg-len .gl-input {
+    min-width: 80px!important;
+    width: 80px!important;
+}
+.rs485-reg-len .line {
+    display: inline-block;
+    padding: 0 4px;
+}
+
+.mqtt-tips {
+    background-color: #f5f5f5;
+    color: #8b8c9f;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 10px;
+}
+
+.rs485-tab {
+    position: relative;
+}
+.rs485-tab .re485-circle {
+    position: absolute;
+    top: 17px;
+    left: 8px;
+}
+
+.re485-tab-title {
+    padding-left: 4px;
+}
+
+.rs485-config-page{
+    display: inline-block;
+    line-height: 40px;
+    width: 100%;
+    padding: 0 10px;
+    text-decoration: none;
+}
+
+.rs485-header {
+    position: relative;
+}
+.rs485-header-arrow {
+    position: absolute;
+    top: -3px;
+    right: 5px;
+}
+
+.rs485-page .panel-group {
+    margin-bottom: 10px!important;
+}
+
+.re485-header-click {
+    padding: 0!important;
+    height: 40px;
+}

@@ -1,0 +1,8 @@
+/rootfs-overlay/etc/uci-defaults/luci-glqos
+/rootfs-overlay/etc/init.d/qosswitch
+/rootfs-overlay/usr/lib/libqosapi.so
+/rootfs-overlay/etc/modules.d/99-qos
+/rootfs-overlay/etc/init.d/glqos
+/rootfs-overlay/etc/hotplug.d/iface/25-glqos
+/rootfs-overlay/usr/sbin/glqos.sh
+/rootfs-overlay/usr/lib/gl/libqosapi.so

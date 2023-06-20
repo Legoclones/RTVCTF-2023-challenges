@@ -1,0 +1,9 @@
+Package: gl-siderouter
+Version: 3.0.0-1
+Depends: libc, gl-util
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-siderouter
+SourceName: gl-siderouter
+Section: base
+Architecture: mips_24kc
+Installed-Size: 5312
+Description:  Openvpn server endpoint api for gl-inet.

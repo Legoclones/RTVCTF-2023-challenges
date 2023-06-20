@@ -1,0 +1,12 @@
+Package: iw-full
+Version: 5.0.1-1
+Depends: libc, libnl-tiny
+Provides: iw
+Source: package/network/utils/iw
+SourceName: iw-full
+License: GPL-2.0
+Section: net
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 63808
+Description:  cfg80211 interface configuration utility (full version)

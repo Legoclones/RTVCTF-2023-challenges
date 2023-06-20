@@ -1,0 +1,174 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                <h4 style="max-width:100%">
+                    <span class="circle active"></span>
+                    {{t($lang.network.networkArchitecture)}}
+                </h4>
+            </div>
+            <div class="panel-body panel-status">
+                <!-- 图片 -->
+                <div class="network_img" :class="mode"></div>
+                <div id="idMacCloneAlertMsg" class="list-group-item alert alert-info">
+                    <span class="fa-info-circle fa"></span>&nbsp;{{t($lang.network.bridgeMsg)}}
+                    <br> <span class="fa-info-circle fa"></span>&nbsp;<i v-if="isSft1200" style="font-style: normal;">{{t('When you use Access Point/Extender, you may not connect to this UI again. You can Press and hold the reset button for 4 seconds to revert back to router mode.')}}</i><i v-else style="font-style: normal;">{{t($lang.network.bridge_msg)}}</i> 
+                    <span v-if="disabled_vpn">
+                        <div >
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t($lang.network.Currently)}}</strong>
+                        </div>
+                    </span>
+                    <span v-if="disabled_portal">
+                        <div >
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t('Captive Portal is enabled. Please disable it in order to set up bridge mode.')}}</strong>
+                        </div>
+                    </span>
+                </div>
+                <br>
+                <!-- 内容 -->
+                <div class="list-group network_mode" id="isnetwork_select">
+                    <div class="network_instruction">
+                        <span class="text-left">
+                            <span class="fa fa-home"></span>
+                            {{t($lang.network.mode_switching)}}
+                        </span>
+                        <!-- <gl-tooltip content="" class="pull-right">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                                <span>{{t($lang.network.help)}}</span>
+                            </a>
+                        </gl-tooltip> -->
+                    </div>
+                    <transition name="component-fade" mode="out-in">
+                        <!-- one page -->
+                        <div v-if="page == 'one'">
+                            <div class="list-group-item clearfix border-none">
+                                <div class="radio">
+                                    <label for="routerMode" style="width: 100%">
+                                        <input type="radio" name="seletVPN" value="router" v-model="mode" id="routerMode" @change="changeMode" :disabled='disabled_vpn || disabled_portal'>
+                                        <span class="cr app-install-select" :class="{'bridge-disable':disabled_vpn || disabled_portal}">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">{{t($lang.modal.router)}}</div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="list-group-item clearfix border-none" v-show="apmode">
+                                <div class="radio">
+                                    <label for="apMode" style="width: 100%">
+                                        <input type="radio" name="seletVPN" value="ap" v-model="mode" @change="changeMode" id="apMode" :disabled='disabled_vpn || disabled_portal'>
+                                        <span class="cr app-install-select" :class="{'bridge-disable':disabled_vpn || disabled_portal}">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">{{t($lang.modal.ap)}}</div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="list-group-item clearfix border-none" v-show="relaymode">
+                                <div class="radio">
+                                    <label for="extenderMode" style="width: 100%">
+                                        <input type="radio" name="seletVPN" value="relay" @change="changeMode('extender')" v-model="mode" id="extenderMode" :disabled='disabled_vpn || disabled_portal'>
+                                        <span class="cr app-install-select" :class="{'bridge-disable':disabled_vpn || disabled_portal}">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">{{t($lang.modal.extender)}}</div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="list-group-item clearfix border-none" v-show="wdsmode && !isSft1200">
+                                <div class="radio">
+                                    <label for="wdsMode" style="width: 100%">
+                                        <input type="radio" name="seletVPN" value="wds" v-model="mode" id="wdsMode" @change="changeMode('wds')" :disabled='disabled_vpn || disabled_portal'>
+                                        <span class="cr app-install-select" :class="{'bridge-disable':disabled_vpn || disabled_portal}">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">{{t($lang.modal.wds)}}</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- two page -->
+                        <div v-if="page == 'two'" class="wifilist">
+                            <!-- class="style-2" :nodeNum="3" -->
+                            <gl-loading v-if="wifiload"></gl-loading>
+                            <div v-else>
+                                <div class="list-group-item clearfix border-none">
+                                    <span class="text-left indexwifi-left">
+                                        <gl-label :labelValue="$lang.label.ssid" style="text-transform: uppercase"></gl-label>
+                                    </span>
+                                    <span class="pull-right indexwifi-right">
+                                        <gl-select :option="wifidata" optionName="ssid" showNum="8" extenderWifi wifiIcon @change="changeWifi"
+                                            :disabled="joinStatus"></gl-select>
+                                    </span>
+                                </div>
+                                <!-- userName -->
+                                <div class="list-group-item clearfix border-none" v-show="modeState == 'EAP'">
+                                    <span class="text-left indexwifi-left">
+                                        <gl-label :labelValue="$lang.label.userName"></gl-label>
+                                    </span>
+                                    <span class="pull-right indexwifi-right">
+                                        <gl-input v-model="usname" type="text" :disabled="joinStatus"></gl-input>
+                                    </span>
+                                </div>
+                                <!-- Password -->
+                                <div class="list-group-item clearfix border-none" v-show="modeState != 'none'">
+                                    <span class="text-left indexwifi-left">
+                                        <gl-label :labelValue="$lang.label.psw"></gl-label>
+                                    </span>
+                                    <span class="pull-right indexwifi-right">
+                                        <gl-input v-model="psw" type="password" inputShow :disabled="joinStatus"></gl-input>
+                                    </span>
+                                </div>
+                                <!-- LAN IP -->
+                                <!-- <div class="list-group-item clearfix border-none" v-show="modeState=='WDS'">
+                                    <span class="pull-left indexwifi-left">
+                                        <gl-label :labelValue="$lang.label.lanip"></gl-label>
+                                    </span>
+                                    <span class="pull-right indexwifi-right">
+                                        <gl-input type="text" :disabled="joinStatus" v-model="lanip"></gl-input>
+                                    </span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </transition>
+                    <div class="text-center" style="padding-top: 10px;" v-show="!wifiload">
+                        <gl-btn type="modify" @click="back" v-show="page == 'two' && !joinStatus">{{t($lang.button.cancel)}}</gl-btn>
+                        <gl-btn :type="btnName == 'Apply' ? 'purple' : 'modify'" @click="checkMode" :disabled="joinStatus || bridgeMode.bridge == mode">
+                            <!-- {{isNext ? t($lang.button.next) : t($lang.button.apply)}} -->
+                            {{t(btnName)}}
+                            <span class="fa fa-spinner fa-pulse" v-show="joinStatus"></span>
+                        </gl-btn>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- WDS and AP -->
+
+    <gl-modal :modalStatus="msgModal" size="sm" :title="$lang.setting.aeecssingRouter" v-if="startModalWDS">
+        <div class="modal-body software-body" style="overflow: visible">
+            <span>
+                {{t($lang.setting.WDSANDAP)}}
+                <span class="cleanfix"></span>
+            </span>
+        </div>
+        <div class="modal-footer" style="text-align: center">
+            <gl-btn class="clientBtn" type="default" @click="resetPage" style="padding: 5.5px 24px">{{t($lang.button.close)}}</gl-btn>
+        </div>
+    </gl-modal>
+
+    <!-- Extender mode -->
+    <gl-modal :modalStatus="msgModal" size="sm" :title="$lang.setting.aeecssingRouter" v-if="startModalEXT">
+        <div class="modal-body software-body" style="overflow: visible">
+            <span>
+                {{t($lang.setting.EXT)}}
+                <span class="cleanfix"></span>
+            </span>
+        </div>
+        <div class="modal-footer" style="text-align: center">
+            <gl-btn class="clientBtn" type="default" @click="resetPage" style="padding: 5.5px 24px">{{t($lang.button.close)}}</gl-btn>
+        </div>
+    </gl-modal>
+</div>

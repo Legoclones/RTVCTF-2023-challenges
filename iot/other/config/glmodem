@@ -1,0 +1,2 @@
+config switch 'sim'
+	option sim_num '1'

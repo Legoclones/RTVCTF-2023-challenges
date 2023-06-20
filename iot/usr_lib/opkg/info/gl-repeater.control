@@ -1,0 +1,9 @@
+Package: gl-repeater
+Version: 3.1.19-1
+Depends: libc, libubus20210603, gl-util, gl-wifi-core, libpthread
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-repeater
+SourceName: gl-repeater
+Section: base
+Architecture: mips_24kc
+Installed-Size: 3877
+Description:  GL Health

@@ -1,0 +1,158 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idAdminpwPanel" v-cloak>
+            <div class="panel-heading">
+                <h4 style="max-width:57%">
+                    <span class="circle active"></span>
+                    Adblock
+                </h4>
+            </div>
+            <div class="panel-body panel-status reset-AdminPwd">
+                <div class="list-group">
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">Enable
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="adEnabled" @change="checkStatus" ></gl-tg-btn>
+                        </div>
+                    </span>
+ 
+                </div>
+            </div>
+        <div></div>
+            <table class="table">
+                <thead>
+                    <tr  style="background-color: #f4f5f7;" >
+                        <th class="col-lg-3 text-left">Blocklist Sourcesice</th>
+
+                        <th class="col-lg-7 text-left">Description
+                        </th>
+                        <th class="col-lg-2 text-left">Selected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-lg-3 text-left">
+                            Adguard
+                        </td>
+
+                        <td class="col-lg-7 text-left">
+                            combined adguard dns filter list, frequent updates, approx. 17.000 entries
+                        </td>
+                        <td class="col-lg-2 text-left">
+                            <div style="transform: translateY(3px)">
+                                <gl-tg-btn size="22px" class="btn-toggler" @change="checkStatus" theme="default" v-model="adguard"></gl-tg-btn>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-3 text-left">
+                            Hphosts
+                        </td>
+
+                        <td class="col-lg-7 text-left">
+                            	broad blocklist, monthly updates, approx. 19.200 entries
+                        </td>
+                        <td class="col-lg-2 text-left">
+                            <div style="transform: translateY(3px)">
+                                <gl-tg-btn size="22px" class="btn-toggler" @change="checkStatus" theme="default" v-model="hphosts"></gl-tg-btn>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-3 text-left">
+                            Spam404
+                        </td>
+
+                        <td class="col-lg-7 text-left">
+                            generic blocklist, infrequent updates, approx. 6.000 entries
+                        </td>
+                        <td class="col-lg-2 text-left">
+                            <div style="transform: translateY(3px)">
+                                <gl-tg-btn size="22px" class="btn-toggler" @change="checkStatus" theme="default" v-model="spam404"></gl-tg-btn>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-3 text-left">
+                            Dshield
+                        </td>
+
+                        <td class="col-lg-7 text-left">
+                            generic blocklist, daily updates, approx. 3.500 entries
+                        </td>
+                        <td class="col-lg-2 text-left">
+                            <div style="transform: translateY(3px)">
+                                <gl-tg-btn size="22px" class="btn-toggler" @change="checkStatus" theme="default" v-model="dshield"></gl-tg-btn>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+             
+            </table>
+
+            <div class="panel-body panel-status">
+                <ul class="nav nav-tabs">
+                    <!-- History -->
+                    <li class="active">
+                        <a href="#tabHistory" data-toggle="tab">
+                            <span class="hidden-xs"> History</span>
+                            <span class="visible-xs-block">History</span>
+                        </a>
+                    </li>
+                    <!-- Black list -->
+                    <li role="presentation">
+                        <a href="#tabBlackList" data-toggle="tab">
+                            <span class="hidden-xs">BlackList</span>
+                            <span class="visible-xs-block">BlackList</span>
+                        </a>
+                    </li>
+                    <!-- White list -->
+                    <li role="presentation">
+                        <a href="#tabWhiteList" data-toggle="tab">
+                            <span class="hidden-xs">WhiteList</span>
+                            <span class="visible-xs-block">WhiteList</span>
+                        </a>
+                    </li>
+                </ul>
+                <br/>
+                <div class="tab-content">
+                    <!-- History -->
+                    <div class="tab-pane fade in active" id="tabHistory">
+                        <div class="list-group panel-status">
+                            <table>
+                                <thead>
+                                    <tr style="background-color: #f4f5f7;">
+                                        <th class="col-lg-2 text-left">Date</th>
+                                        <th class="col-lg-6 text-center">URL</th>
+                                        <th class="col-lg-3 text-left">From</th>
+                                        <th class="col-lg-1 text-left">Frequency</th>
+                                        <th class="col-lg-2 text-left">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-html="AdbHistory">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- BlackList -->
+                    <div class="tab-pane fade" id="tabBlackList">
+                        <div class="list-group panel-status">
+                            google.com
+                        </div>
+                    </div>
+                    <!-- WhiteList -->
+                    <div class="tab-pane fade" id="tabWhiteList">
+                        <div class="list-group panel-status">
+                            bing.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span class="list-group-item text-center">
+                <gl-btn type="purple" @click="applyAdbSetting" :disabled="applyDisabled || btnMove">{{t('Apply')}}
+                    <span class="fa fa-spinner fa-pulse" v-if="btnMove"></span>
+                </gl-btn>
+            </span>
+        </div>
+    </div>

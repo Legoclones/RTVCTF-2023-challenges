@@ -1,0 +1,8 @@
+.networksplit{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #95b0ca;
+    font-size: 15px;
+    color: #fff;
+}

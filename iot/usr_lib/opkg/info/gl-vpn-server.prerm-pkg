@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ -z "${IPKG_INSTROOT}" ]; then
+	/etc/init.d/vpn-service stop
+	uci set vpn_service.global.enable='0'
+	uci commit vpn_service
+fi
+exit 0

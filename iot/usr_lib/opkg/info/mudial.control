@@ -1,0 +1,9 @@
+Package: mudial
+Version: 1.0.0-1
+Depends: libc, mwan3, kmod-macvlan, gl-util
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/mudial
+SourceName: mudial
+Section: base
+Architecture: mips_24kc
+Installed-Size: 4143
+Description:  GL iNet mudial mode

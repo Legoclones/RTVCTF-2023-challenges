@@ -1,0 +1,157 @@
+.firewall_style .fw-body.modal-body {
+    overflow: visible
+}
+.active td,
+.firewall_style .active th {
+    color: #555
+}
+ @media (max-width: 768px) {
+    .firewall_style .fw-body.modal-body {
+        overflow: auto
+    }
+}
+.firewall_style .idDNSPanel .panel-heading h4{
+    max-width: none;
+}
+.firewall_style .panel-heading{
+    background: #f4f5f7;
+}
+.firewall_style .headColor{
+    background-color: #e9f4f4;
+    background: #95B0CA;
+}
+.firewall_style .headTrText{
+    text-align: center;
+}
+.firewall_style .add_input .gl-input{
+ min-width: 110px;
+}
+.firewall_style .add_input .gl-input input{
+    height: 30px!important;
+    padding: 0 0 0 12px;
+    outline: none;
+    border: 1px solid #cccccc
+}
+.firewall_style .add_input .select-drop-down{
+    min-width: 80px;
+}
+.firewall_style .add_input>.inner_ip .select-drop-down{
+    min-width: 110px;
+}
+ .firewall_style .add_input>.inner_ip .gl-input{
+    min-width: 110px;
+   }
+.firewall_style .add_input div.input-control{
+    line-height: 30px;
+    height: 30px;
+}
+.firewall_style .required{
+    border: 1px solid #ff0000;
+    border-radius: 3px;
+    outline: none
+}
+.firewall_style .pcshow{
+    display: block;
+}
+.firewall_style .moblieshow{
+    display: none;
+}
+
+.firewall_style .screen-float-l {
+    padding: 10px 0
+}
+.firewall_style .dmzbox{
+    width: 300px;
+    margin: 0 auto;
+}
+.firewall_style .dmzbox ul>li{
+    width: 100%;
+    height: 60px;
+    
+    /* font-size: 18px;
+    
+    color:#595e7c; */
+}
+.firewall_style .mright{
+    margin-right: 40px;
+}
+.firewall_style .bdbottom{
+    border:none;
+    padding-top:0;
+    
+}
+.firewall_style .borderWidth .table-bordered>thead>tr>th{
+    border-bottom-width: 1px
+}
+.firewall table tr td,
+.firewall_style .firewall table tr th {
+    border: 1px solid #dddddd;
+}
+.firewall_style .headColor th {
+    color: #fff;
+    vertical-align: middle!important;
+}
+.firewall_style .headColor .firewall-head {
+    text-align: left;
+    font-weight: bold;
+    padding: 15px !important;
+    /* border: 1px solid skyblue !important; */
+    background: #eeeeee;
+    border-radius:4px 4px 0 0; 
+    margin-top: 15px;
+    color: #000
+}
+.firewall_style .float-1,.float-r{
+    float: left;
+    padding-top: 10px;
+    color: #000
+}
+.firewall_style .dmzbox .select-input.gl-input > input{
+    height: 30px;
+    
+}
+.firewall_style .dmzbox div.input-control{
+    height: 30px;
+    line-height: 30px;
+} 
+.firewall_style .dmzbox .gl-input > input{
+    width: 73%;
+}
+.firewall_style .dmzbox .select-drop-down{
+    width: 44%;
+    min-width: 110px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 500;
+}
+ @media (max-width: 1170px) { 
+    .firewall_style #scroll{
+        overflow: visible;
+       
+    }
+}
+  .firewall_style .displayFlex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .firewall_style .flex{
+      flex:1;
+  }
+  .firewall_style .displayFlex .gl-input{
+      max-width: 180px;
+  }
+  .firewall_style .displayFlex .gl-input input{
+    width: 180px;
+  }
+  .firewall_style .displayFlex  .select-drop-down{
+      max-width: 180px;
+  }
+
+  .line-limit-length {
+    max-width:126px!important;
+    overflow: hidden;
+    text-align: justify;
+    text-justify: newspaper;
+    word-break: break-all;
+}

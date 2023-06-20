@@ -1,0 +1,12 @@
+Package: kmod-fs-exfat
+Version: 4.14.241+2018-04-17-01c30ad5-2
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-nls-base
+Source: feeds/packages/kernel/exfat-nofuse
+SourceName: kmod-fs-exfat
+License: GPL-2.0
+LicenseFiles: LICENSE
+Section: kernel
+Maintainer: Yousong Zhou <yszhou4tech@gmail.com>
+Architecture: mips_24kc
+Installed-Size: 50413
+Description:  Kernel module for ExFAT Filesytems

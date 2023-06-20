@@ -1,0 +1,8 @@
+@media screen and (max-width: 768px){
+  #idDNSPanel .next-dns .ses-text {
+    max-width: 100%!important;
+    text-align: center!important;
+    transform: translateY(0)!important;
+    padding: 0 0 5px!important;
+  }
+}

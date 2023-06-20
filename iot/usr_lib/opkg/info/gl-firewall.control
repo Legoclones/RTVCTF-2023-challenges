@@ -1,0 +1,9 @@
+Package: gl-firewall
+Version: 3.0.5-1
+Depends: libc
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-firewall
+SourceName: gl-firewall
+Section: base
+Architecture: mips_24kc
+Installed-Size: 722
+Description:  GL iNet firewall

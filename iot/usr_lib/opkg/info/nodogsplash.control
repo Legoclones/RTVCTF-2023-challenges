@@ -1,0 +1,11 @@
+Package: nodogsplash
+Version: 1.0.2-3
+Depends: libc, libpthread, iptables-mod-ipopt
+Source: feeds/gli_pub/nodogsplash
+SourceName: nodogsplash
+License: GPL-2.0+
+Section: net
+Architecture: mips_24kc
+Installed-Size: 44260
+Description:  Nodogsplash offers a simple way to open a free hotspot providing
+ restricted access to an internet connection.

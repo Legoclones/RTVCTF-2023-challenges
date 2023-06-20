@@ -1,0 +1,233 @@
+<div class="row first-row-margin">
+    <div class="col-lg-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle" :class="circleClass" id="headerCircle"></span>
+                    {{t($lang.vpnserver.vpnServer)}}
+                </h4>
+            </div>
+            <!-- ip 冲突 -->
+            <div class="alert alert-info idScanWifiAlertMsg vpn-server" v-if="msgOf_dmz" style="border-bottom: 0;">
+                <div class="text-left alert-red" style="color: chocolate;">
+                    <span class="fa-exclamation-circle fa"></span>
+                    {{t($lang.vpnserver.msgOf_dmz)}}
+                </div>
+            </div>
+            <div class="alert alert-info idScanWifiAlertMsg vpn-server" v-if="ovpnconfig.dev == 'Bridge'">
+                <div class="text-left alert-red" style="color: chocolate;">
+                    {{ t('Please follow the') }} <a href="https://docs.gl-inet.com/en/3/app/openvpn/#openvpn-bridge" target="_blank">{{ t('setup guide') }}</a> {{ t('if you are using it for the first time.') }} <br>
+                    <span class="fa-exclamation-circle fa"></span>
+                    {{ t("OpenVPN Bridge DOESN'T support IPv6.") }} 
+                </div>
+            </div>
+            <div class="panel-body ">
+                <div class="list-group">
+                    <div v-if="!generate" class="panel-status">
+                        <div id="defaultStatus" v-cloak>
+                            <br />
+                            <p>{{t($lang.vpnserver.vpnSource)}}</p>
+                            <ol>
+                                <li>{{t($lang.vpnserver.addCertificate)}}</li>
+                                <li>{{t($lang.vpnserver.modifyConfig)}}.</li>
+                                <li>{{t($lang.vpnserver.exportConfigFile)}}.</li>
+                                <li>{{t($lang.vpnserver.start)}}</li>
+                            </ol>
+                            <p>{{t($lang.vpnserver.generatCertificate)}}</p>
+                        </div>
+                        <span class="list-group-item slider-btn-inlist text-center glGp" style="border-bottom: none;">
+                            <gl-btn type="modify" class="rec gl-border" :disabled="btnapy" @click="generateing">
+                                <span class="fa fa-plus"></span>
+                                <span>{{t($lang.vpnserver.buildVpn_ss)}}</span>
+                                <span class="fa fa-spinner fa-pulse" v-show="btnapy"></span>
+                            </gl-btn>
+                        </span>
+                    </div>
+                    <div v-else>
+                        <!-- accress mac address -->
+                        <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix" style="padding-bottom: 0;border-bottom: 0;">
+                            <span style="margin-top: 8px;float: left;">
+                                {{t($lang.vpnserver.lan_access)}}
+                                <gl-tooltip :content="$lang.toolTip.turn_on" direction="top">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                </gl-tooltip>
+                            </span>
+                            <span class="pull-right" style="margin-top: 5px;">
+                                <gl-tg-btn size="22px" theme="default" :disabled="blockStatus" v-model="access"
+                                    @onclick="blockclient(ovpnconfig)" style="display: inline-block;"></gl-tg-btn>
+                            </span>
+                        </span>
+                        <div v-if="ovpnstatus.status !=='started'">
+                            <!-- type -->
+                            <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>{{t('Type')}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-select :option="TypeArr" @change="changeType" :disabled="btname=='Modify'" v-model="ovpnconfig.dev"
+                                        ></gl-select>
+                                </div>
+                            </span>
+                            <!-- ipv4 address -->
+                            <span class="list-group-item list-group-narrow clearfix" style="border-bottom: 0;">
+                                <div class="text-left pull-left ">
+                                    <span>
+                                        {{ t('IP Address') }}
+                                    </span>
+                                </div>
+                                <div class="lanstartend list-input-field" id="iphoverStatus">
+                                    <input :class="{'has-success':inputStatus=='success','has-error':inputStatus=='error'}" :disabled="btname=='Modify'" type="text" class="form-control"
+                                        @input="validate" id="idSetIpInput" maxlength="15" :placeholder="$lang.holdPlace.required" @input="validate"
+                                v-model="ovpnconfig.subnet" style="width: 180px!important;height: 38px" />
+                                </div>
+                                <!-- <div class="list-input-field">
+                                    <gl-input v-model="ovpnconfig.subnet" :disabled="btname=='Modify'" :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div> -->
+                            </span>
+                            <!-- Start Ip Address -->
+                            <span v-if="methodType == 'tap'" class="list-group-item list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>
+                                        {{t('Start IP Address')}}
+                                    </span>
+                                </div>
+                                <div class="lanstartend list-input-field">
+                                    <span id="iphoverStatus" class="lanstartend">{{IpAddress+'.'}}
+                                        <input :class="{'is-successvpnserve':lanStartInputStatus=='success','is-errorvpnserve':lanStartInputStatus=='error'}" :disabled="btname=='Modify'" type="text" class="form-control"
+                                            @input="lanStartVaildate" id="idSetIpInput" maxlength="3"
+                                            v-model="lanstart"  style="max-width: 136px!important;display: inline-block;padding-right: 10px!important;" />
+                                    </span>
+                                </div>
+                            </span>
+                            <!-- End Ip Address -->
+                             <span v-if="methodType == 'tap'" class="list-group-item list-group-narrow clearfix" style="border-bottom: 0;">
+                                <div class="text-left pull-left ">
+                                    <span>
+                                        {{t('End IP Address')}}
+                                    </span>
+                                </div>
+                                <div class="lanstartend list-input-field">
+                                    <span id="iphoverStatus" class="lanstartend">{{IpAddress+'.'}}
+                                        <input  :class="{'is-successvpnserve':lanEndInputStatus=='success','is-errorvpnserve':lanEndInputStatus=='error'}"
+                                            @input="lanEndVaildate" id="idSetIpInput" maxlength="3" :disabled="btname=='Modify'" type="text" class="form-control"
+                                            v-model="lanend" style="max-width: 136px!important;display: inline-block;padding-right: 10px!important;" />
+                                    </span>
+                                </div>
+                            </span>
+                            <!-- ipv6 address -->
+                            <span class="list-group-item list-group-narrow clearfix" v-if="methodType == 'tun'" style="border-bottom: 0;">
+                                <div class="text-left pull-left ">
+                                    <span>
+                                        {{ t('IPv6 Address') }}
+                                    </span>
+                                </div>
+                                <div class="lanstartend list-input-field" id="vpnipv6iphoverStatus">
+                                    <gl-tooltip class="vpnserver-ipv6-tip" :content="ipv6EnabledTooltip" direction="top" v-show="ovpnconfig.ipv6 == 0 || ipv6AddressDisabled">
+                                        <span class="fa fa-exclamation-circle" style="color: #d2691e;"></span>
+                                    </gl-tooltip>
+                                    <input :class="{'has-success':inputV6Status=='success','has-error':inputV6Status=='error'}" :disabled="btname == 'Modify' || ovpnconfig.ipv6 == 0 || ipv6AddressDisabled" type="text" class="form-control"
+                                        @input="validatev6" id="idSetIpInput" :placeholder="$lang.holdPlace.required" @input="validatev6"
+                                v-model="ovpnconfig.subnetv6" style="width: 180px!important;height: 38px" />
+                                </div>
+                                <!-- <div class="list-input-field">
+                                    <gl-input v-model="ovpnconfig.subnet" :disabled="btname=='Modify'" :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div> -->
+                            </span>
+
+                            <span class="list-group-item list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>{{t($lang.vpnserver.netmask)}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <!-- <gl-tooltip :content="$lang.vpnserver.enterSubnetConfigures" direction="left" :toolShow="btnstatus"> -->
+                                    <gl-input v-model="ovpnconfig.mask" :disabled="btname=='Modify'" :placeholder="$lang.holdPlace.required"></gl-input>
+                                    <!-- </gl-tooltip> -->
+                                </div>
+                            </span>
+                            <span class="list-group-item list-group-narrow clearfix" style="border-bottom: 0;">
+                                <div class="text-left pull-left ">
+                                    <span>{{t($lang.vpnserver.port)}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <!-- <gl-tooltip :content="$lang.vpnserver.enterSubnetConfigures" direction="left" :toolShow="btnstatus"> -->
+                                    <gl-input v-model="ovpnconfig.port" :disabled="btname=='Modify'" :placeholder="$lang.holdPlace.required"></gl-input>
+                                    <!-- </gl-tooltip> -->
+                                </div>
+                            </span>
+                            <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>{{t($lang.vpnserver.encryption)}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-select :option="encryptArray" :disabled="btname=='Modify'" v-model="ovpnconfig.cipher" @change="selectEncryption"></gl-select>
+                                </div>
+                            </span>
+                            <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix" style="border-bottom: 0;">
+                                <div class="text-left pull-left ">
+                                    <span>{{ t('Authentication') }}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-select :option="authentocationArray" :disabled="btname=='Modify'" v-model="ovpnconfig.auth"></gl-select>
+                                </div>
+                            </span>
+                            <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>{{t($lang.vpnserver.proto)}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-select :option="ProtoArray" :disabled="btname=='Modify'" v-model="ovpnconfig.proto"
+                                        style="text-transform: uppercase"></gl-select>
+                                </div>
+                            </span>
+                        </div>
+
+                        <div v-else class="panel-clients" style="border-bottom: none">
+                            <div class="list-group client-list ">
+                                <span class="list-group-item client-list-heading">
+                                    <div>
+                                        <ul class="client-list-row ">
+                                            <li class="col-md-6 col-xs-6 ssclient-ip">{{t($lang.vpnserver.ip)}}</li>
+                                            <li class="col-md-6 col-xs-6 ssclient-data text-left hidden-xxs ">{{t($lang.vpnserver.sentReceived)}}</li>
+                                        </ul>
+                                    </div>
+                                </span>
+                                <div class="">
+                                    <span class="list-group-item client-item" style="border-bottom: none">
+                                        <ul class="client-list-row ">
+                                            <li class="col-md-6 col-xs-6 ssclient-ip">{{ovpnstatus.ipaddr}}<br>{{ovpnstatus.ipaddrv6}}</li>
+                                            <li class="col-md-6 col-xs-6 ssclient-data text-left hidden-xxs ">{{getFlow(parseInt(ovpnstatus.tx_bytes))}}/{{getFlow(parseInt(ovpnstatus.rx_bytes))}}</li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="list-group-item slider-btn-inlist text-center glGp" style="border-bottom: none;border-top: none;padding: 15px 0px;">
+                            <gl-btn type="modify" v-show="btname =='Apply' && !checkServer && !btnapy" @click="checkBtn">{{t($lang.button.cancel)}}</gl-btn>
+                            <!-- modify and apply -->
+                            <gl-btn v-show="generate && modifyStat && modifyBtn && !checkServer" :type="btname=='Modify'? 'modify': 'purple'"
+                                :disabled="ovpnstatus.status=='started' || btnapy || lanStartInputStatus == 'error' || lanEndInputStatus == 'error' || inputStatus == 'error' || inputV6Status == 'error'" @click="applyConfig">
+                                <span>{{t(btname)}}</span>
+                                <span class="fa fa-spinner fa-pulse" v-show="btnmfy"></span>
+                            </gl-btn>
+                            <!-- 开启关闭 -->
+                            <gl-btn v-show="generate && btname !=='Apply'" :type="typename" @click="startOvpn"
+                                :disabled="checkServer">
+                                <span>{{t(btnName)}}</span>
+                                <span class="fa fa-spinner fa-pulse" v-show="checkServer"></span>
+                            </gl-btn>
+                            <!-- 导出配置 -->
+                                <span class="fa fa-spinner fa-pulse vpn-export hidden-xs" style="margin-right: 10px" v-if="exportConfig"></span>
+                                <a @click="exportfile" class="vpn-export hidden-xs" v-else>{{t($lang.vpnserver.exportConfig)}}</a>
+                        </span>
+                        <span class="list-group-item visible-xs" style="text-align: right;">
+                            <span class="fa fa-spinner fa-pulse" v-if="exportConfig"></span>
+                            <a @click="exportfile" v-else>{{t($lang.vpnserver.exportConfig)}}</a>
+                        </span>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

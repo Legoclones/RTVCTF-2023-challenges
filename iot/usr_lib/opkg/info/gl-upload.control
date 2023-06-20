@@ -1,0 +1,9 @@
+Package: gl-upload
+Version: 1.0.46-1
+Depends: libc, libuci20130104, libjson-c2, libiwinfo20181126, gl-util, libcurl4
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-upload
+SourceName: gl-upload
+Section: base
+Architecture: mips_24kc
+Installed-Size: 13100
+Description:  GL.iNet SDK3.0.

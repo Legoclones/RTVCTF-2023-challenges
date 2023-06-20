@@ -1,0 +1,5 @@
+config proxy
+	option main_server 'nil'
+	option enable '0'
+	option access 'DROP'
+

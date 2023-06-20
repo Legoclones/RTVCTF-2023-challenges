@@ -1,0 +1,13 @@
+
+config globals 'globals'
+	option enabled '0'
+
+config interface 'wan'
+	option interface 'wan'
+	option addrmode 'auto'
+	option dnsmode 'auto'
+
+config interface 'lan'
+	option mode 'nat6'
+	option dnsmode 'auto'
+

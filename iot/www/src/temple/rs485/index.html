@@ -1,0 +1,598 @@
+<div class="templete">
+  <div class="col-lg-12">
+    <!-- base config -->
+    <div class="panel with-nav-tabs panel-default rs485-page">
+      <div class="panel-heading">
+          <h4>
+              <span class="circle active"></span>
+              RS485
+          </h4>
+      </div>
+      <div class="panel-body panel-status">
+        <ul class="nav nav-tabs">
+          <!-- config -->
+          <li class="active" @click="changeTab('Config')">
+              <a href="#tabConfig" data-toggle="tab">
+                  <span class="hidden-xs">{{ t('Config') }}</span>
+                  <span class="visible-xs-block">{{ t('Config') }}</span>
+              </a>
+          </li>
+          <!-- Socket -->
+          <li role="presentation" @click="changeTab('Socket')">
+            <a href="#tabSocket" data-toggle="tab" class="rs485-tab">
+              <span class="circle re485-circle" :class="{'active': socketConnectStatus}"></span>
+              <span class="hidden-xs re485-tab-title">Socket</span>
+              <span class="visible-xs-block re485-tab-title">Socket</span>
+              <div class="clearfix"></div>
+            </a>
+          </li>
+          <!-- MQTT -->
+          <li role="presentation" @click="changeTab('MQTT')">
+            <a href="#tabMqtt" data-toggle="tab" class="rs485-tab">
+              <span class="circle re485-circle" :class="{'active': mqttConnectStatus}"></span>
+              <span class="hidden-xs re485-tab-title">MQTT</span>
+              <span class="visible-xs-block re485-tab-title">MQTT</span>
+              <div class="clearfix"></div>
+            </a>
+          </li>
+        </ul>
+        <br/>
+        <div class="tab-content">
+          <!-- config -->
+          <div class="tab-pane fade in active" id="tabConfig">
+            <div class="panel-group" id="fade-rs485-tab">
+              <!-- mode bus -->
+              <div class="panel panel-default">
+                <div class="panel-heading re485-header-click">
+                  <span class="rs485-header" data-toggle="collapse" data-parent="#fade-rs485-tab" href="#tabTerminalPage">
+                    <span class="rs485-config-page">
+                      {{ t('Modbus') }}
+                    </span>
+                    <button class="btn pull-right btn-xs rs485-header-arrow">
+                      <span class="fa fa-chevron-down"></span>
+                    </button>
+                  </span>
+                </div>
+                <div id="tabTerminalPage" class="panel-collapse collapse in">
+                  <div class="panel-body" style="padding: 0 0 15px;">
+                    <div class="list-group hotspot-list">
+                      <!-- device id -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Device ID')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="terminalList.device_id" :disabled="applyTerminalStatus" type="text"
+                                placeholder="01-F7"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- func_code -->
+                      <span class="list-group-item " style="border-bottom: 0;">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Function Code')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="terminalList.func_code" :disabled="applyTerminalStatus" type="text"
+                                placeholder="00 ~ FF"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- reg_addr_h -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                          <gl-label :labelValue="t('Reg Addr')" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                          <!-- <gl-tooltip content="请分别输入两位16进制字符" direction="top">
+                              <span class="fa fa-exclamation-circle"></span>
+                          </gl-tooltip> -->
+                            <!-- <gl-label labelValue="Reg Addr"></gl-label> -->
+                        </div>
+                        <div class="list-input-field rs485-reg-len">
+                            <gl-input v-model="terminalList.reg_addr_h" :disabled="applyTerminalStatus" type="text"
+                                placeholder="00 ~ FF"></gl-input>
+                            <span class="line">-</span>
+                            <gl-input v-model="terminalList.reg_addr_l" :disabled="applyTerminalStatus" type="text"
+                            placeholder="00 ~ FF"></gl-input>
+                            <!-- <gl-select :option="modeList" v-model="terminalList.mode" :disabled="modifyConfigStatus" @getval="getModeSelectVal"></gl-select> -->
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                          <gl-label :labelValue="t('Reg Len')" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                          <!-- <gl-tooltip content="请输入两位16进制字符" direction="top">
+                              <span class="fa fa-exclamation-circle"></span>
+                          </gl-tooltip> -->
+                            <!-- <gl-label labelValue="Reg Len"></gl-label> -->
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="terminalList.reg_len" :disabled="applyTerminalStatus" type="text"
+                                placeholder="01 ~ 20"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <span class="list-group-item " v-if="writeTerminal">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Data Count')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="terminalList.data_count" :disabled="applyTerminalStatus" type="text"
+                                placeholder="02 ~ 40"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- data -->
+                      <span class="list-group-item " v-if="writeTerminal">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Data')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="terminalList.data" :disabled="applyTerminalStatus" type="text"
+                                placeholder="HEX"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <div class="list-group-item alert alert-info" v-if="isReadResult" style="text-align: justify;text-justify: newspaper;word-break: break-all;">
+                        {{ readResult }}
+                      </div>
+                      <!-- modify - apply -->
+                      <div class="text-center" style="padding: 15px 0 0;">
+                        <span v-if="!writeTerminal">
+                          <gl-btn type="modify" class="btn" @click="openWriteInput('write')" :disabled="applyTerminalStatus">{{ t('Write') }}</gl-btn>
+                          <gl-btn type="purple" class="btn" @click="ApplyreadTerminal('read')" :disabled="applyTerminalStatus">{{ t('Read') }}</gl-btn>
+                        </span>
+                        <span v-else>
+                          <gl-btn type="modify" class="btn" @click="openWriteInput" :disabled="applyTerminalStatus">{{t($lang.button.cancel)}}</gl-btn>
+                          <gl-btn type="purple" class="btn" @click="ApplyreadTerminal('write')" :disabled="applyTerminalStatus">{{t($lang.button.apply)}}</gl-btn>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- terminal -->
+              <div class="panel panel-default">
+                <div class="panel-heading re485-header-click">
+                  <span class="rs485-header" data-toggle="collapse" data-parent="#fade-rs485-tab" href="#tabMessagePage">
+                    <span class="rs485-config-page">
+                      {{ t('Terminal') }}
+                    </span>
+                    <button class="btn pull-right btn-xs rs485-header-arrow">
+                      <span class="fa fa-chevron-down"></span>
+                    </button>
+                  </span>
+                </div>
+                <div id="tabMessagePage" class="panel-collapse collapse">
+                  <div class="panel-body" style="padding: 0 0 15px;">
+                    <div class="list-group hotspot-list">
+                      <!-- data -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Data')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="sendMessageData.data" :disabled="isSendMessage" type="text"
+                                :placeholder="t('Please enter the data to be sent')"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- time -->
+                      <span class="list-group-item slider-btn-inlist mqttautonn">
+                        <div class="text-left ">{{ t('Show Time') }}</div>
+                        <div class=" pull-right btn-toggler-right">
+                          <gl-tg-btn size="22px" theme="default" v-model="sendMessageData.show_date" :disabled="isSendMessage"></gl-tg-btn>
+                        </div>
+                      </span>
+                      <!-- show_send -->
+                      <span class="list-group-item slider-btn-inlist mqttautonn">
+                        <div class="text-left ">{{ t('Show Send Message') }}</div>
+                        <div class=" pull-right btn-toggler-right">
+                          <gl-tg-btn size="22px" theme="default" v-model="sendMessageData.show_send" :disabled="isSendMessage"></gl-tg-btn>
+                        </div>
+                      </span>
+                      <!-- receive message -->
+                      <div class="list-group-item alert alert-info"  v-if="receiveMessage"  style="text-align: justify;text-justify: newspaper;word-break: break-all;">
+                        <span v-if="receiveMessage.send">send: {{ receiveMessage.send }}</span> <br/>
+                        <span v-if="receiveMessage.alldata">receive: {{ receiveMessage.alldata }}</span> <br/>
+                        <span v-if="receiveMessage.date">time: {{ receiveMessage.date }}</span>
+                      </div>
+                      <!-- apply -->
+                      <div class="text-center" style="padding: 15px 0 0;">
+                        <gl-btn type="purple" class="btn" @click="sendMessage" :disabled="isSendMessage">{{t($lang.button.apply)}}</gl-btn>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- config -->
+              <div class="panel panel-default">
+                <div class="panel-heading re485-header-click">
+                  <span class="rs485-header" data-toggle="collapse" data-parent="#fade-rs485-tab" href="#tabConfigPage">
+                    <span class="rs485-config-page">
+                      {{ t('Config Info') }}
+                    </span>
+                    <button class="btn pull-right btn-xs rs485-header-arrow">
+                      <span class="fa fa-chevron-down"></span>
+                    </button>
+                  </span>
+                </div>
+                <div id="tabConfigPage" class="panel-collapse collapse">
+                  <div class="panel-body" style="padding: 0 0 15px;">
+                    <div class="list-group hotspot-list">
+                      <!-- device -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Device')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="configInfo.device" :disabled="modifyConfigStatus" type="text"
+                                placeholder=""></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- speed -->
+                      <span class="list-group-item " style="border-bottom: 0;">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Speed')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-if="isCustom" v-model="configInfo.speed" :disabled="modifyConfigStatus" type="text"
+                                placeholder=""></gl-input>
+                            <gl-select v-else :option="speedList" showNum="5" v-model="configInfo.speed" :disabled="modifyConfigStatus" @getval="getSpeedSelectVal"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- mode -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Mode')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <!-- <gl-input v-model="configInfo.mode" :disabled="modifyConfigStatus" type="text"
+                                placeholder=""></gl-input> -->
+                            <gl-select :option="modeList" showNum="5" v-model="configInfo.mode" :disabled="modifyConfigStatus"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- timeout -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Timeout') + '(ms)'"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="configInfo.timeout" :disabled="modifyConfigStatus" type="text"
+                                placeholder=""></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- type -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Type')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                          <gl-select :option="messageType" v-model="configInfo.type" :disabled="modifyConfigStatus"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- modify - apply -->
+                      <div class="text-center" style="padding: 15px 0 0;">
+                        <!-- <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn> -->
+                        <span v-if="!configBtnStatus">
+                          <gl-btn type="modify" class="btn" :disabled="modifyBtnStatus" @click="clickConfigModify">{{t($lang.button.modify)}}</gl-btn>
+                        </span>
+                        <span v-else>
+                          <gl-btn type="modify" class="btn" @click="clickConfigCancel" :disabled="modifyBtnStatus">{{t($lang.button.cancel)}}</gl-btn>
+                          <gl-btn type="purple" class="btn" @click="setConfigInfo" :disabled="modifyBtnStatus">{{t($lang.button.apply)}}</gl-btn>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- socket -->
+          <div class="tab-pane fade" id="tabSocket" style="padding: 0 0 10px;">
+            <div class="list-group hotspot-list">
+              <!-- address -->
+              <span class="list-group-item ">
+                <div class="text-left pull-left">
+                    <gl-label :labelValue="t('IP Address')"></gl-label>
+                </div>
+                <div class="list-input-field">
+                    <gl-input v-model="socketData.address" type="text"
+                        placeholder="" :disabled="isSocketCancelConnectingBtn"></gl-input>
+                </div>
+                <div class="clearfix"></div>
+              </span>
+              <!-- port -->
+              <span class="list-group-item " style="border-bottom: 0;">
+                <div class="text-left pull-left">
+                    <gl-label :labelValue="t('Port')"></gl-label>
+                </div>
+                <div class="list-input-field">
+                    <gl-input v-model="socketData.port" type="text"
+                        placeholder="" :disabled="isSocketCancelConnectingBtn"></gl-input>
+                </div>
+                <div class="clearfix"></div>
+              </span>
+              <!-- mode -->
+              <span class="list-group-item ">
+                <div class="text-left pull-left">
+                    <gl-label :labelValue="t('Mode')"></gl-label>
+                </div>
+                <div class="list-input-field">
+                    <gl-select :option="socketModeList" v-model="socketData.mode" :disabled="isSocketCancelConnectingBtn"></gl-select>
+                </div>
+                <div class="clearfix"></div>
+              </span>
+              <!-- timeout -->
+              <span class="list-group-item ">
+                <div class="text-left pull-left">
+                    <gl-label :labelValue="t('Timeout') + '(s)'"></gl-label>
+                </div>
+                <div class="list-input-field">
+                    <gl-input v-model="socketData.timeout" type="text"
+                        placeholder="" :disabled="isSocketCancelConnectingBtn"></gl-input>
+                </div>
+                <div class="clearfix"></div>
+              </span>
+              <!-- apply -->
+              <div class="text-center" style="padding: 15px 0 0;">
+                <!-- <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn> -->
+                <span v-if="isSocketCancelConnectingBtn">
+                  <gl-btn v-if="!socketConnectStatus" type="modify" class="btn" :disabled="socketApplyBtnStatus" @click="clickSocketMqttModify('socket')">{{t($lang.button.modify)}}</gl-btn>
+                  <gl-btn :type="socketConnectStatus ? 'danger' : 'purple'" class="btn" :disabled="socketApplyBtnStatus || mqttConnectStatus" @click="applyStopStartSocketMqtt('socketStart')">{{socketConnectStatus ? 'Stop' : 'Start'}}</gl-btn>
+                </span>
+                <span v-else>
+                  <gl-btn type="modify" class="btn" @click="clickSocketMqttModify('socketCancel')" :disabled="socketApplyBtnStatus">{{t($lang.button.cancel)}}</gl-btn>
+                  <gl-btn type="purple" class="btn" @click="applyStopStartSocketMqtt('socketApply')" :disabled="socketApplyBtnStatus">{{t($lang.button.apply)}}</gl-btn>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- mqtt -->
+          <div class="tab-pane fade" id="tabMqtt">
+            <div class="panel-group" id="fade-rs485-tab-mqtt">
+              <div class="panel panel-default">
+                <div class="panel-heading re485-header-click">
+                  <span class="rs485-header" data-toggle="collapse" data-parent="#fade-rs485-tab-mqtt" href="#tabMqttPage">
+                    <span class="rs485-config-page">
+                      {{ t('MQTT Profile Settings') }}
+                    </span>
+                    <button class="btn pull-right btn-xs rs485-header-arrow">
+                      <span class="fa fa-chevron-down"></span>
+                    </button>
+                  </span>
+                </div>
+                <div id="tabMqttPage" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="list-group hotspot-list">
+                      <!-- address -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Server Address')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="mqttData.address" type="text"
+                                placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- port -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Port')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="mqttData.port" type="text"
+                                placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- clientid -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Client ID')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                          <gl-input v-model="mqttData.clientid" type="text"
+                                placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- qos -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label labelValue="Qos"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                          <gl-select :option="qosClientidList" v-model="mqttData.qos" :disabled="isMqttCanceConnectinglBtn"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- publish -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Publish')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="mqttData.publish" type="text"
+                                placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                      <!-- subscribe -->
+                      <span class="list-group-item ">
+                        <div class="text-left pull-left">
+                            <gl-label :labelValue="t('Subscribe')"></gl-label>
+                        </div>
+                        <div class="list-input-field">
+                            <gl-input v-model="mqttData.subscribe" type="text"
+                                placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 更多设置 -->
+              <div class="panel panel-default">
+                <div class="panel-heading re485-header-click">
+                  <span class="rs485-header" data-toggle="collapse" data-parent="#fade-rs485-tab-mqtt" href="#tabMorSettings">
+                    <span class="rs485-config-page">
+                      {{ t('More Settings') }}
+                    </span>
+                    <button class="btn pull-right btn-xs rs485-header-arrow">
+                      <span class="fa fa-chevron-down"></span>
+                    </button>
+                  </span>
+                </div>
+                <div id="tabMorSettings" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <div class="list-group hotspot-list">
+                      <div class="col-lg-12" style="padding-right: 0; padding-left: 0;">
+                        <ul class="nav nav-tabs">
+                          <li class="active" @click="changeTab('General')">
+                              <a href="#tabGeneral" data-toggle="tab">
+                                {{ t('General') }}
+                              </a>
+                          </li>
+                          <li role="presentation" @click="changeTab('User Credentials')">
+                              <a href="#tabUserCredentials" data-toggle="tab">
+                                {{ t('User Credentials') }}
+                              </a>
+                          </li>
+                          <li role="presentation" @click="changeTab('User Credentials')">
+                            <a href="#tabAutoReconnection" data-toggle="tab">
+                              {{ t('Auto Reconnection') }}
+                            </a>
+                          </li>
+                        </ul>
+                        <br />
+                        <div class="tab-content">
+                          <!-- General -->
+                          <div class="tab-pane fade in active" id="tabGeneral">
+                            <div class="list-group hotspot-list">
+                              <!-- timeout -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Timeout') + '(ms)'"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.timeout" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                              <!-- interval -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Interval') + '(s)'"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.interval" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                            </div>
+                          </div>
+                          <!-- User Credentials -->
+                          <div class="tab-pane fade" id="tabUserCredentials">
+                            <div class="list-group hotspot-list">
+                              <!-- username -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Username')"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.username" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                              <!-- password -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Password')"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.password" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                            </div>
+                          </div>
+                          <!-- Auto Reconnection -->
+                          <div class="tab-pane fade" id="tabAutoReconnection">
+                            <div class="list-group hotspot-list">
+                              <!-- account -->
+                              <!-- <span class="list-group-item slider-btn-inlist mqttautonn">
+                                <div class="text-left ">{{ t('Autoconn') }}</div>
+                                <div class=" pull-right btn-toggler-right">
+                                  <gl-tg-btn size="22px" theme="default" v-model="mqttData.autoconn" :disabled="isMqttCanceConnectinglBtn"></gl-tg-btn>
+                                </div>
+                              </span> -->
+                              <!-- account -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Autoconn')"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                  <gl-select :option="autoconnList" v-model="mqttData.autoconn" :disabled="isMqttCanceConnectinglBtn"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                              <!-- autoconninteval -->
+                              <span class="list-group-item " style="border-bottom: 0;">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Autoconninteval') + '(s)'"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.autoconninteval" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                              <!-- autoconnmaxtime -->
+                              <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Autoconnmaxtime')"></gl-label>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-input v-model="mqttData.autoconnmaxtime" type="text"
+                                        placeholder="" :disabled="isMqttCanceConnectinglBtn"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- apply -->
+              <div class="text-center" style="padding: 15px 0 0;">
+                <!-- <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn> -->
+                <span v-if="isMqttCanceConnectinglBtn">
+                  <gl-btn type="modify" v-if="!mqttConnectStatus" class="btn" :disabled="mqttApplyBtnStatus" @click="clickSocketMqttModify('mqtt')">{{t($lang.button.modify)}}</gl-btn>
+                  <gl-btn :type="mqttConnectStatus ? 'danger' : 'purple'" :disabled="mqttApplyBtnStatus || socketConnectStatus" @click="applyStopStartSocketMqtt('mqttStart')">{{mqttConnectStatus ? 'Stop' : 'Start'}}</gl-btn>
+                </span>
+                <span v-else>
+                  <gl-btn type="modify" class="btn" @click="clickSocketMqttModify('mqttCancel')" :disabled="mqttApplyBtnStatus">{{t($lang.button.cancel)}}</gl-btn>
+                  <gl-btn type="purple" class="btn" @click="applyStopStartSocketMqtt('mqttApply')" :disabled="mqttApplyBtnStatus">{{t($lang.button.apply)}}</gl-btn>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

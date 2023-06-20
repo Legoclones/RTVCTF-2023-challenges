@@ -1,0 +1,27 @@
+#sms-input-show span{
+  top: 1px;
+  height: 38px;
+  padding: 13px 8px;
+}
+
+@media screen and (max-width: 768px) {
+  .sms-forward-to {
+    display: block;
+    width: 100%!important;
+    min-width: 100%!important;
+  }
+  .sms-forward-to .phone-email {
+    width: 100%;
+    text-align: center;
+    line-height: 25px!important;
+  }
+  .sms-forward-to #OldAdminPwdCheck {
+    min-width: 100%!important;
+    width: 100%!important;
+  }
+  .smtp-setting .phone-email{
+    width: 100%;
+    text-align: center;
+    line-height: 25px!important;
+  }
+}

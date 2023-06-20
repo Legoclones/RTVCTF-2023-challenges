@@ -1,0 +1,14 @@
+#idLogPanel .panel-max{
+    max-width: 100%;
+}
+#idLogPanel .log-mian .desc{
+    font-size: 13px;
+}
+#idLogPanel .log-mian .desc,.btns{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#idLogPanel .log-mian .btns{
+    margin-top: 16px;
+}

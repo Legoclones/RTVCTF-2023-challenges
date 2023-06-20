@@ -1,0 +1,13 @@
+Package: getdns
+Version: 1.6.0-5
+Depends: libc, libopenssl1.1
+Source: feeds/gli_pub/getdns
+SourceName: getdns
+License: BSD-3-Clause
+LicenseFiles: LICENSE
+Section: libs
+Maintainer: Jonathan Underwood <jonathan.underwood@gmail.com>
+Architecture: mips_24kc
+Installed-Size: 159667
+Description:  This package contains the getdns library (libgetdns).
+ This package also contains the "getdns_query" command line wrapper for getdns exposing the features of this implementation (both in the official API and the additional API functions).

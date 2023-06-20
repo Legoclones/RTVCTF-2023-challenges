@@ -1,0 +1,9 @@
+Package: gl-modem
+Version: 3.0.179-1
+Depends: libc, libpthread, libuci20130104, libubus20210603, libblobmsg-json, libubox20191228, gl-util, gl-wifi-core
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-modem
+SourceName: gl-modem
+Section: base
+Architecture: mips_24kc
+Installed-Size: 186928
+Description:  GL iNet modem manager

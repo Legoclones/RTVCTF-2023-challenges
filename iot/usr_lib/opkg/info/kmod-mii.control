@@ -1,0 +1,10 @@
+Package: kmod-mii
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c)
+Source: package/kernel/linux
+SourceName: kmod-mii
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 3476
+Description:  MII library

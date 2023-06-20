@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ -z "${IPKG_INSTROOT}" ]; then
+	/etc/init.d/ddns stop
+	uci -q set ddns.glddns.enabled='0'
+	uci -q set glconfig.ddns.ddns_enabled='0'
+	/etc/init.d/gl_mqtt stop
+	uci -q set glconfig.cloud.enable='0'
+	uci -q commit glconfig
+	uci -q commit ddns
+fi
+exit 0

@@ -1,0 +1,178 @@
+<div class="row">
+    <!-- filesharing -->
+    <div class="col-lg-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                <h4 style="display:inline-block;width: 57%;">
+                    <span class="circle active"></span>
+                    <span>{{t($lang.share.share)}}</span>
+                </h4>
+            </div>
+            
+            <div v-if="isSharing">
+                <!-- ip 冲突 -->
+            <div class="alert alert-info idScanWifiAlertMsg vpn-server" v-if="msgOf_dmz">
+                <div class="text-left alert-red" style="color: chocolate;">
+                    <span class="fa-exclamation-circle fa"></span>
+                    {{t($lang.share.msgOf_dmz)}}
+                </div>
+            </div>
+            <div class="panel-body panel-status ">
+                <span class="list-group-item slider-btn-inlist clearfix" style="border-bottom: 0;">
+                    <div class="share-left">
+                        {{t($lang.share.share_Lan)}}
+                        <gl-tooltip direction="top" :content="$lang.toolTip.usbshareTo_LAN">
+                            <span class="fa fa-info-circle"></span>
+                        </gl-tooltip>
+                    </div>
+                    <div class="share-right">
+                        <gl-switch size="22px" checked="true" theme="default"  @change="checkApply" v-model="shareget.share_on_lan"></gl-switch>
+                    </div>
+                </span>
+                <span class="list-group-item slider-btn-inlist clearfix">
+                    <div class="share-left">
+                        {{t($lang.share.share_wan)}}
+                        <gl-tooltip direction="top" :content="$lang.toolTip.usbshareTo_WAN">
+                            <span class="fa fa-info-circle"></span>
+                        </gl-tooltip>
+                    </div>
+                    <div class="share-right">
+                        <gl-switch size="22px" v-model="shareget.share_on_wan" theme="default" @change="checkApply"></gl-switch>
+                    </div>
+                </span>
+                <span class="list-group-item slider-btn-inlist clearfix">
+                    <div class="share-left">
+                        {{t($lang.share.writable)}}
+                        <gl-tooltip :content="$lang.toolTip.filesystem" direction="right">
+                            <span class="fa fa-info-circle"></span>
+                        </gl-tooltip>
+
+                    </div>
+                    <div class="share-right">
+                        <gl-switch size="22px" v-model="shareget.samba_writable" theme="default" @change="checkArgee"></gl-switch>
+                    </div>
+                    
+                </span>
+
+                <!-- share_list -->
+                <span class="list-group-item slider-btn-inlist selectPdb" >
+                    <div class="text-left pull-left">{{t('Current Directory')}}</div>
+                    <div class="list-input-field">
+                        <!-- <gl-select v-if="shareget.list" :option="shareget.list" showNum="6" input v-model="currentDir" @change="changeSambaDir"></gl-select> -->
+                        <gl-select v-if="shareget.list" :option="shareget.list" :disabled="isDiasableShareApply" showNum="6" v-model="currentDir" @input="curInputDir('samb')" @change="changeCurDir('samb')"></gl-select>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <!-- apply -->
+                <span class="list-group-item btn-group text-center" style="border-bottom:none;">
+                    <gl-btn type="purple" class="moblieBtnLate" :disabled="applyStatus || isDiasableShareApply || !currentDir" @click="setShare">{{t($lang.button.apply)}}</gl-btn>
+                </span>
+                
+            </div>
+            </div>
+            <div v-else>
+               
+                <div class="panel-body panel-status ">
+                    <!-- 中间信息 -->
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                        {{uploadStaMsg}} <a v-if="!uploadOperatBtn" style="text-decoration: none;">{{uploadOperat}}</a><a v-else style="cursor: pointer;text-decoration: none;" @click="updateSoftWare" :disabled="updateDisaBtn">{{uploadOperat}}</a>
+                    </div>
+                    <span class="list-group-item slider-btn-inlist clearfix">
+                        <div class="share-msg">
+                           {{t($lang.share.share)}} {{t('ERROR: Not installed yet!')}}
+                        </div>
+                    </span>
+                    <span class="list-group-item btn-group text-center" style="border-bottom:none;">
+                        <gl-btn type="purple" class="moblieBtnLate" :disabled='dlnaInstallStatus || !uploadStatus' @click="installApp('filesharing')"> <span class="fa fa-spinner fa-pulse" v-show="dlnaInstallStatus && spinnerStatus == 'sharing'"></span>{{t("install")}}</gl-btn>
+                    </span>
+                    <span class="pull-right"
+                    style="margin-right:20px;">{{t('Free space')}}{{": "+splitString+"% ("+flash_total+" MB)"}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- DLNA -->
+    <div class="col-lg-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                <h4 style="display:inline-block;width: 57%;">
+                    <span class="circle active"></span>
+                    <span>{{t('Multimedia File Sharing')}}</span>
+                </h4>
+            </div>
+            <!-- 开启DLNA -->
+            <div class="panel-body panel-status" v-if='isDlna'>
+                <!-- introduce dlna -->
+                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                    {{t("You can enable this feature for multimedia file sharing.")}}
+                </div>
+                <!-- enabled DLNA -->
+                <span class="list-group-item slider-btn-inlist">
+                    <div class="text-left force_dns">{{t('Share via DLNA')}}
+                    </div>
+                    <div class="pull-right btn-toggler-right">
+                        <gl-switch size="22px" v-model="enableDlna" theme="default" @change="checkDlnaApply"></gl-switch>
+                    </div>
+                </span>
+                <!-- dlan name -->
+                <span class="list-group-item slider-btn-inlist" v-show="enableDlna">
+                    <span class="text-left">{{t('Name')}}</span>
+                    <div class="input-text pull-right">
+                        <span class="pull-right" id="current_version">{{dlnaget.name}}</span>
+                    </div>
+                </span>
+                <!-- dir_list -->
+                <span class="list-group-item slider-btn-inlist selectPdb" v-show="enableDlna">
+                    <div class="text-left pull-left">{{t('Current Directory')}}</div>
+                    <div class="list-input-field">
+                        <!-- <gl_select v-if="dlnaget.list" :option="dlnaget.list" v-model="dlnaget.current" @change="changeStatusDir(1)"></gl_select> -->
+                        <gl-select v-if="dlnaget.list" :option="dlnaget.list" showNum="6" v-model="currentDlnaDir" @input="curInputDir('dlna')" @change="changeCurDir('dlna')"></gl-select>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <!-- apply dlna -->
+                <span class="list-group-item btn-group text-center" style="border-bottom:none;">
+                    <gl-btn type="purple" class="moblieBtnLate" :disabled="applyDlnaStatus" @click="setDLNA">{{t($lang.button.apply)}}</gl-btn>
+                </span>
+            </div>
+            <div v-else>
+                <div class="panel-body panel-status ">
+                    <!-- 中间信息 -->
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                        {{uploadStaMsg}} <a v-if="!uploadOperatBtn" style="text-decoration: none;" >{{uploadOperat}}</a><a v-else style="cursor: pointer;text-decoration: none;" @click="updateSoftWare" :disabled="updateDisaBtn">{{uploadOperat}}</a>
+                    </div>
+                    <span class="list-group-item slider-btn-inlist clearfix">
+                        <div class="share-msg">
+                            {{t('Multimedia File Sharing')}} {{t('ERROR: Not installed yet!')}}
+                        </div>
+                    </span>
+                    <span class="list-group-item btn-group text-center" style="border-bottom:none;">
+                        <gl-btn type="purple" class="moblieBtnLate" @click="installApp('dlna')" :disabled='dlnaInstallStatus || !uploadStatus'>
+                            <span class="fa fa-spinner fa-pulse" v-show="dlnaInstallStatus && spinnerStatus == 'dlna'"></span>{{t("install")}}</gl-btn>
+                    </span>
+                    <span class="pull-right"
+                    style="margin-right:20px;">{{t('Free space')}}{{": "+splitString+"% ("+flash_total+" MB)"}}</span>
+                </div>
+        </div>
+    </div>
+    </div>
+<gl-modal :modalStatus="msgModal" size="sm" :title="softName">
+    <div class="modal-body software-body">
+        <div>
+            <span class="soft-descreption">{{t($lang.software.status)}}: </span>
+            {{t('installed')}}&nbsp;{{t(status)}}
+        </div>
+        <div v-show="putMsg" style="margin-top: 5px">
+            <span class="soft-descreption">{{t($lang.software.stdout)}}: </span>
+            {{t(putMsg)}}
+        </div>
+        <div v-show="errMsg" style="margin-top: 5px">
+            <span class="soft-descreption">{{t($lang.software.stderr)}}: </span>
+            {{t(errMsg)}}
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: center">
+        <gl-btn class="clientBtn" type="default" @click="closeModal" style="padding: 5.5px 24px">
+            {{t($lang.button.close)}}</gl-btn>
+    </div>
+</gl-modal>

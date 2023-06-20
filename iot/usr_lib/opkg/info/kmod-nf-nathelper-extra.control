@@ -1,0 +1,21 @@
+Package: kmod-nf-nathelper-extra
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-nf-nat, kmod-lib-textsearch, kmod-ipt-raw
+Source: package/kernel/linux
+SourceName: kmod-nf-nathelper-extra
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 54061
+Description:  Extra Netfilter (IPv4) Conntrack and NAT helpers
+ Includes:
+ - amanda
+ - h323
+ - irc
+ - mms
+ - pptp
+ - proto_gre
+ - sip
+ - snmp_basic
+ - tftp
+ - broadcast

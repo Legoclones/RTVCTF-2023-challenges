@@ -1,0 +1,5 @@
+/usr/lib/libroutepolicy.so
+/etc/hotplug.d/iface/21-mirrir_route
+/usr/lib/gl/libroutepolicy.so
+/etc/init.d/gl_route_policy
+/lib/upgrade/keep.d/route_policy

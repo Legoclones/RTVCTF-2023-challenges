@@ -1,0 +1,4 @@
+/etc/init.d/gl_bigdata
+/usr/bin/gl_upload
+/usr/bin/get_curriface.sh
+/etc/config/glbigdata

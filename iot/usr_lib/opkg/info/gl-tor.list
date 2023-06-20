@@ -1,0 +1,5 @@
+/usr/bin/tor_switch
+/etc/tor/torrc
+/usr/lib/libgltor.so
+/usr/lib/gl/libgltor.so
+/etc/config/tor

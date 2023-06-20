@@ -1,0 +1,17 @@
+Package: tor
+Version: 0.4.6.8-1
+Depends: libc, libevent2-7, libopenssl1.1, libpthread, librt, zlib, libcap
+Source: feeds/gli_pub/tor
+SourceName: tor
+LicenseFiles: LICENSE
+Section: net
+Require-User: tor=52:tor=52
+Maintainer: Hauke Mehrtens <hauke@hauke-m.de> Peter Wagner <tripolar@gmx.at>
+Architecture: mips_24kc
+Installed-Size: 1268260
+Description:  Tor is a toolset for a wide range of organizations and people that want to
+ improve their safety and security on the Internet. Using Tor can help you
+ anonymize web browsing and publishing, instant messaging, IRC, SSH, and
+ more. Tor also provides a platform on which software developers can build
+ new applications with built-in anonymity, safety, and privacy features.
+ This package contains the tor daemon.

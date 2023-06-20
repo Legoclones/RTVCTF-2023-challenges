@@ -1,0 +1,9 @@
+Package: gl-portal
+Version: 3.0.27-1
+Depends: libc, libjson-c2, gl-util, nodogsplash
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-portal
+SourceName: gl-portal
+Section: base
+Architecture: mips_24kc
+Installed-Size: 88334
+Description:  glportal api for gl-inet.

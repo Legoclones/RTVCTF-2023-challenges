@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idTimezonePanel" v-cloak>
+            
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle" :class="{'active': activeStatus}"></span>
+                    IGMP Snooping
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" @click="setSnooping" :disabled="applyStatus">{{t($lang.button.apply)}}
+                    <span class="fa fa-spinner fa-pulse" v-if='isDisabled'></span>
+                </gl-btn>
+            </div>
+
+            <div class="panel-body panel-status">
+                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                    {{t("IGMP Snooping listens to the IGMP protocol package, extracts the corresponding information, establishes and maintains the layer 2 multicast forwarding publication, and then forwards the multicast group data to the host that joins the multicast group, while other hosts cannot receive the multicast group data.")}}
+                    <div style="margin-top: 5px">
+                        <span class="fa fa-exclamation-circle"></span>
+                        <strong>{{t('IGMPv3 is compatible with v1 and v2.Try it without first and only change if you experience a problem.')}}</strong>
+                    </div>
+                </div>
+
+                <div class="list-group timezone-body">
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{t('Enable')}}
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model='enable' @change="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist ">
+                        <div class="text-left pull-left">{{t('Version')}}</div>
+                        <div class="list-input-field">
+                            <gl-select :option="versionList" v-model="version" @getval="checkBtn"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+Package: gl-monitor
+Version: 3.0.136-1
+Depends: libc
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-monitor
+SourceName: gl-monitor
+Section: base
+Architecture: mips_24kc
+Installed-Size: 8261
+Description:  gl-monitor

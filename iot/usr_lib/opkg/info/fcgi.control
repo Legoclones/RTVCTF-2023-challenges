@@ -1,0 +1,14 @@
+Package: fcgi
+Version: 2.4.2-1
+Depends: libc, libpthread
+Source: feeds/packages/libs/fcgi
+SourceName: fcgi
+License: MIT
+LicenseFiles: LICENSE.TERMS
+Section: libs
+Maintainer: Jacob Siverskog <jacob@teenageengineering.com>
+Architecture: mips_24kc
+Installed-Size: 18519
+Description:  FastCGI is a language independent, scalable, open extension to
+ CGI that provides high performance without the limitations of
+ server specific APIs.

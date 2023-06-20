@@ -1,0 +1,129 @@
+.has-panel-toggle>.toggle>.toggle-group>.btn-primary {
+    background-color: #23d1a2;
+    /* -- box-shadow:inset 3px 0px 5px rgba(0,0,0,.3); --*/
+    border: 0px solid #23d1a2;
+    padding-top: 8px;
+}
+.has-panel-toggle>.btn-primary {
+    background-color: #23d1a2;
+    border: 1px solid #23d1a2;
+}
+.hotspot-list>.list-group-item>.text-left,
+#spanBlock {
+    padding: 10px 0;
+}
+.hotspot-list>.list-group-item>.pull-right>input,
+.hotspot-list>.list-group-item>.pull-right>.range>output {
+    font-size: 13px;
+}
+.cleanspace {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+@media screen and (max-width:768px) {
+    .hotspot-list>.list-group-item>.text-left,
+    #spanBlock {
+        padding: 2px;
+    }
+    .panel-body {
+        padding: 0 15px;
+    }
+}
+@media screen and (max-width: 320px) {
+    .disabled_channel {
+        padding: 12px 10px 12px 0px !important;
+    }
+}
+.min-height{
+    min-height: 450px
+}
+.palceholder-box{
+    min-height: 500px;
+    background-color: #ebedf2
+}
+
+/* ------------------------------------------------------------------------------------------- */
+.nav_tipsMesh {
+    text-align: left;
+    background-color: #f5f5f5;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8b8c9f;
+    padding-left: 12px;
+}
+#meshClient .table>thead>tr>th{
+    border: none
+}
+.btnsetMesh {
+    border-radius: 20px;
+    border: 1px solid #c4cdd5;
+    color: #595e7c;
+    min-width: 80px;
+    height: 23px;
+    outline: none;
+    line-height: 23px;
+    display: inline-block;
+    box-shadow: 0 1px 0 0 rgba(22, 29, 37, 0.05);
+    background: linear-gradient(to bottom, #fff, #f9fafb);
+    cursor: no-drop;
+}
+a.btnsetMesh:hover {
+    text-decoration: none;
+    color: #595e7c;
+    background: linear-gradient(to bottom, #f9fafb, #f4f6f8)
+}
+#meshClient tr>td>h5{
+    margin: 0;
+    font-size: 13px;
+}
+#meshClient .meshconfig{
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+    padding: 0px 16px;
+    text-align: center;
+}
+#meshClient  .meshflex-1{
+    flex: 1;
+}
+#meshClient  .meshflex-4{
+    flex: 5;
+}
+#meshClient  .meshflex-5{
+    flex: 5;
+}
+#meshClient .disflex{
+    display: flex;
+    text-align: center;
+    background: #f5f5f5;
+}
+@media screen and (max-width: 768px){
+    #meshClient .meshconfig{
+        padding: 0px 6px;
+    }
+}
+
+#meshClient .meshconfig{
+    border-bottom: 1px solid #ddd;
+}
+#meshClient .meshconfig:last-child{
+    border: none
+}
+@media (max-width:403px) {
+    .btn.channeloptimiza{
+        margin-top: 10px;
+    }
+}
+
+.wlan-mesh-status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+}
+
+.wlan-mesh-active {
+    background-color: #22F4BB;
+    border: 0;
+}

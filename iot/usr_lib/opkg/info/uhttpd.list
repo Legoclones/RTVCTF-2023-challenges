@@ -1,0 +1,8 @@
+/www/luci-static/resources/protocol/directip.js
+/www/luci-static/resources/protocol/qcm.js
+/www/luci-static/resources/protocol/callip.js
+/usr/sbin/uhttpd
+/etc/init.d/uhttpd
+/www/luci-static/resources/protocol/wwan.js
+/etc/config/uhttpd
+/lib/upgrade/keep.d/uhttpd

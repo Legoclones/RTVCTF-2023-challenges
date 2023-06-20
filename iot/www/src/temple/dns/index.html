@@ -1,0 +1,129 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idDNSPanel">
+            <div class="panel-heading">
+                <h4 style="max-width: 57%">
+                    <span class="circle active"></span>
+                    {{t($lang.dns.cusDns_ss)}}
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="applystatus" id="idApplyBtn"
+                    @click="applyDNS">{{t($lang.button.apply)}}</gl-btn>
+            </div>
+            <div class="panel-body panel-status">
+                <div class="list-group">
+                    <!-- rebind -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{t($lang.dns.rebindProtection)}}
+                            <gl-tooltip :content="$lang.toolTip.disabled_dns" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="getdnsinfo.rebind_protection"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- force_dns -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left force_dns">{{t($lang.dns.overrideClient)}}
+                            <gl-tooltip :content="$lang.toolTip.dnsInstructions" direction="top">
+                                <a href="http://www.gl-inet.com/docs/" target="_blank">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </a>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="getdnsinfo.force_dns" @onclick="checkBtn">
+                            </gl-tg-btn>
+                        </div>
+                    </span>
+
+                    <!-- cloudflare_dns -->
+                    <!-- <span class="list-group-item slider-btn-inlist" v-if="router.model != 'mt1300'" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="text-left ">{{t('DNS over TLS')}}</div>
+                        <div class=" pull-right btn-toggler-right" style="display: flex; margin-bottom: -35px;">
+                            <gl-tg-btn size="22px" theme="default" v-model="cloudflare_dns" :disabled="manual_dns || quad9_dns || dnscrypt_proxy" @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span> -->
+                    <span class="next-dns">
+                        <span class="list-group-item slider-btn-inlist" v-if="router.model != 'vixmini'">
+                            <div class="text-left force_dns">{{t('DNS over TLS (Cloudflare or NextDNS)')}}</div>
+                            
+                            <div class=" pull-right btn-toggler-right" style="display: flex; margin-bottom: -35px;">
+                                <gl-tg-btn size="22px" theme="default" v-model="cloudflare_dns" :disabled="manual_dns || quad9_dns || dnscrypt_proxy" @onclick="checkBtn"></gl-tg-btn>
+                            </div>
+                        </span>
+                        
+                        <span class="list-group-item slider-btn-inlist dnscrypt"  style="padding: 5px 5px;" v-show="cloudflare_dns">
+                            <div class="text-left pull-left ses-text" style="transform: translateY(6px);">{{t($lang.dns.ses)}}</div>
+                            <div class="list-input-field">
+                                <gl-select showNum="10"   :option="macList" v-model="macs" searchip  @getval="checkBtn" @change="dnsServerChange"></gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist dnscrypt"  style="padding: 5px 5px;border-bottom: 0;" v-show="cloudflare_dns && isShowNext_id">
+                            <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                NextDNS ID
+                                <gl-tooltip direction="top">
+                                    <a href="https://www.gl-inet.com/solutions/nextdns" target="_blank">
+                                        <span class="glyphicon glyphicon-question-sign"></span>
+                                    </a>
+                                </gl-tooltip>
+                            </div>
+                            <div class="list-input-field">
+                                <gl-input type="text" v-model="nextdns_id" @postValue="getValue"></gl-input>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left force_dns">{{t('Dnscrypt-Proxy Settings')}}
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="dnscrypt_proxy"
+                                :disabled="cloudflare_dns || manual_dns || quad9_dns" @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist dnscrypt" v-show="dnscrypt_proxy" style="padding: 5px 5px;">
+                        <div class="text-left pull-left" style="transform: translateY(6px);">{{t('Select Proxy Server')}}</div>
+                        <div class="list-input-field">
+                            <gl-select showNum="10" v-model="proxy_server"  :option="proxy_serverlist" searchip  @getval="checkBtn"></gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                     <!-- 手动DSN设置 -->
+                         <span class="list-group-item slider-btn-inlist">
+                            <div class="text-left ">{{t($lang.dns.manualSet)}}</div>
+                            <div class=" pull-right btn-toggler-right">
+                                <gl-tg-btn size="22px" theme="default" v-model="manual_dns"
+                                    :disabled="cloudflare_dns || quad9_dns || dnscrypt_proxy" @onclick="checkBtn">
+                                </gl-tg-btn>
+                            </div>
+                        </span>
+                        <span class="list-group-item" v-show="manual_dns">
+                            <p class="text-left alert-red">
+                                <!-- <span class="fa fa-info-circle"></span> -->
+                                {{t($lang.dns.dnsInstructions)}}.
+                            </p>
+                            <br />
+                            <!-- DNS Server1 -->
+                            <div class=" input-group " id="inputDNS1Check">
+                                <span class="input-group-addon"> {{t($lang.dns.dnsServer)}}1</span>
+                                <gl-input v-model="dnsInputVal1" :error="!dnsInputStatus1"
+                                    :placeholder="!dnsInputVal1?$lang.dns.chooseDns:dnsInputVal1" @postValue="checkbutton">
+                                </gl-input>
+                            </div>
+                            <br />
+                            <!-- DNS Server2 -->
+                            <div class=" input-group" id="inputDNS2Check">
+                                <span class="input-group-addon">{{t($lang.dns.dnsServer)}}2</span>
+                                <gl-input v-model="dnsInputVal2" :error="!dnsInputStatus2"
+                                    :placeholder="!dnsInputVal2?$lang.dns.chooseDns:dnsInputVal2" @postValue="checkbutton">
+                                </gl-input>
+                            </div>
+                        </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

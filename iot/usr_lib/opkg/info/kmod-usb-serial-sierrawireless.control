@@ -1,0 +1,10 @@
+Package: kmod-usb-serial-sierrawireless
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-usb-serial
+Source: package/kernel/linux
+SourceName: kmod-usb-serial-sierrawireless
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 4307
+Description:  Kernel support for Sierra Wireless devices

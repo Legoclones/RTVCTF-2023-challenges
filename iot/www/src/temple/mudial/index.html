@@ -1,0 +1,151 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idMudialPanel">
+            <div class="panel-heading">
+                <h4 style="max-width: 57%">
+                    <span class="circle active"></span>
+                    {{ '一键多拨' }}
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="disapply" id="idApplyBtn"
+                    @click="applymudial">{{t($lang.button.apply)}}</gl-btn>
+            </div>
+            <div class="panel-body">
+                <div class="list-group panel-status">
+                    <div class="alert list-group-item alert alert-info" id="idSetIpAlertMsg">
+                        <div>
+                            <span>多拨可以让一个物理网口同时支持多种协议，叠加出口流量（无法超过物理网口的限制），
+                                多拨有单线多拨和多线多拨俩种物理连接方式，目前仅支持单线多拨功能，多拨有以下俩种配置方式:</span>
+                            <br><strong>1. 克隆模式: </strong>
+                            <span>该模式下将自动克隆现有WAN口的连接协议以及账户信息，并在连接成功后自动叠加出口流量</span>
+                            <br><strong>2. 手动模式:</strong>
+                            <span>该模式下允许您配置多拨接口的连接协议以及账户信息，并在连接成功后自动叠加出口流量</span>
+
+                            <div style="margin-top: 10px">
+                                <span class="fa fa-exclamation-circle"></span>
+                                <strong>该功能目前处于测试阶段，使用过程中遇到问题可以到</strong>
+                                <strong><a
+                                        href='https://forum.gl-inet.cn/forum.php?mod=viewthread&tid=116&extra=page%3D1'
+                                        target="_black">{{ 'GL.iNet中文论坛' }}</a></strong>
+                                <strong> 请求帮助。</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="list-group-item slider-btn-inlist">
+                        <div style="margin-top: 20px" class="text-left ">启用多拨功能
+                            <gl-tooltip :content="t('是否启用多拨功能')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="Enable" @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <div v-show="Enable">
+                        <span class="list-group-item slider-btn-inlist dnscrypt" style="padding: 5px 5px;">
+                            <div class="text-left pull-left ses-text" style="transform: translateY(6px);">多拨模式</div>
+                            <div class="list-input-field">
+                                <gl-select showNum="10" v-model="Mode_zh" :option="Modes" @change="selectMode">
+                                </gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <div v-show="Mode=='manul'">
+                            <span class=" list-group-item slider-btn-inlist dnscrypt" style="padding: 5px 5px;">
+                                <div class="text-left pull-left ses-text" style="transform: translateY(6px);">协议</div>
+                                <div class="list-input-field">
+                                    <gl-select showNum="10" v-model="Proto" :option="Protos" @change="selectProto">
+                                    </gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+
+                            <!-- pppoe 修改-->
+                            <div v-show="Proto == 'pppoe' ">
+                                <!-- 用户名 -->
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        用户名
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="username"  @blurValue="checkpppoe"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <!--密码 -->
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        密码
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="password" type="password"
+                                            :placeholder="$lang.holdPlace.required" inputShow   @blurValue="checkpppoe"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                            </div>
+
+                            <!-- static 修改-->
+                            <div v-show="Proto == 'static' ">
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);" >
+                                        IP地址
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="ipaddr"  @blurValue="checkstatic"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        子网掩码
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="netmask"  @blurValue="checkstatic"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        网关地址
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="gateway"  @blurValue="checkstatic"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        DNS服务器1
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="dns1"  @blurValue="checkstatic"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <span class="list-group-item slider-btn-inlist dnscrypt"
+                                    style="padding: 5px 5px;border-bottom: 0;">
+                                    <div class="text-left pull-left ses-text" style="transform: translateY(6px);">
+                                        DNS服务器2
+                                    </div>
+                                    <div class="list-input-field">
+                                        <gl-input type="text" v-model="dns2"  @blurValue="checkstatic"></gl-input>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

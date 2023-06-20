@@ -1,0 +1,4 @@
+/usr/lib/gl/libgl_mqtt_router_api.so
+/usr/bin/gl_mqtt_service
+/usr/lib/libgl_mqtt_router_api.so
+/etc/init.d/gl_mqtt

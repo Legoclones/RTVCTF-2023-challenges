@@ -1,0 +1,142 @@
+.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 40, 100, 0.12);
+    border-radius: 3px;
+}
+
+.text-blue {
+    font-size: 28px;
+    color: #467fcf !important;
+}
+
+.text-red {
+    font-size: 28px;
+    color: #cd201f !important;
+}
+
+.text-green {
+    font-size: 28px;
+    color: #5eba00 !important;
+}
+
+.text-yellow {
+    font-size: 28px;
+    color: #f1c40f !important;
+}
+
+.card-value-stats {
+    display: block;
+    font-size: 2.1rem;
+    line-height: 2.7rem;
+    height: 2.7rem;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.card-full {
+    position: relative;
+    flex: 1 1 auto;
+    height: calc(100% - 3rem);
+    margin: 10px 10px;
+    /* padding: 1rem 1.5rem; */
+}
+
+.card-body-stats {
+    position: relative;
+    flex: 1 1 auto;
+    height: calc(100% - 3rem);
+    margin: 0;
+    padding: 1rem 1.5rem;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #467fcf;
+    border-color: #467fcf;
+}
+
+.btn-outline-primary {
+    color: #467fcf;
+    background: #fff;
+    border: 1px solid #467fcf;
+    font-size: 12px;
+    padding: 3px 6px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.dashboardBox {
+    padding: 0 10px;
+    margin: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboardline {
+    height: 5px;
+    background: #e0e5ec;
+    margin: 0 10px;
+}
+
+.descriptionbox {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    border-bottom: 1px solid rgba(0, 40, 100, 0.12);
+}
+
+.description-header-box {
+    margin: 10px 10px;
+    border: 1px solid rgba(0, 40, 100, 0.12);
+    border-radius: 3px;
+}
+
+.description-info {
+    height: 50px;
+}
+
+.descriptionbox-li {
+    height: 50px;
+    display: flex;
+    padding: 0px 10px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 40, 100, 0.12);
+}
+
+.descriptionbox-commit {
+    color: #495057;
+    flex: 5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.adguardanger {
+    background-color: #cd201f !important;
+}
+
+.adguarsuccess {
+    background-color: #5eba00 !important;
+}
+
+.dashboardflex {
+    display: flex;
+    justify-content: space-between;
+}
+.translate3 {
+    transform: translateY(6px);
+}

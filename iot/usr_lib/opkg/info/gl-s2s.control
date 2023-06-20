@@ -1,0 +1,9 @@
+Package: gl-s2s
+Version: 1.0.24-1
+Depends: libc, wireguard, libjson-c2, libubox20191228, libubus20210603, gl-util, gl-crond
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-s2s
+SourceName: gl-s2s
+Section: base
+Architecture: mips_24kc
+Installed-Size: 15693
+Description:  It is the Site to Site API for GL.iNet. 

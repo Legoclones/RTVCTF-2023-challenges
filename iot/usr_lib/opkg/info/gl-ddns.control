@@ -1,0 +1,9 @@
+Package: gl-ddns
+Version: 3.0.28-1
+Depends: libc, libjson-c2, gl-util, ddns-scripts
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-ddns
+SourceName: gl-ddns
+Section: base
+Architecture: mips_24kc
+Installed-Size: 18181
+Description:  glddns api for gl-inet.

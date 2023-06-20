@@ -1,0 +1,9 @@
+Package: gl-fw
+Version: 3.0.29-1
+Depends: libc, iptables, ip-full, gl-util, libuci20130104
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-fw
+SourceName: gl-fw
+Section: base
+Architecture: mips_24kc
+Installed-Size: 7459
+Description:  This service allows open port and port forwarding.

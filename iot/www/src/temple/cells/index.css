@@ -1,0 +1,88 @@
+.nav_tipsMesh {
+    text-align: left;
+    background-color: #f5f5f5;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8b8c9f;
+    padding-left: 12px;
+}
+#meshClient .table>thead>tr>th{
+    border: none
+}
+.retateshow.transretate{
+    transform: rotate(0deg);
+}
+.retateshow{
+    transform: rotate(-90deg);
+}
+.btnsetMesh {
+    border-radius: 20px;
+    border: 1px solid #c4cdd5;
+    color: #595e7c;
+    min-width: 80px;
+    height: 23px;
+    outline: none;
+    line-height: 23px;
+    display: inline-block;
+    box-shadow: 0 1px 0 0 rgba(22, 29, 37, 0.05);
+    background: linear-gradient(to bottom, #fff, #f9fafb);
+    cursor: no-drop;
+}
+a.btnsetMesh:hover {
+    text-decoration: none;
+    color: #595e7c;
+    background: linear-gradient(to bottom, #f9fafb, #f4f6f8)
+}
+#meshClient tr>td>h5{
+    margin: 0;
+    font-size: 13px;
+}
+#meshClient .meshconfig{
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+    padding: 0px 16px;
+    text-align: center;
+}
+#meshClient *:not(.breadcrumb) li{
+    width: 100%;
+}
+#meshClient  .meshflex-1{
+    flex: 1;
+}
+#meshClient  .meshflex-4{
+    flex: 5;
+}
+#meshClient  .meshflex-5{
+    flex: 5;
+}
+#meshClient .disflex{
+    display: flex;
+    text-align: center;
+    background: #f5f5f5;
+}
+@media screen and (max-width: 768px){
+    #meshClient .meshconfig{
+        padding: 0px 6px;
+    }
+   
+}
+@media (max-width:360px){
+    .moblieBtnLate{
+        max-width: 69px;
+        padding-left: 7px!important;
+    }
+    .moblieBtnLate.copyJson{
+        max-width: 66px;
+        padding-left: 15px!important;
+        
+    }
+
+}
+
+#meshClient .meshconfig{
+    border-bottom: 1px solid #ddd;
+}
+#meshClient .meshconfig:last-child{
+    border: none
+}

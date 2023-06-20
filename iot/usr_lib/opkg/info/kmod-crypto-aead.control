@@ -1,0 +1,10 @@
+Package: kmod-crypto-aead
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-crypto-null
+Source: package/kernel/linux
+SourceName: kmod-crypto-aead
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 3225
+Description:  CryptoAPI AEAD support

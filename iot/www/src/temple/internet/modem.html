@@ -1,0 +1,377 @@
+<div v-show="moInfo.code != '-17' && moInfo.code != '-3'" id="inter-modem" class="innerStatus">
+    <ul class="nav nav-pills" style="margin-bottom: 10px;" v-show="modems && modems.length > 1 && moInfo.code != -6">
+        <li role="presentation" v-for="(item,index) in modems" :class="{'active': modemIndex == index}"
+            @click="checkModem(index)">
+            <a target="_blank">{{t('Modem') + (index + 1)}}</a>
+        </li>
+    </ul>
+    <div class="state-box panel panel-default" v-for="(item, index) in modems"
+        v-if="(index == modemIndex || modems.length == 1) && moInfo.code != -6 && isGetModem">
+        <!-- head -->
+        <div class="internet-btn panel-heading">
+            <h4>
+                <!-- 标题或者运营商信息 -->
+                <span class="circle"
+                    :class="{'active' : item.up == 'on' && moInfo.code != -6, 'waiting': item.up == 'connecting' && moInfo.code != -6}"></span>
+                {{moInfo.code != -6 ? (item.carrier || t($lang.internet.modem)) : t($lang.internet.modem)}}
+            </h4>
+            <!-- 信号显示 -->
+            <!--  v-show="item.signal && item.modem_id != 255" -->
+            <span class="signal" v-show="item.signal && item.modem_id != 255">
+                <span class="signal-modem">{{item.mode}}</span>
+                <span class="signal-one" :class="{'singnal-active':item.signal >= 1}"></span>
+                <span class="signal-two" :class="{'singnal-active':item.signal >= 2}"></span>
+                <span class="signal-three" :class="{'singnal-active':item.signal >= 3}"></span>
+                <span class="signal-four" :class="{'singnal-active':item.signal == 4}"></span>
+            </span>
+            <!-- 短信 -->
+            <router-link to="/smessage" v-if="modeEnvelope" class="newsmsNumMiFi">
+                <span class="fa fa-envelope pull-right" style="padding: 7px 10px;font-size: 24px;position: relative;">
+                    <span class="newsmsNum" v-show="item.newsms > 0">{{item.newsms}}</span>
+                </span>
+            </router-link>
+        </div>
+        <!-- content -->
+        <div class="panel-bg-3G-Modem" style="position: relative;min-height: 125px">
+            <!-- item.SIM_status  -1 no SIM, -2 need PIN code,  -3 not register, 0 ready  （SIM card not detected -1 时出现） -->
+            <!-- 警告 -->
+            <div class="alert alert-info idScanWifiAlertMsg"
+                v-if="(item.SIM_status && item.SIM_status!=0 && modemIndex == index && moreset) || moInfo.hint_modify_wifi_channel > 0">
+                <div class="text-left alert-red" style="color: chocolate;"
+                    v-if="item.SIM_status && item.SIM_status!=0 && modemIndex == index && moreset">
+                    <span class="fa-exclamation-circle fa"></span>
+                    <span v-if="item.SIM_status == -1">
+                        {{t('SIM card not detected.')}}
+                        {{t('SIM card cannot be hot-plugged. If card cannot be recognized, please make sure the card is inserted in the correct direction, and then click Modem Reboot or restart the router.')}}
+                    </span>
+                    <span v-else-if="item.SIM_status == -2">{{t('SIM card need PIN number')}}</span>
+                    <span
+                        v-else-if="item.SIM_status == -3">{{t('SIM card cannot be registered. Please check: 1. You are using the compatible modem for your carrier; 2. Whether a specific APN or data plan is required.')}}</span>
+                    <span v-else-if="item.SIM_status == -4">{{t('SIM card need PUK number')}}</span>
+                </div>
+                <div class="text-left alert-red" style="color: chocolate;margin-top: 5px;"
+                    v-if="moInfo.hint_modify_wifi_channel > 0">
+                    <span class="fa-exclamation-circle fa"></span>
+                    {{ modifyWifiChannel }}
+                </div>
+            </div>
+            <!-- 在 3G/4G Modem Card 配置状态下 显示 -->
+            <div class="alert alert-info idScanWifiAlertMsg"
+                v-else-if="item.SIM_status === 0 && !(!moreset || !reset) && !mosetting">
+                <div class="text-left">
+                    <span>{{t('For faster speed, choose')}} {{textObj.fasterSpeedTxt}}.
+                        {{t('For more compatibility, choose')}} {{textObj.compatibilityTxt}}.</span>
+                </div>
+            </div>
+            <div class="panel-body panel-status">
+                <!--  index == resetIndex -->
+                <div v-if="!moreset || !reset" class="modem-loading">
+                    <gl-loading>
+                        </gloadingl->
+                </div>
+                <div v-else>
+                    <!-- sim卡插入 sim卡信息 -->
+                    <div v-if="mosetting">
+                        <span class="list-group-item" v-if="item.hw_version && item.hw_version == 'GL-X1200-S'" style="    padding: 0;
+                        height: 50px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;">
+                            <span class="text-left" style="padding-left: 5px;">SIM</span>
+                            <span id="idsim" class="pull-right" style="height: 38px;">
+                                <!-- <div class="radio" style="display: flex;">
+                                    <label for="sim1" style="width: 100%">
+                                        <input type="radio" name="seletSim" value="Sim1" v-model="simModel" @change="getSimSwitch" id="sim1">
+                                        <span class="cr app-install-select">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">SIM1</div>
+                                    </label>
+                                    <label for="sim2" style="width: 100%">
+                                        <input type="radio" name="seletSim" value="Sim2" v-model="simModel" @change="getSimSwitch" id="sim2">
+                                        <span class="cr app-install-select">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                        <div class="wifimode">SIM2</div>
+                                    </label>
+                                </div> -->
+                                <gl-select :option="simList" v-model="simModel" :disabled="item.up != 'off'"
+                                    @getval="getSimSwitch($event,item)" @postValue="getSimSwitch($event,item)">
+                                </gl-select>
+                            </span>
+                        </span>
+                        <span class="list-group-item">
+                            <span class="text-left">{{t($lang.internet.modemName)}}</span>
+                            <span id="idUsbStaIp" class="pull-right">{{item.name != 'unknown' ? item.name : '-'}}</span>
+                        </span>
+                        <span class="list-group-item">
+                            <span class="text-left">IMEI</span>
+                            <span id="idUsbStaIp" class="pull-right">{{item.IMEI || '-'}}</span>
+                        </span>
+                        <!-- 网络已连接显示 rx/tx -->
+                        <transition name="main-fade" mode="out-in">
+                            <span v-show="item.up == 'on'">
+                                <span class="list-group-item">
+                                    <span class="text-left">{{t($lang.internet.ipAddress)}}</span>
+                                    <span id="idUsbStaIp" class="pull-right" v-text="item.ip_addr || '-'"></span>
+                                </span>
+                                <span class="list-group-item clearfix"
+                                    v-if="router.ipv6info && router.ipv6info.interface && router.ipv6info.interface.includes('modem') && router.ipv6info.code != -4">
+                                    <span class="text-left">{{ t('IPv6 Address') }}</span>
+                                    <span class="pull-right"
+                                        id="WanIp">{{ router.ipv6info.ip6addr && router.ipv6info.ip6addr[0] ? router.ipv6info.ip6addr[0] : t('Unable to get IPv6 address') }}</span>
+                                    <br v-if="router.ipv6info.ip6addr && router.ipv6info.ip6addr[0]">
+                                    <span v-if="router.ipv6info.ip6addr && router.ipv6info.ip6addr[0]"
+                                        class="pull-right" id="WanIp">
+                                        {{ router.ipv6info.ip6addr[1] ? router.ipv6info.ip6addr[1] : '' }}
+                                    </span>
+                                </span>
+                                <span class="list-group-item">
+                                    <span class="text-left">{{t($lang.internet.upload)}}</span>
+                                    <span id="idUsbStaIp" class="pull-right"
+                                        v-text="getFlow(item.upload) || '-'"></span>
+                                </span>
+                                <span class="list-group-item">
+                                    <span class="text-left">{{t($lang.internet.download)}}</span>
+                                    <span id="idUsbStaIp" class="pull-right"
+                                        v-text="getFlow(item.download) || '-'"></span>
+                                </span>
+                            </span>
+                        </transition>
+                        <!-- 断开连接 自动连接按钮 -->
+                        <div style="display: flex; align-items: center; justify-content: center; padding: 10px;"
+                            class="conneting">
+                            <!-- disconnect -->
+                            <gl-btn type="danger" class="setMargin" @click="moDisconnect(item, index)"
+                                :disabled="mobtnStatus || isconnect" v-if="item.up == 'on'">
+                                <span>{{t($lang.button.disconnect)}}</span>
+                                <span class="fa fa-spinner fa-pulse"
+                                    v-show="mobtnStatus && index == connectIndex || (isconnect && index == connectIndex)"></span>
+                            </gl-btn>
+                            <!-- abort -->
+                            <gl-btn type="danger" class="setMargin" @click="moDisconnect(item, index)"
+                                :disabled="mobtnStatus || isconnect" v-if="item.up == 'connecting'">
+                                <span>{{t($lang.button.abort)}}</span>
+                                <span class="fa fa-spinner fa-pulse"
+                                    v-show="mobtnStatus && index == connectIndex || (isconnect && index == connectIndex)"></span>
+                            </gl-btn>
+                            <!-- automat -->
+                            <gl-btn type="default" class="setMargin" @click="autoSet(item, index)"
+                                :disabled="mobtnStatus" v-if="item.up == 'off'">
+                                <span>{{t(btnName['btn' + index])}}</span>
+                                <span class="fa fa-spinner fa-pulse"
+                                    v-show="mobtnStatus && index == connectIndex"></span>
+                            </gl-btn>
+                            <!-- manuSetup -->
+                            <span>
+                                <a @click="clickMoSet(item, index)"
+                                    v-show="!mobtnStatus && !isconnect">{{t($lang.internet.manuSetup)}}</a>
+                                <a class="pull-right" @click="$router.push('ipv6')"
+                                    v-if="router.ipv6info && router.ipv6info.enable && router.ipv6info.interface && router.ipv6info.interface.includes('modem')"
+                                    style="margin-left: 10px;">{{ t('More IPv6 information') }}</a>
+                            </span>
+                            <!-- <gl-btn type="modify" @click="clickMoSet(item, index)" v-show="!mobtnStatus && !isconnect">{{t($lang.internet.manuSetup)}}</gl-btn> -->
+
+                        </div>
+                    </div>
+                    <!-- sim卡设置 -->
+                    <div v-else>
+                        <!-- operator -->
+                        <span class="list-group-item clearfix" v-if="item.operators">
+                            <div class="text-left modem-left pull-left">
+                                <gl-label :labelValue="t('Operator')"></gl-label>
+                            </div>
+                            <div class="list-input-field input-append">
+                                <div class="password-check">
+                                    <div class="passtrengthMeter">
+                                        <gl-select :option="newOperator(item.operators)" v-model="operator" defaultShow>
+                                        </gl-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+
+                        <!-- Device -->
+                        <span class="list-group-item clearfix">
+                            <div class="text-left modem-left pull-left">
+                                <gl-label :labelValue="$lang.label.device"></gl-label>
+                            </div>
+                            <div class="list-input-field input-append">
+                                <div class="password-check">
+                                    <div class="passtrengthMeter">
+                                        <gl-select :option="item.ports" v-model="modevice"></gl-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                        <!-- service -->
+                        <span class="list-group-item clearfix" v-show="modevice.indexOf('cdc-wdm') < 0">
+                            <div class="text-left modem-left pull-left">
+                                <gl-label :labelValue="$lang.label.service"></gl-label>
+                            </div>
+                            <div class="list-input-field input-append">
+                                <div class="password-check">
+                                    <div class="passtrengthMeter">
+                                        <gl-select :option="moServiceList" v-model="moservice"></gl-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                        <!-- APN -->
+                        <span class="list-group-item clearfix">
+                            <div class="text-left modem-left pull-left">
+                                <gl-label :labelValue="$lang.label.apn" style="text-transform: uppercase">
+                                </gl-label>
+                            </div>
+                            <!-- web -->
+                            <div style="float: right;padding: 10px 25px 10px 0px;" class="visible-xs"
+                                v-if="moInfo.success && apns[index].length <= 0 && !mobtnStatus && !configapn && item.up == 'off'">
+                                <span class="fa fa-spinner fa-pulse"></span>
+                            </div>
+                            <div class="list-input-field input-append">
+                                <div class="password-check">
+                                    <div class="passtrengthMeter">
+                                        <gl-select :option="apns[index]" v-model="moapns['apn' + index]"
+                                            optionName="-apn" input @postValue="getmoapn"></gl-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- pc -->
+                            <div style="float: right;padding: 10px" class="hidden-xs"
+                                v-if="moInfo.success && apns[index].length <= 0 && !mobtnStatus && configapn &&item.up == 'off'">
+                                <span class="fa fa-spinner fa-pulse"></span>
+                            </div>
+                        </span>
+                        <span class="list-group-item  text-center clearfix" :class="'modem' + index">
+                            <a @click="getMoreSetting(index)">{{t('More')}}</a>
+                        </span>
+                        <!-- 高级设置 -->
+                        <div :id="'advanced' + index" style="display: none">
+                            <!-- auth -->
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label labelValue="Auth"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <div class="password-check">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="athList" v-model="athvalue"></gl-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </span>
+                            <!-- proto -->
+                            <span v-show="modevice.indexOf('cdc-wdm') >= 0" class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label labelValue="Proto"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <div class="password-check">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="protoList" v-model="protoVal"></gl-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </span>
+                            <!-- ttl -->
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label labelValue="TTL"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="text" v-model="ttlVal"></gl-input>
+                                </div>
+                            </span>
+                            <!-- mtu -->
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label labelValue="MTU"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="text" v-model="mtuVal"></gl-input>
+                                </div>
+                            </span>
+                            <span class="list-group-item clearfix" v-show="  modevice.indexOf('cdc-wdm') < 0">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label :labelValue="$lang.label.pincode"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="text" :placeholder="$lang.internet.option" v-model="mopincode">
+                                    </gl-input>
+                                </div>
+                            </span>
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label :labelValue="$lang.label.dianum"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="text" :placeholder="$lang.internet.option" v-model="mopdanum">
+                                    </gl-input>
+                                </div>
+                            </span>
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label :labelValue="$lang.label.userName"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="text" :placeholder="$lang.internet.option" v-model="mousername">
+                                    </gl-input>
+                                </div>
+                            </span>
+                            <span class="list-group-item clearfix">
+                                <div class="text-left modem-left pull-left">
+                                    <gl-label :labelValue="$lang.internet.psw"></gl-label>
+                                </div>
+                                <div class="list-input-field input-append input-group">
+                                    <gl-input type="password" :placeholder="$lang.internet.option" v-model="mopasswd"
+                                        inputShow></gl-input>
+                                </div>
+                            </span>
+                        </div>
+                        <!-- 取消 自动 应用按钮 -->
+                        <div class="text-center" style="padding: 10px 0">
+                            <!-- <a data-toggle="collapse" href="#advanced">{{t($lang.button.advanced)}}</a> -->
+                            <gl-btn type="modify" @click="clickBack(index)">{{t($lang.button.cancel)}}</gl-btn>
+                            <gl-btn type="purple" @click="manualSet(item, index, item.up)">
+                                {{t($lang.button.apply)}}
+                            </gl-btn>
+                            <!-- <gl-tooltip content="You can't change setting when it is connecting">
+                                <span class="fa-exclamation-circle fa" style="font-size: 18px" v-show="item.up != 'off'"></span>
+                            </gl-tooltip> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- 手动设置 -->
+        <div class="panel-heading" v-show="moreset && reset">
+            <span>
+                <a @click="$router.push({path: 'attools', query: {index: index}})"
+                    style="margin-right: 20px">{{t($lang.index.atCommand)}}</a>
+                <a @click="clickMoReset(item, index)" style="margin-right: 20px">{{t($lang.internet.modemReset)}}</a>
+                <a @click="$router.push({path: 'cells', query: {id: item.modem_id,bus:item.bus}})"
+                    style="margin-right: 20px">{{t('Cells Info')}}</a>
+                <a v-if="modeEnvelope"
+                    @click="$router.push({path: 'sms', query: {id: item.modem_id,bus:item.bus}})">{{t('SMS Forward')}}</a>
+            </span>
+        </div>
+    </div>
+    <!-- 模块不存在 -->
+    <div class="state-box panel panel-default" v-if="!modems || moInfo.code == -6 || !isGetModem">
+        <div class="internet-btn panel-heading">
+            <h4>
+                <span class="circle"></span>
+                {{t($lang.internet.modem)}}
+            </h4>
+        </div>
+        <div class="panel-body panel-status">
+            <div class="internet-text clearfix">
+                <img src="/src/static/images/3G-Modem.jpg" class="internet-img">
+                <div class="uninter">
+                    <span>{{t($lang.internet.noModem)}}. {{t($lang.internet.plug_modem)}}.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

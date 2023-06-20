@@ -1,0 +1,11 @@
+Package: libyaml
+Version: 0.2.2-1
+Depends: libc
+Source: feeds/packages/libs/yaml
+SourceName: libyaml
+License: MIT
+LicenseFiles: COPYING
+Section: libs
+Architecture: mips_24kc
+Installed-Size: 35800
+Description:  Fast YAML 1.1 parser and emitter library

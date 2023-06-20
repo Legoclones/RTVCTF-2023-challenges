@@ -1,0 +1,621 @@
+<div class="templete">
+    <gl-loading v-if="loading"></gl-loading>
+    <div class="clsRootDiv" id="ParentDiv" v-else>
+        <div id="wrapper" style="flex: 1;height:100%;  background:#fff;position:relative;">
+            <!-- gl-message 专用 -->
+            <div id="glmsg"></div>
+            <!-- nav -->
+            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" id="glnav"
+                style="width:100%;max-width:1300px; margin:0 auto; ">
+                <div class="container-fluid">
+                    <!-- LOGO -->
+                    <div class="navbar-header" id="glmess">
+                        <button id="navcollapse" type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#navbar-ex1-collapse" aria-expanded="false"
+                            aria-controls="navbar-ex1-collapse">
+                            <span class="sr-only">Toggle nav</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="https://www.gl-inet.com/" target="blank">
+                            <img src="/src/static/images/logo_64x20-color.png" style="width: 64px;height:20px;" />
+                        </a>
+                        <span class="navbar-brand">
+                            {{t($lang.index.adminPanel)}}
+                        </span>
+                    </div>
+
+                    <!-- pc=>(Reboot、Logout、language) -->
+                    <ul class="nav navbar-right top-nav">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle RebotBtn" @click="reboot" v-if="rebootStatus">
+                                <gl-tooltip :content="$lang.toolTip.rebootStatus" direction="bottom" class="tooltipRed">
+                                    {{t($lang.index.reboot)}}
+                                    <span class="circle alert-red"></span>
+                                </gl-tooltip>
+                            </a>
+                            <a class="dropdown-toggle RebotBtn" @click="reboot" v-else>
+                                {{t($lang.index.reboot)}}
+                            </a>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle RebotBtn" @click="logout">
+                                {{t($lang.index.logout)}}
+                            </a>
+                        </li>
+                        <li class="dropdown" id="idLanguage">
+                            <gl-select :option="language" class="index-language" @change="setlang" v-model="lang">
+                            </gl-select>
+                        </li>
+                    </ul>
+                    <!-- 导航栏 -->
+                    <div class="collapse navbar-collapse" id="navbar-ex1-collapse" @click="toggleNav($event)">
+                        <ul class="nav navbar-nav side-nav ">
+                            <!-- bridge为router和ap模式显示，relay和wds模式不显示 -->
+                            <li v-if="routerMode == 'router' || routerMode == 'mesh'">
+                                <a @click="$router.push('internet')" class="clsLink2internet active bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="gli-icon-internet side-icon"></span>
+                                    {{t($lang.index.internet)}}
+                                </a>
+                            </li>
+                            <li>
+                                <a @click="$router.push('wlan')" class="clsLink2wlan toggle-nav bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="gli-icon-wlan side-icon"></span>
+                                    {{meshjudge ? 'Mesh' : t($lang.index.wireless)}}
+                                </a>
+                            </li>
+                            <li>
+                                <a @click="$router.push('clients')" class="clsLink2clients toggle-nav bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="gli-icon-client side-icon"></span>
+                                    {{t($lang.index.clients)}}
+
+                                </a>
+                            </li>
+                            <li>
+                                <a @click="$router.push('upgrade')" class="clsLink2upgrade toggle-nav bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="gli-icon-upgrade side-icon"></span>
+                                    {{t($lang.index.upgrade)}}
+                                    <span class="circle alert-red reminder-dot clsSideBarUpgrade"
+                                        v-show="checkfirmware.has_new"></span>
+                                </a>
+                            </li>
+                            <li v-if="hideFire">
+                                <a @click="$router.push('firewall')" class="clsLink2firewall toggle-nav bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="fa fa-fire side-icon"></span>
+                                    &nbsp;{{t('Firewall')}}
+                                </a>
+                            </li>
+                            <!-- VPN -->
+                            <li v-if="vpnActive && hideVpn">
+                                <div @click="changeCollapse('vpn')" data-toggle="collapse" href="#vpn"
+                                    style="text-transform:uppercase;">
+
+                                    <span class="gli-icon-vpn side-icon" style="position: relative;">
+                                        <span v-show="vpnCricleStatus != 'off'" class="height-light"
+                                            style="position: absolute;left:0px;top:8px;width:8px;height:8px;border-radius: 50%;"
+                                            :style="{ 'background-color': vpnLabelCyStatus ? '#ffcc33' : '#22f4bb' }"></span>
+                                    </span>&nbsp;{{t($lang.index.vpn)}}
+                                    <span class="caret"></span>
+                                </div>
+                                <ul id="vpn" class="collapse expand-opt ">
+                                    <li v-for="item in vpnlist">
+                                        <a @click="$router.push(item.router)" :class="geclass(item.router)"
+                                            style="position: relative;">
+
+                                            <span v-show="item.router == vpnclientCircleStatus" class="height-light"
+                                                :class="vpnclientCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            <span v-show="item.router == wgclientCircleStatus" class="height-light"
+                                                :class="wgclientCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            <span v-show="item.router == ssclientCircleStatus" class="height-light"
+                                                :class="ssclientCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            <span v-show="vpnServerCircleStatus && item.router == 'vpnserver'"
+                                                class="height-light" :class="vpnServerCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            <span v-show="wgServerCircleStatus && item.router == 'wgserver'"
+                                                class="height-light" :class="wgServerCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            {{t(item.name)}}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a @click="$router.push('safemode')" class="clsLink2safemode bar"
+                                            style="position: relative;">
+                                            <span v-show="internetKillSwitchCircleStatus" class="height-light"
+                                                :class="internetKillSwitchCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            Internet Kill Switch
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a @click="$router.push('policy')" class="clsLink2policy bar"
+                                            style="position: relative;">
+                                            <span v-show="vpnPoliciesCircleStatus" class="height-light"
+                                                :class="vpnPoliciesCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            {{t('VPN Policies')}}
+                                        </a>
+                                    </li>
+
+                                    <li v-if="isShowTor && router.model != 'sf1200'">
+                                        <a @click="$router.push('tor')" class="clsLink2tor bar"
+                                            style="position: relative;">
+                                            <span v-show="torCircleStatus" class="height-light"
+                                                :class="torCircleStatusFlag"
+                                                style="position: absolute;left:25px;top:14px;width:8px;height:8px;border-radius: 50%;"></span>
+                                            Tor
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li v-if="router.model == 'x300b' && hasRs485">
+                                <a @click="$router.push('rs485')" class="clsLink2rs485 toggle-nav bar"
+                                    style="text-transform:uppercase;">
+                                    <span class="glyphicon glyphicon-hdd side-icon" style="font-size: 15px;"></span>
+                                    &nbsp;{{t('RS485')}}
+                                </a>
+                            </li>
+                            <!-- APPLICATIONS  -->
+                            <li>
+                                <div @click="changeCollapse('system')" data-toggle="collapse" href="#system"
+                                    style="text-transform:uppercase;">
+                                    <span
+                                        class="gli-icon-application side-icon"></span>&nbsp;{{t($lang.index.applications)}}
+                                    <span class="caret"></span>
+                                </div>
+                                <ul id="system" class="collapse expand-opt ">
+                                    <!-- <li v-show="moInfo.success">
+                                        <a @click="$router.push('attools')" class="clsLink2attools bar">
+                                            {{t($lang.index.atCommand)}}
+                                        </a>
+                                    </li> -->
+                                    <li>
+                                        <a @click="$router.push('software')" class="clsLink2software bar">
+                                            {{t($lang.index.plugins)}}
+                                        </a>
+                                    </li>
+                                    <!-- <li v-if="moInfo.success">
+                                        <a @click="$router.push('smessage')" class="clsLink2smessage bar">
+                                            {{t($lang.index.sms)}}
+                                        </a>
+                                    </li> -->
+                                    <li v-if="share && router.model != 's200'">
+                                        <a @click="$router.push('share')" class="clsLink2share bar">
+                                            {{t($lang.index.share)}}
+                                        </a>
+                                    </li>
+                                    <li v-show="isGetBle">
+                                        <a @click="$router.push('bluetooth')" class="clsLink2bluetooth bar">
+                                            {{t($lang.index.bluetooth)}}
+                                        </a>
+                                    </li>
+                                    <li v-for="item in gl_package" v-if="item.router && item.name">
+                                        <a @click="$router.push(item.router)" :class="geclass(item.router)">
+                                            {{t(item.name)}}
+                                        </a>
+                                    </li>
+                                    <li v-if="!meshjudge && hideFire && !haveNotPortal && router.model != 'sf1200'">
+                                        <a @click="$router.push('portal')" class="clsLink2portal bar">
+                                            {{t('Captive Portal')}}
+                                        </a>
+                                    </li>
+                                    <li v-if="judgeAdguardHome">
+                                        <a @click="$router.push('adguardhome')" class="clsLink2adguardhome bar">
+                                            {{t('AdGuardHome')}}
+                                        </a>
+                                    </li>
+                                    <li v-if="router.model != 'sf1200'">
+                                        <a @click="$router.push('snooping')" class="clsLink2snooping bar">
+                                            {{ t('IGMP Snooping') }}
+                                        </a>
+                                    </li>
+                                    <li v-if="router.model == 'ap1300'">
+                                        <a @click="$router.push('ping')" class="clsLink2ping bar">
+                                            {{ t('Network Diagnostics') }}
+                                        </a>
+                                    </li>
+                                    <li v-if="router.model == 'ax1800'">
+                                        <a @click="$router.push('log')" class="clsLink2log bar">
+                                            {{t('Log')}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- MORE SETTINGS-->
+                            <li>
+                                <div @click="changeCollapse('moresetting')" href="#moresetting" data-toggle="collapse"
+                                    style="text-transform:uppercase;">
+                                    <span class="gli-icon-setting side-icon"></span>&nbsp;{{t($lang.index.moreSet)}}
+                                    <span class="caret"></span>
+                                </div>
+                                <ul id="moresetting" class="collapse expand-opt ">
+                                    <li>
+                                        <a @click="$router.push('adminpw')" class="clsLink2adminpw bar">
+                                            {{t($lang.index.adminPsw)}}
+                                        </a>
+                                    </li>
+
+                                    <li v-show="routerMode == 'router' || routerMode == 'mesh'">
+                                        <a @click="$router.push('lanip')" class="clsLink2lanip bar"
+                                            style="text-transform: uppercase">
+                                            {{t($lang.index.lanip)}}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a @click="$router.push('timezone')" class="clsLink2timezone bar">
+                                            {{t($lang.index.timezone)}}
+                                        </a>
+                                    </li>
+                                    <li v-if="hasGps">
+                                        <a @click="$router.push('gps')" class="clsLink2gps bar">
+                                            GPS
+                                        </a>
+                                    </li>
+                                    <li v-show="routerMode == 'router' || routerMode == 'mesh'">
+                                        <a @click="$router.push('macclone')" class="clsLink2macclone bar">
+                                            {{t($lang.index.macClone)}}
+                                        </a>
+                                    </li>
+                                    <li v-show="routerMode == 'router' || routerMode == 'mesh'">
+                                        <a @click="$router.push('ipv6')" class="clsLink2ipv6 bar">
+                                            IPv6
+                                        </a>
+                                    </li>
+                                    <li v-show="routerMode == 'router' || routerMode == 'mesh'">
+                                        <a @click="$router.push('dns')" class="clsLink2dns bar">
+                                            {{t($lang.index.customDns_ss)}}
+                                        </a>
+                                    </li>
+                                    <li
+                                        v-show="settings && hideVpn && router.model != 'x300b' && router.model != 'sf1200' ">
+                                        <a @click="$router.push('settings')" class="clsLink2settings bar">
+                                            {{t($lang.index.btnSetting)}}
+                                        </a>
+                                    </li>
+                                    <li v-if="router.model == 'e750'">
+                                        <a @click="$router.push('mcu')" class="clsLink2mcu bar">
+                                            {{ t('MCU Settings') }}
+                                        </a>
+                                    </li>
+                                    <li v-if="lan == 'CN' && SideRouteMode">
+                                        <a @click="$router.push('siderouter')" class="clsLink2siderouter bar">
+                                            {{ t('旁路由模式') }}
+                                        </a>
+                                    </li>
+                                    <li v-if="lan == 'CN' && Mudial">
+                                        <a @click="$router.push('mudial')" class="clsLink2mudial bar">
+                                            {{ t('一键多拨') }}
+                                        </a>
+                                    </li>
+                                    <li v-if="!meshjudge">
+                                        <a @click="$router.push('bridge')" class="clsLink2bridge bar">
+                                            {{t($lang.index.networkArchitecture)}}
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a @click="$router.push('revert')" class="clsLink2revert bar">
+                                            {{t($lang.index.revert)}}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a @click="$router.push('luci')" target="_blank" class="clsLink2luci bar">
+                                            <!-- <a href="/cgi-bin/luci" target="_blank" class="clsLink2luci bar"> -->
+                                            {{t($lang.index.advanced)}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- web=>language -->
+                            <li class="responsive-hidden">
+                                <a data-toggle="collapse" data-target="#lang" style="text-transform: capitalize;">
+                                    <span class="gli-icon-setting side-icon" style="color:transparent;"></span>
+                                    {{t($lang.index.language)}}
+                                </a>
+                                <!-- choose language -->
+                                <ul id="lang" class="collapse expand-opt">
+                                    <li>
+                                        <a href="#" @click="setlang('English')"
+                                            :class="{'active': webLang == 'EN'}">English</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('简体中文')"
+                                            :class="{'active': webLang == 'CN'}">简体中文</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('繁體中文')"
+                                            :class="{'active': webLang == 'TC'}">繁體中文</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('Deutsch')"
+                                            :class="{'active': webLang == 'DE'}">Deutsch</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('Français')"
+                                            :class="{'active': webLang == 'FR'}">Français</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('Español')"
+                                            :class="{'active': webLang == 'SP'}">Español</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('Italiano')"
+                                            :class="{'active': webLang == 'IT'}">Italiano</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('日本語')" :class="{'active': webLang == 'JP'}">日本語</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('한국어')" :class="{'active': webLang == 'KR'}">한국어</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" @click="setlang('Русский')"
+                                            :class="{'active': webLang == 'RU'}">Русский</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- web=>Reboot -->
+                            <li class="responsive-hidden">
+                                <a class="RebotBtn" @click="reboot">
+                                    <span class="gli-icon-setting side-icon" style="color:transparent;"></span>
+                                    <span style="display:inline-block;">{{t($lang.index.reboot)}}</span>
+                                </a>
+                            </li>
+                            <!-- web=>Logout -->
+                            <li class="responsive-hidden">
+                                <a class="LogoutBtn" @click="logout">
+                                    <span class="gli-icon-setting side-icon" style="color:transparent;"></span>
+                                    <span style="display:inline-block;">{{t($lang.index.logout)}}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div id="page-wrapper" style="z-index:100;padding-top:51px;">
+                <!-- 断网提示 -->
+                <div class=" alert-danger idScanWifiAlertMsg text-center" v-if="noInter"
+                    style="padding: 12px 0px;margin-top: -1px;">
+                    <div class="text-center" style="color: chocolate;">
+                        <a @click="$router.push('internet')">{{t($lang.index.reConnect_inter)}}</a>
+                    </div>
+                </div>
+                <!-- 路由器信息显示 -->
+                <div id="idIndexInfo">
+                    <div class="col-lg-12 " id="router-visual">
+                        <div id="idStaInfo">
+                            <div class="phone-only pull-left">
+                                <div class="phone-only-internet clsStaInfo" :class="{active:phoneInter}">
+                                    <div id="icon-connect2internet" class="gli-icon-internet col-xs-1"
+                                        @click="routerPush('internet')"></div>
+                                    <div class="text-left total-internet-no" style="width: 100px;height: 20px">
+                                        <span v-if="wifiIconActive ||  waninfo.ip || teinfo.ip || mostatus"
+                                            class="client-no clsTotalClietsNum active">
+                                            <span class="icon-font-ethernet clsStaIcon"
+                                                v-show="waninfo.success && waninfo.ip"
+                                                style="transform: translateY(2px);display: inline-block;"></span>
+                                            <span class="gli-icon-wifi-full clsStaIcon"
+                                                v-show="stainfo&&stainfo.success&&stainfo.ip"></span>
+                                            <span class="gli-icon-phone clsStaIcon"
+                                                v-show="teinfo.success&&teinfo.devices&&teinfo.ip"></span>
+                                            <span class="icon-font-4g-lte clsStaIcon" v-show="mostatus"
+                                                style="transform: translateY(2px);display: inline-block;"></span>
+                                        </span>
+                                        <span v-else class="client-no clsTotalClietsNum">
+                                            <span class="icon-font-ethernet clsStaIcon"></span>{{teinfo.ip}}
+                                        </span>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="phone-only-internet clsTotalClietsPanel"
+                                    :class="{'active': (wifiNum>0&&wifiNum) || (lanNum>0&&lanNum) ? true : false,'router': router.mode == 'router' || router.mode == 'mesh'}">
+                                    <div id="icon-connect2client" class="gli-icon-client col-xs-1"
+                                        @click="routerPush('clients')"></div>
+                                    <div class="text-left total-client-no">
+                                        <span class="client-no clsTotalClietsNum">
+                                            {{wifiNum > 0 || lanNum > 0 ? wifiNum+lanNum : '...'}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-3 col-xs-2  hidden-xxxs" id="router-import">
+                                <div class="float pull-right">
+                                    <div class="float pull-right  hidden-xxxs">
+                                        <div class="import-line"></div>
+                                    </div>
+                                    <div class="float import-opt clsStaInfo"
+                                        :id="isN300icon?'n300-icon':isAp1300icon?'ap1300-icon':'wan-icon'"
+                                        v-if="wanicon"
+                                        :class="{'active':waninfo.success && waninfo.ip || router.mode =='ap', 'mt300-wan': router.model == 'vixmini'}"
+                                        @click="routerPush('internet')">
+                                        <span
+                                            class="import-txt clsStaSSID hidden-sm hidden-xs">{{t($lang.index.cable)}}</span>
+                                        <span class="icon-font-ethernet import-icon clsStaIcon"
+                                            style="transform: translateY(5px);display: inline-block;"></span>
+                                    </div>
+                                    <div class="float import-opt clsStaInfo"
+                                        :id="isN300icon?'n300-icon':isAp1300icon?'ap1300-icon':'wan-icon'"
+                                        :class="{'active':wifiIconActive, 'router': router.mode =='router'|| router.mode == 'mesh' , 'usb-wifi': router.model == 'usb150', 'mt300-wifi': router.model == 'vixmini'}"
+                                        @click="routerPush('internet')">
+                                        <span class="import-txt clsStaSSID hidden-sm hidden-xs">{{wifiIconActive ?
+                                            stainfo.ssid : t($lang.index.repeater)}}</span>
+                                        <span class="gli-icon-wifi-full import-icon clsStaIcon"></span>
+                                    </div>
+                                    <div class="float import-opt clsStaInfo"
+                                        :id="isN300icon?'n300-icon':isAp1300icon?'ap1300-icon':'wan-icon'" v-if="teicon"
+                                        :class="{'active':teinfo.success&&teinfo.ip, 'router': router.mode =='router' || router.mode == 'mesh'}"
+                                        @click="routerPush('internet')">
+                                        <span
+                                            class="import-txt clsStaSSID hidden-sm hidden-xs">{{t($lang.index.tethering)}}</span>
+                                        <span class="gli-icon-phone import-icon clsStaIcon"></span>
+                                    </div>
+                                    <div class="float import-opt clsStaInfo"
+                                        :id="isN300icon?'n300-icon':isAp1300icon?'ap1300-icon':'wan-icon'"
+                                        v-if="modemicon"
+                                        :class="{'active':mostatus, 'router': router.mode =='router' || router.mode == 'mesh'}"
+                                        @click="routerPush('internet')">
+                                        <span class="import-txt clsStaSSID hidden-sm hidden-xs">
+                                            {{ mostatus ? (modems[0].carrier ? modems[0].carrier : t($lang.index.modem)) : t($lang.index.modem)}}</span>
+                                        <span class="import-icon clsStaIcon icon icon-font-4g-lte"></span>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-xs-3 text-center" id="usb-router-pic" :class="appIcon">
+                            <!-- vpn状态显示 -->
+                            <div id="icon-vpn-status" :class="vpnIconSrc"></div>
+                            <div id="icon-adguard-status" v-if='aghstatus' class="icon-adguradhome-on"></div>
+                            <!-- 路由器主图 -->
+                            <div class="typeOfRouter" :id="appIcon" v-cloak style="cursor:pointer;position: relative;">
+                            </div>
+                            <br />
+                            <div id="ssidRouterText">
+                                <div v-for="item in getWifiList" v-if="item.mode == 'ap'">
+                                    <div class="clsDeviceSSID" id="UpBarDeviceSSID" :class="{active: item.up}"
+                                        @click="$router.push('wlan')">
+                                        {{item.ssid}}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4  hidden-xxxs" id="router-output">
+                            <div class="float pull-left  hidden-xxxs">
+                                <div class="output-line "></div>
+                            </div>
+                            <div class="float pull-left ">
+                                <div class="float output-opt clsWifiClietsPanel"
+                                    v-bind:class="{'active':wifiNum>0,'router': router.mode == 'router' || router.mode == 'mesh'}"
+                                    @click="routerPush('clients')">
+                                    <span class="gli-icon-client-wifi output-icon clsWifiClietsIcon"></span>
+                                    <span class="client-no clsWifiClietsNum" v-text="wifiNum">
+                                        {{t($lang.index.loading)}}
+                                    </span>
+                                    <span class="output-txt  clsWifiClietsTxt">
+                                        {{t($lang.index.wlanClients)}}
+                                    </span>
+                                </div>
+                                <div class="float output-opt clsLanClietsPanel hide">
+                                    <span class="gli-icon-client-lan output-icon clsLanClietsIcon"></span>
+                                    <span class="output-txt ">
+                                        {{t($lang.index.lanClient)}}
+                                    </span>
+                                </div>
+                                <div class="float output-opt clsLanClietsPanel "
+                                    v-bind:class="{'active':lanNum>0,'router': router.mode == 'router' || router.mode == 'mesh'}"
+                                    @click="routerPush('clients')">
+                                    <span class="gli-icon-client-lan output-icon clsLanClietsIcon"></span>
+                                    <span class="client-no clsLanClietsNum" v-text="lanNum">
+                                        {{t($lang.index.loading)}}
+                                    </span>
+                                    <span class="output-txt ">
+                                        {{t($lang.index.lanClients)}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- mifi电量显示 -->
+                        <div class="mifi-battery"
+                            v-if="(router.model == 'mifi' || router.model == 'e750' || router.model == 'xe300') && !isShowmifiMcu">
+                            <span v-if="router.model == 'e750' || router.model == 'xe300'">
+                                <span class="battery-text" style="color:#22f4bb !important">{{temperature}}</span>
+                                <svg class="icon temperature" aria-hidden="true">
+                                    <use xlink:href="#icon-wenduji"></use>
+                                </svg>
+                            </span>
+                            <span class="battery-text active">{{percent}}</span>
+                            <span class="battery-before">
+                                <!-- 电量容量 -->
+                                <i class="battery_power" :style="battery"></i>
+                                <svg class="icon battery-power" aria-hidden="true">
+                                    <use xlink:href="#icon-ios-battery-dead-copy"></use>
+                                </svg>
+                                <!-- 是否充电 -->
+                                <svg class="icon battery_isCharging" aria-hidden="true"
+                                    style="color:#fff;font-size: 11px;left: 21%" v-show="mifiMcu.Charging == 1">
+                                    <use xlink:href="#icon-lightningbshandian"></use>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- router show -->
+                <div class="container-fluid" style="height:100%;padding-top: 25px">
+                    <transition name="component-fade" mode="out-in">
+                        <router-view></router-view>
+                    </transition>
+                    <div class="clsGLFooter"
+                        style="width:100%;text-align:right;padding-right:20px;background:#fff;max-width:1300px;margin: 0px auto;">
+                        <h6>
+                            {{t($lang.index.copyright)}} © 2021
+                            <a href="https://docs.gl-inet.com/en/3/">{{t('GL.iNet')}}</a>.
+                            {{t($lang.index.allRightReserved)}}.
+                        </h6>
+                    </div>
+                </div>
+
+                <!-- vodal -->
+                <vodal :closeOnEsc="modal.esc" :show="modal.show" :animation="modal.animation" :title="modal.title"
+                    :msg="modal.message" @close="CancelFirm" @comfirm="comfirm" className="my-dialog" :yes="modal.yes"
+                    :no="modal.no" :type="modal.type" :msgTwo="modal.messageTwo" :msgTwoi="modal.messageTwoi"
+                    :msgTwos="modal.messageTwos" :msgThree="modal.messageThree" :showfoot="modal.showfoot"
+                    :showCancelBtn="modal.showCancelBtn" :href="modal.href" :closeOnClickMask="modal.closeOnClickMask">
+                </vodal>
+
+            </div>
+            <!-- 登录后的弹窗:wifiInit -->
+            <div id="mask" v-if="wifiInitModal">
+                <div class="wifi-init-modal">
+                    <div class="wifi-init-body">
+                        <h3 class="title">Init Wifi</h3>
+                        <span class="list-group-item wifi-init-ssid" style="border:0;border-top:1px solid #ddd">
+                            <div class="text-left pull-left" style="padding: 10px 0;">
+                                <gl-label labelValue="SSID"></gl-label>
+                            </div>
+                            <div class="list-input-field">
+                                <gl-input v-model="ssid" type="text"></gl-input>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <!-- Key -->
+                        <span class="list-group-item" style="border:0;border-bottom:1px solid #ddd">
+                            <div class="text-left pull-left">
+                                <gl-label labelValue="Key" style="display: inline-block;margin-right: -5px;"></gl-label>
+                                <gl-tooltip :content="$lang.toolTip.leastNum" direction="top">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                </gl-tooltip>
+                            </div>
+                            <div class="list-input-field">
+                                <span class="password-input-style">
+                                    <div class="passtrengthMeter">
+                                        <gl-input v-model="key" @keyup.enter.native="confirmInput" type="password"
+                                            inputShow @postValue="checkpsw(key)" :placeholder="$lang.holdPlace.required"
+                                            :error="!checkpassword"></gl-input>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                    </div>
+                    <div class="wifi-init-footer">
+                        <gl-btn class="clientBtn" type="default" @click="confirmInput" style="padding: 5.5px 24px"
+                            :disabled="wifiBtnInit">{{t('OK')}}</gl-btn>
+                        <!-- <gl-btn class="clientBtn" type="default" @click="jumpSkip" style="padding: 5.5px 24px">跳过</gl-btn> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

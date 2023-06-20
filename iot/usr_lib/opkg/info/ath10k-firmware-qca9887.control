@@ -1,0 +1,10 @@
+Package: ath10k-firmware-qca9887
+Version: 2019-10-03-d622d160-1
+Depends: libc
+Source: package/firmware/ath10k-firmware
+SourceName: ath10k-firmware-qca9887
+Section: firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 209225
+Description:  ath10k firmware for QCA9887 devices

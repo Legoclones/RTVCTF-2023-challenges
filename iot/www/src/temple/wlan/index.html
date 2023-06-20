@@ -1,0 +1,660 @@
+<div class="row" style="position:relative">
+    <gl-loading v-if="loading"></gl-loading>
+    <div class="col-lg-12" id="idHotspotPanel">
+        <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+            <li class="active" v-if="wifi2g.length > 0 || loading">
+                <a href="#ID24GHostPotPanel" data-toggle="tab">
+                    <span class="circle"  v-for="item,index in wifi2g" :class="{'active': item.up}"></span>
+                    {{meshjudge ? t("Settings") : t('2.4G WiFi')}}
+                </a>
+            </li>
+            <li role="presentation" v-if="(router.mode == 'router' || router.mode == 'mesh') && wifi2gGuest.length > 0" >
+                <a href="#ID2GHostPotPanels" data-toggle="tab">
+                    <span class="circle"  v-for="item,index in wifi2gGuest" :class="{'active': item.up}"></span>
+                    {{meshjudge ? 'MESH' : '2.4G'}} {{t($lang.wlan.Guest)}} WiFi
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="ID24GHostPotPanel">
+                <div class="panel panel-default " v-for="item,index in wifi2g" v-if="item.mode == 'ap'" :class="{'min-height' : !meshjudge}">
+                    <div class="panel-heading">
+                        <h4>
+                            <span class="circle" :class="{'active': item.up}"></span>
+                            <span class="clsDeviceSSID">{{item.wifissid}}</span>
+                            <span v-show="item.channel >= 36 && item.wifissid" class="badge badge-pill badge-secondary"
+                                style="background: #cccccc;vertical-align: top;margin-top: 3px">5G</span>
+                        </h4>
+                        <!-- toggle btn -->
+                        <span class="pull-right has-panel-toggle" :id="generateId('gl_vue',item.ssid,item.id)" v-if="!meshjudge">
+                            <gl-tg-btn size="39px" timer="true" showTimer="true" class="btn-toggler" showon="true"
+                                theme="default" v-model="item.up" @change="hotspotEnableAp(item)" :disabled="btnStatus"></gl-tg-btn>
+                        </span>
+                    </div>
+                    <div class="panel-body panel-status">
+                        <div class="list-group hotspot-list">
+                            <!-- Wi-Fi SSID -->
+                            <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfName"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,item.id)">
+                                    <gl-input v-model="item.ssid" :disabled="wifiId != item.id" type="text"
+                                        :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                             <!-- Wireless Security-->
+                            <span class="list-group-item" style="border-bottom: 0;">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.Security"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                       
+                                        <gl-select  :option="SecurityList" v-model="item.encrypt" showNum="5"
+                                        :disabled="wifiId != item.id"
+                                        checkLang  searchip @change="changeSecurity(item.encrypt, '2g')"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi Key -->
+                            <span class="list-group-item "  v-if="item.encrypt != 'OPEN'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfKey" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="$lang.toolTip.leastNum" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotPasswordCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-input v-model="item.key" :disabled="wifiId != item.id" type="password"
+                                                inputShow @postValue="checkpsw(item.key,item.id)" :placeholder="$lang.holdPlace.required"
+                                                :error="!checkpassword && item.id == currentindex"></gl-input>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi cloaking -->
+                            <span class="list-group-item" v-if="!meshjudge">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.HideSSID"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                        <gl-select :option="cloaking" v-model="item.hidden"  showNum="5" 
+                                        :disabled="wifiId != item.id"
+                                        searchip></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi max client -->
+                            <span class="list-group-item" v-if="!meshjudge && router.model =='ap1300'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Maximum Station Number')" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="t('Maximum wireless client number; 0 means unlimited')" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                    <gl-input v-model="item.maxsta" :disabled="wifiId != item.id" type="text"
+                                    :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+
+                            <!-- hwmode -->
+                            <span class="list-group-item" v-if="item.guest == 0 && !meshjudge">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Wi-Fi Mode')"></gl-label>
+                                </div>
+                        
+                                <div class="list-input-field" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="item.hwmodelist ? item.hwmodelist : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                v-model="item.hwmode" @getval="router.model==='ax1800'? changeHtmodeForAx(item):changeHtmode(item)"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                 <!-- Speed 禁止修改信道icon  pc-->
+                                 <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_Speed">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                           
+                            <!-- htmode -->
+                            <span class="list-group-item" v-if="item.guest == 0 && !meshjudge">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Bandwidth')"></gl-label>
+                                </div>
+                        
+                                <div class="list-input-field" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="item.htmodelist ? item.htmodelist : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                v-model="item.htmode"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                 <!-- Speed 禁止修改信道icon  pc-->
+                                 <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_Speed">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+
+
+                            <!-- Wi-Fi channel -->
+                            <span class="list-group-item clearfix" v-if="item.guest == 0 && !meshjudge && router.model != 'b2200'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.channel"></gl-label>
+                                </div>
+                                <!-- repater 禁止修改信道icon web -->
+                                <div style="float: right; padding: 12px 30px 12px 0" class="visible-xs disabled_channel"
+                                    v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_channel">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <!-- select -->
+                                <div class="list-input-field" style="display: flex;align-items: baseline;" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="item.channels ? item.channels : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                v-model="item.channel" showNum="5" checkLang></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                <!-- repater 禁止修改信道icon  pc-->
+                                <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_channel">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                            </span>
+                            
+                            <!-- TODO -->
+                            <span class="list-group-item" v-if="item.guest == 0 && !meshjudge">
+                                <div class="text-left pull-left">
+                                    {{t($lang.wlan.txPower)}}
+                                    <gl-tooltip :content="$lang.toolTip.power" direction="top">
+                                        <span class="fa fa-info-circle" id="dbmTooltip"></span>
+                                    </gl-tooltip>
+                                    <span class="hide alert-green" :id="generateId('powerChangeMsg',item.ssid,item.id)">
+                                        <strong>{{t($lang.wlan.success)}}!</strong>
+                                    </span>
+                                </div>
+                                <div class="list-input-field" style="display: flex;align-items: baseline;" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="powerList" v-model="item.txpower" :disabled="btnStatus" @getval="powerChange(item)"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix cleanspace"></div>
+                            </span> 
+                        </div>
+                        <div style="background-color: #fff;text-align: center;margin: 10px;" >
+                            <span v-if="wifiId != item.id">
+                                <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn>
+                                <gl-btn type="modify" v-if="!meshjudge"  class="btn channeloptimiza" :disabled="!item.channelStatus || btnStatus && wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')" @click="modifyChannel(item)">{{t('Channel Optimization')}}
+                                    <span class="fa fa-spinner fa-pulse" v-if="btnStatus && channelId == item.id"></span>
+                                </gl-btn>
+                            </span>
+                            <span v-else>
+                                <gl-btn type="modify" class="btn" @click="cancel(index)">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn type="purple" class="btn" @click="applyBtnClick(item)">{{t($lang.button.apply)}}</gl-btn>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="ID2GHostPotPanels" style="color:black">
+                <div class="panel panel-default" v-for="item,index in wifi2gGuest" v-if="item.mode == 'ap'">
+                    <div class="panel-heading">
+                        <h4>
+                            <span class="circle" :class="{'active': item.up}"></span>
+                            <span class="clsDeviceSSID">{{item.wifissid}}</span>
+                            <span v-show="item.channel >= 36 && item.wifissid" class="badge badge-pill badge-secondary"
+                                style="background: #cccccc;vertical-align: top;margin-top: 3px">5G</span>
+                        </h4>
+                        <!-- toggle btn -->
+                        <span class="pull-right has-panel-toggle" :id="generateId('gl_vue',item.ssid,item.id)">
+                            <gl-tg-btn size="39px" timer="true" showTimer="true" class="btn-toggler" showon="true"
+                                theme="default" v-model="item.up" @change="hotspotEnableAp(item)" :disabled="btnStatus"></gl-tg-btn>
+                        </span>
+                    </div>
+                    <div class="panel-body panel-status">
+                        <div class="list-group hotspot-list">
+                            <!-- Wi-Fi SSID -->
+                            <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfName"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,item.id)">
+                                    <gl-input v-model="item.ssid" :disabled="wifiId != item.id" type="text"
+                                        :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wireless Security-->
+                            <span class="list-group-item">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.Security"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                    <gl-select  :option="SecurityList" v-model="item.encrypt" showNum="5"
+                                    :disabled="wifiId != item.id"
+                                    checkLang  searchip  @change="changeSecurity(item.encrypt, '2g-guest')"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi Key -->
+                            <span class="list-group-item "  v-if="item.encrypt != 'OPEN'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfKey" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="$lang.toolTip.leastNum" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotPasswordCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-input v-model="item.key" :disabled="wifiId != item.id" type="password"
+                                                inputShow @postValue="checkpsw(item.key,item.id)" :placeholder="$lang.holdPlace.required"
+                                                :error="!checkpassword && item.id == currentindex"></gl-input>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                        </div>
+                        <div style="background-color: #fff;text-align: center;margin: 10px;">
+                            <span v-if="wifiId != item.id">
+                                <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn>
+                                
+                            </span>
+                            <span v-else>
+                                <gl-btn type="modify" class="btn" @click="cancel(index)">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn type="purple" class="btn" @click="applyBtnClick(item)">{{t($lang.button.apply)}}</gl-btn>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="loading" class="palceholder-box"></div>
+        <ul class="nav nav-tabs" style="margin-bottom: 20px;" v-if="!meshjudge">
+            <li class="active" v-if="wifi5g.length > 0">
+                <a href="#ID5GHostPotPanel" data-toggle="tab">
+                        <span class="circle"  v-for="item,index in wifi5g" :class="{'active': item.up}"></span>
+
+                    5G WiFi
+                </a>
+            </li>
+            <li role="presentation" v-if="(router.mode == 'router' || router.mode == 'mesh') && wifi5gGuest.length > 0">
+                <a href="#ID5GHostPotPanels" data-toggle="tab">
+                        <span class="circle"  v-for="item,index in wifi5gGuest" :class="{'active': item.up}"></span>
+                        5G {{t($lang.wlan.Guest)}} WiFi
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content" v-if="!meshjudge">
+            <div class="tab-pane fade in active" id="ID5GHostPotPanel">
+                <div class="panel panel-default min-height" v-for="item,index in wifi5g" v-if="item.mode == 'ap'">
+                    <div class="panel-heading">
+                        <h4>
+                            <span class="circle" :class="{'active': item.up}"></span>
+                            <span class="clsDeviceSSID">{{item.wifissid}}</span>
+                            <span v-show="item.channel >= 36 && item.wifissid" class="badge badge-pill badge-secondary"
+                                style="background: #cccccc;vertical-align: top;margin-top: 3px">5G</span>
+                        </h4>
+                        <!-- toggle btn -->
+                        <span class="pull-right has-panel-toggle" :id="generateId('gl_vue',item.ssid,item.id)">
+                            <gl-tg-btn size="39px" timer="true" showTimer="true" class="btn-toggler" showon="true"
+                                theme="default" v-model="item.up" @change="hotspotEnableAp(item)" :disabled="btnStatus"></gl-tg-btn>
+                        </span>
+                    </div>
+                    <div class="panel-body panel-status">
+                        <div class="list-group hotspot-list">
+                            <!-- Wi-Fi SSID -->
+                            <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfName"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,item.id)">
+                                    <gl-input v-model="item.ssid" :disabled="wifiId != item.id" type="text"
+                                        :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wireless Security-->
+                            <span class="list-group-item">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.Security"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                    <gl-select  :option="SecurityList" v-model="item.encrypt" showNum="5"
+                                    :disabled="wifiId != item.id"
+                                    checkLang  searchip @change="changeSecurity(item.encrypt, '5g')"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi Key -->
+                            <span class="list-group-item "  v-if="item.encrypt != 'OPEN'" style="border-bottom: 0;">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfKey" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="$lang.toolTip.leastNum" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotPasswordCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-input v-model="item.key" :disabled="wifiId != item.id" type="password"
+                                                inputShow @postValue="checkpsw(item.key,item.id)" :placeholder="$lang.holdPlace.required"
+                                                :error="!checkpassword && item.id == currentindex"></gl-input>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi cloaking -->
+                            <span class="list-group-item">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.HideSSID"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                        <gl-select :option="cloaking" v-model="item.hidden"  showNum="5" 
+                                        :disabled="wifiId != item.id"
+                                        searchip></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                             <!-- Wi-Fi max client -->
+                             <span class="list-group-item" v-if="!meshjudge && router.model =='ap1300'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Maximum Station Number')" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="t('Maximum wireless client number; 0 means unlimited')" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                    <gl-input v-model="item.maxsta" :disabled="wifiId != item.id" type="text"
+                                    :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                             <!-- hwmode -->
+                             <span class="list-group-item" v-if="item.guest == 0 && !meshjudge">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Wi-Fi Mode')"></gl-label>
+                                </div>
+                        
+                                <div class="list-input-field" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="item.hwmodelist ? item.hwmodelist : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                v-model="item.hwmode" @getval="router.model==='ax1800'? changeHtmodeForAx(item):changeHtmode(item)"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                 <!-- Speed 禁止修改信道icon  pc-->
+                                 <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_Speed">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                           
+                            <!-- htmode -->
+                            <span class="list-group-item" v-if="item.guest == 0 && !meshjudge">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="t('Bandwidth')"></gl-label>
+                                </div>
+                        
+                                <div class="list-input-field" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="item.htmodelist ? item.htmodelist : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                v-model="item.htmode"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                 <!-- Speed 禁止修改信道icon  pc-->
+                                 <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_Speed">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi channel -->
+                            <span class="list-group-item clearfix" v-if="item.guest == 0 && router.model != 'b2200'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.channel"></gl-label>
+                                </div>
+                                <!-- repater 禁止修改信道icon web -->
+                                <div style="float: right; padding: 12px 30px 12px 0" class="visible-xs disabled_channel"
+                                    v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_channel">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <!-- select -->
+                                <div class="list-input-field" style="display: flex;align-items: baseline;" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                        <span class="password-input-style">
+                                            <div class="passtrengthMeter">
+                                                    <gl-select :option="item.channels ? item.channels : []" :disabled="wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')"
+                                                        v-model="item.channel" showNum="5" checkLang></gl-select>
+                                            </div>
+                                        </span>
+                                    </div>
+                                <!-- repater 禁止修改信道icon  pc-->
+                                <div style="float: right; padding: 12px 5px" class="hidden-xs" v-if="wifiId == item.id && ((stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G'))">
+                                    <gl-tooltip :content="$lang.toolTip.disabled_channel">
+                                        <span class="fa fa-exclamation-circle text-danger"></span>
+                                    </gl-tooltip>
+                                </div>
+
+                            </span>
+                            
+                            <!-- TODO -->
+                            <span class="list-group-item" v-if="item.guest == 0">
+                                <div class="text-left pull-left">
+                                    {{t($lang.wlan.txPower)}}
+                                    <gl-tooltip :content="$lang.toolTip.power" direction="top">
+                                        <span class="fa fa-info-circle" id="dbmTooltip"></span>
+                                    </gl-tooltip>
+                                    <span class="hide alert-green" :id="generateId('powerChangeMsg',item.ssid,item.id)">
+                                        <strong>{{t($lang.wlan.success)}}!</strong>
+                                    </span>
+                                </div>
+                                <div class="list-input-field" style="display: flex;align-items: baseline;" :id="generateId('idHotspotChannelCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-select :option="powerList" v-model="item.txpower" :disabled="btnStatus" @getval="powerChange(item)"></gl-select>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix cleanspace"></div>
+                            </span>
+                        </div>
+                        <div style="background-color: #fff;text-align: center;margin: 10px;" >
+                            <span v-if="wifiId != item.id">
+                                <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn>
+                                <gl-btn type="modify" v-if="!meshjudge" class="btn channeloptimiza" :disabled="!item.channelStatus ||btnStatus && wifiId != item.id || (stainfo.ip  && stainfo.channel >= 36 && item.band == '5G') || (stainfo.ip  && stainfo.channel < 36 && item.band == '2G')" @click="modifyChannel(item)">{{t('Channel Optimization')}}
+                                    <span class="fa fa-spinner fa-pulse" v-if="btnStatus && channelId == item.id"></span>
+                                </gl-btn>
+                            </span>
+                            <span v-else>
+                                <gl-btn type="modify" class="btn" @click="cancel(index)">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn type="purple" class="btn" @click="applyBtnClick(item)">{{t($lang.button.apply)}}</gl-btn>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="ID5GHostPotPanels">
+                <div class="panel panel-default" v-for="item,index in wifi5gGuest" v-if="item.mode == 'ap'">
+                    <div class="panel-heading">
+                        <h4>
+                            <span class="circle" :class="{'active': item.up}"></span>
+                            <span class="clsDeviceSSID">{{item.wifissid}}</span>
+                            <span v-show="item.channel >= 36 && item.wifissid" class="badge badge-pill badge-secondary"
+                                style="background: #cccccc;vertical-align: top;margin-top: 3px">5G</span>
+                        </h4>
+                        <!-- toggle btn -->
+                        <span class="pull-right has-panel-toggle" :id="generateId('gl_vue',item.ssid,item.id)">
+                            <gl-tg-btn size="39px" timer="true" showTimer="true" class="btn-toggler" showon="true"
+                                theme="default" v-model="item.up" @change="hotspotEnableAp(item)" :disabled="btnStatus"></gl-tg-btn>
+                        </span>
+                    </div>
+                    <div class="panel-body panel-status">
+                        <div class="list-group hotspot-list">
+                            <!-- Wi-Fi SSID -->
+                            <span class="list-group-item ">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfName"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,item.id)">
+                                    <gl-input v-model="item.ssid" :disabled="wifiId != item.id" type="text"
+                                        :placeholder="$lang.holdPlace.required"></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wireless Security-->
+                            <span class="list-group-item">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.wlan.Security"></gl-label>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotSSIDCheck',item.ssid,index)">
+                                        <gl-select  :option="SecurityList" v-model="item.encrypt" showNum="5"
+                                        :disabled="wifiId != item.id"
+                                        checkLang  searchip @change="changeSecurity(item.encrypt, '5g-guest')"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <!-- Wi-Fi Key -->
+                            <span class="list-group-item "  v-if="item.encrypt != 'OPEN'">
+                                <div class="text-left pull-left">
+                                    <gl-label :labelValue="$lang.label.wfKey" labelShow style="display: inline-block;margin-right: -5px;"></gl-label>
+                                    <gl-tooltip :content="$lang.toolTip.leastNum" direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </div>
+                                <div class="list-input-field" :id="generateId('idHotspotPasswordCheck',item.ssid,item.id)">
+                                    <span class="password-input-style">
+                                        <div class="passtrengthMeter">
+                                            <gl-input v-model="item.key" :disabled="wifiId != item.id" type="password"
+                                                inputShow @postValue="checkpsw(item.key,item.id)" :placeholder="$lang.holdPlace.required"
+                                                :error="!checkpassword && item.id == currentindex"></gl-input>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                        </div>
+                        <div style="background-color: #fff;text-align: center;margin: 10px;">
+                            <span v-if="wifiId != item.id">
+                                <gl-btn type="modify" class="btn" :disabled="btnStatus" @click="changeClick(item,index)">{{t($lang.button.modify)}}</gl-btn>
+                            </span>
+                            <span v-else>
+                                <gl-btn type="modify" class="btn" @click="cancel(index)">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn type="purple" class="btn" @click="applyBtnClick(item)">{{t($lang.button.apply)}}</gl-btn>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div  class="tab-content" v-if="meshjudge" id="meshClient">
+            <div class="panel panel-default ">
+                <div class="panel-heading">
+                    <h4>
+                        <span class="circle active"></span>
+                        {{t('Mesh Clients')}}
+                    </h4>
+                </div>
+                <div class="panel-body panel-status">
+                    <!-- <div class="list-group-item alert-info">
+                         Lorem ipsum dolor sit amet consectetur adipisicing elit. In sunt odio voluptates magni temporibus consectetur, a dolore exercitationem error. Aspernatur.
+                    </div> -->
+                   <ul>
+                       <li class="meshconfig">
+                            <span class="meshflex-1">#</span>   
+                            <span class="meshflex-4">MAC</span>   
+                            <span class="meshflex-3">{{t('Status')}}</span>   
+                            <span class="meshflex-5">Mesh
+                            </span>  
+                        </li> 
+                       <!-- <li class="meshconfig" v-for="(item, index) in meshToodList" :key="index" data-toggle="collapse" :href="'#'+meshToodList.name">
+                            <span class="meshflex">{{index+1}}</span>   
+                            <span class="meshflex">{{item.mac}}</span>   
+                            <span class="meshflex">{{item.name}}</span> 
+                       </li>
+                       <li class="meshconfig"  class="collapse" :id="meshToodList.name">
+                            <span class="meshflex">3</span>   
+                            <span class="meshflex">2</span>   
+                            <span class="meshflex">1</span> 
+                       </li> -->
+                   </ul>
+                   <div v-for="(item, index) in meshToodList">
+                        <!-- Vpn list -->
+                        <span class="list-group-item  gl-padding-five disflex" data-toggle="collapse" :href="'#'+index+'gl_inet'">
+                            <span class="meshflex-1" style="color: #000">{{index+1}}</span>   
+                            <span class="meshflex-4">{{item.mac}}</span>
+                            <span class="meshflex-3">
+                                <span class="wlan-mesh-status" :class="{'wlan-mesh-active': item.online}"></span>
+                            </span>   
+                            <span class="meshflex-5">
+                                <span style="padding-left: 20px;">
+                                    {{t(item.name)}}
+                                </span>
+                                <button class="btn pull-right btn-xs">
+                                    <span class="fa fa-chevron-down"></span>
+                                </button>
+                            </span>  
+                        </span>
+                        <!-- change Vpn -->
+                        <div class="vpn-manage-body  collapse" :id="index+'gl_inet'">
+                            <span class="meshconfig" v-if="item.eth1 && item.ath1 && item.ath0 && item.eth1.length == '0' && item.ath1.length == '0' && item.ath0.length == '0'">
+                                    <span class="meshflex-1">{{t('No Data')}}</span>   
+                                    
+                            </span>
+                            <span class="meshconfig"  v-for="(data, idx) in item.ath0">
+                                    <span class="meshflex-1">{{idx+1}}</span>   
+                                    <span class="meshflex-4">{{data}}</span>   
+                                    <span class="meshflex-5">
+                                        2.4G
+                                    </span>  
+                            </span>
+                            <span class="meshconfig"  v-for="(data, idx) in item.ath1">
+                                    <span class="meshflex-1">{{idx+1+item.ath0.length}}</span>   
+                                    <span class="meshflex-4">{{data}}</span>   
+                                    <span class="meshflex-5">
+                                        5G
+                                    </span>  
+                            </span>
+                            <span class="meshconfig"  v-for="(data, idx) in item.eth1">
+                                    <span class="meshflex-1">{{idx+1+item.ath0.length+item.ath1.length}}</span>   
+                                    <span class="meshflex-4">{{data}}</span>   
+                                    <span class="meshflex-5">
+                                        {{t('Cable')}}
+                                    </span>  
+                            </span>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

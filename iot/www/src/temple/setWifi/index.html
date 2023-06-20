@@ -1,0 +1,159 @@
+<div class="row first-row-margin">
+    <div class="col-lg-12">
+        <ol class="breadcrumb">
+            <li>
+                <a @click="$router.push('internet')" style="text-transform: uppercase">{{t($lang.setWifi.internet)}}</a>
+            </li>
+            <li class="gl-active">{{t($lang.setWifi.wifi)}}</li>
+        </ol>
+        <div class="wifi-list" id="setWifiList">
+            <div id="buttonPanel" class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 style="display:inline-block;">
+                        <span class="circle" id="ScanwifiCircle"
+                            :class="{active:stainfo&&stainfo.success&&stainfo.ip}"></span>
+                        <span id="ScanwifiSSID"
+                            v-text="stainfo&&stainfo.success&&stainfo.ip?stainfo.ssid:'Wi-Fi'"></span>
+                    </h4>
+                    <gl-btn type="default" class="pull-right" @click="reScan" :disabled="btnMove">
+                        {{t($lang.setWifi.scan)}}</gl-btn>
+                </div>
+                <!-- <div class="alert" :class="[alertStatus=='info'?'alert-info':'alert-danger']" id="idScanWifiAlertMsg" v-text="t(alertInfo)">
+                </div> -->
+                <div class="panel-status panel-body" v-show="wifilist">
+                    <!-- SSID -->
+                    <div class="list-group-item clearfix setWifiBox" style="border-top: none"
+                        v-if="wifiName != 'Other...'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="wifiName == 'Other...' ? '网络类型' :$lang.label.ssid"
+                                style="text-transform: uppercase"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right set-select" style="min-width: 280px;max-width: 280px;">
+                            <gl-select :option="sortWifiData" :disabled="btnMove" optionName="ssid" showNum="8"
+                                class="setwifiSelect" v-model="wifiName" wifiIcon
+                                :stainfo="(stainfo.success  && stainfo.ip) ? stainfo.ssid : false"
+                                :encrypt="working.encrypt" :checkLang="true" otherWifi='true' @wifichange="changeWifi">
+                            </gl-select>
+                        </span>
+                    </div>
+                    <!-- Mode -->
+                    <!-- <div class="list-group-item clearfix setWifiBox" v-show="modeState!='EAP'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.label.mode"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right">
+                            <gl-select :option="mode" v-model="modeState"></gl-select>
+                        </span>
+                    </div> -->
+                    <!-- Ssid -->
+                    <div class="list-group-item clearfix setWifiBox" v-if="wifiName == 'Other...'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.label.ssid" style="text-transform: uppercase"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right"
+                            style="margin-bottom: 5px;min-width: 280px;max-width: 280px;">
+                            <gl-input v-model="otherSsid" :disabled="btnMove" type="text" class="set-input"></gl-input>
+                        </span>
+                    </div>
+                    <!-- 安全协议 -->
+                    <div class="list-group-item clearfix setWifiBox" v-if="wifiName == 'Other...'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.wlan.Security"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right set-select" style="min-width: 280px;max-width: 280px;">
+                            <gl-select v-if="router.model !='sf1200' && router.model !='sft1200'" :option="Compatible"
+                                :disabled="btnMove" v-model="securityVal" showNum="8" class="setwifiSelect"
+                                :checkLang="true"></gl-select>
+                            <gl-select v-else :option="sft1200List" :disabled="btnMove" v-model="securityVal"
+                                showNum="8" class="setwifiSelect" :checkLang="true"></gl-select>
+                        </span>
+                    </div>
+                    <div class="list-group-item clearfix setWifiBox" v-if="wifiName == 'Other...' && !ChannelStatus">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="t('Channel')"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right set-select" style="min-width: 280px;max-width: 280px;">
+                            <gl-select :option="otherDevice == '5G' ? channel5GList:channelList" :disabled="btnMove"
+                                v-model="channelVal" showNum="8" class="setwifiSelect" :checkLang="true"></gl-select>
+                        </span>
+                    </div>
+                    <!-- 连接类型 -->
+                    <div class="list-group-item clearfix setWifiBox" v-if="wifiName == 'Other...'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="t('Type')"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right set-select" style="min-width: 280px;max-width: 280px;">
+                            <gl-select :option="typeClass" :disabled="btnMove || !singleRouter" showNum="8"
+                                class="setwifiSelect" @change="changeType" :checkLang="true" v-model="otherDevice">
+                            </gl-select>
+                        </span>
+                    </div>
+                    <!-- userName -->
+                    <div class="list-group-item clearfix setWifiBox"
+                        v-show="modeState=='EAP' || securityVal == '802.1X EAP/WPA2' || securityVal == '802.1X EAP/WPA'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.label.userName"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right"
+                            style="margin-bottom: 5px;min-width: 280px;max-width: 280px;">
+                            <gl-input v-model="usname" :disabled="btnMove" type="text" class="set-input"></gl-input>
+                        </span>
+                    </div>
+                    <!-- Password -->
+                    <div class="list-group-item clearfix setWifiBox"
+                        v-show="curSelect.encrypt != 'none' || securityVal != 'OPEN'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.label.psw"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right"
+                            style="margin-bottom: 5px;min-width: 280px;max-width: 280px;">
+                            <gl-input :maxlength="64" v-model="psw" :disabled="btnMove" type="password" inputShow
+                                class="set-input">
+                            </gl-input>
+                        </span>
+                    </div>
+                    <!-- LAN IP -->
+                    <div class="list-group-item clearfix setWifiBox" v-show="modeState=='WDS'">
+                        <span class="pull-left setWifi-text">
+                            <gl-label :labelValue="$lang.label.lanip" style="text-transform: uppercase"></gl-label>
+                        </span>
+                        <span class="pull-right setWifi-right"
+                            style="margin-bottom: 5px;min-width: 280px;max-width: 280px;">
+                            <gl-input type="text" :disabled="btnMove" v-model="lanip" class="set-input"></gl-input>
+                        </span>
+                    </div>
+                    <!-- Remember  -->
+                    <div class="list-group-item clearfix setWifiBox">
+                        <span class="pull-left">
+                            <gl-label :labelValue="$lang.label.remember"></gl-label>
+                        </span>
+                        <span class="pull-right">
+                            <!-- <gl-tooltip :content="$lang.toolTip.remeber_net"> -->
+                            <gl-switch size="22px" theme="default" v-model="isRember" :disabled="btnMove"></gl-switch>
+                            <!-- </gl-tooltip> -->
+                        </span>
+                    </div>
+                    <div class="setWifiBox" style="text-align: center;padding: 10px;">
+                        <gl-btn v-if="router.model !='sf1200' && router.model !='sft1200'" type="text" type="default"
+                            :disabled="joinstate || btnMove || meshjudge" @click="join">
+                            {{t($lang.button.join)}}
+                            <span class="fa fa-spinner fa-pulse" v-show="btnMove"></span>
+                        </gl-btn>
+                        <gl-btn v-else type="text" type="default" :disabled="joinstate || btnMove || meshjudge"
+                            @click="joinForSf1200">
+                            {{t($lang.button.join)}}
+                            <span class="fa fa-spinner fa-pulse" v-show="btnMove"></span>
+                        </gl-btn>
+                    </div>
+                </div>
+            </div>
+            <div class="progress clsScanWifiProgress" v-show="scanDone==false">
+                <div class="progress-bar progress-bar-striped active" id="idScanwifiProgressBar" role="progressbar"
+                    :aria-valuenow="iProgress" aria-valuemin="0" aria-valuemax="100" :style="progressWidthObj"
+                    style="width:0;color: #fff!important">{{iProgress+'%'}}</div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+Package: gl-cloud-ui
+Version: 3.0.36-1
+Depends: libc, gl-util, libjson-c2, gl-mqtt, gl-ddns
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-cloud-ui
+SourceName: gl-cloud-ui
+Section: base
+Architecture: mips_24kc
+Installed-Size: 9193
+Description:  The firmware needs to be upgraded to 3.010 to support cloud management and dynamic DNS.
+ 

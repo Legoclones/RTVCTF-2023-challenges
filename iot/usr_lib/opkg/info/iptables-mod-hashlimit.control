@@ -1,0 +1,14 @@
+Package: iptables-mod-hashlimit
+Version: 1.8.3-1
+Depends: libc, iptables, kmod-ipt-hashlimit
+Source: package/network/utils/iptables
+SourceName: iptables-mod-hashlimit
+License: GPL-2.0
+Section: net
+Architecture: mips_24kc
+Installed-Size: 8405
+Description:  iptables extensions for hashlimit matching
+ 
+ Matches:
+ - hashlimit
+ 

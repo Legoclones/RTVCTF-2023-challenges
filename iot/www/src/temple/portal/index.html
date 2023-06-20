@@ -1,0 +1,70 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idMacClonePanel">
+            <div class="panel-heading">
+                <h4><span class="circle"  :class="{'active': activeStatus}"></span>
+                    {{t('Captive Portal')}}
+                </h4>
+            </div>
+            <div class="panel-body  ">
+                <div class="list-group panel-status">
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                       {{t('You can set up a captive portal to display a web page when a user connects to your Wi-Fi network.')}}
+                       <a href="https://docs.gl-inet.com/en/3/app/captive_portal/" target="_black"> &nbsp;{{t('Help')}}?</a>
+                        <div style="margin-top: 5px" v-if="!meshjudge">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t('If Guest network is disabled, captive portal function is unavailable.')}}</strong>
+                        </div>
+                        <div style="margin-top: 5px" v-if="meshjudge">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t('Note: The virtual network interface in the Mesh mode is set to Guest and does not take effect.')}}</strong>
+                        </div>
+                        <div style="margin-top: 5px">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t('Opening the captival portal will cause the block function to fail.')}}</strong>
+                        </div>
+                        <div style="margin-top: 5px" v-if="router.ipv6info && router.ipv6info.enable">
+                            <span class="fa fa-exclamation-circle" style="color: chocolate;"></span>
+                            <strong style="color: chocolate;">{{t('Note that the VPN policy does not apply to IPV6')}}</strong>
+                        </div>
+                    </div>
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left force_dns">
+                            {{t('Enable captive portal')}}
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn v-model="openPortal" size="22px" theme="default" @change="activeStatus=true"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist ">
+                        <div class="text-left pull-left">{{t('Virtual network interface')}}</div>
+                        <div class="list-input-field mactext">
+                            <span>{{getway}}</span>
+                            <!-- <gl-select :option="networkList" v-model="getway" checkLang @change="activeStatus=true" :disabled="disabledSelcet"></gl-select> -->
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist ">
+                        <div class="text-left pull-left">{{t('Lease time minutes (1-1440)')}}:</div>
+                        <div class="list-input-field">
+                            <gl-input v-model="onLineTime":placeholder="$lang.holdPlace.required" maxlength="4" @postValue="activeStatus=true"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist ">
+                        <div class="text-left pull-left">{{t('Forward URL after Authorization')}}</div>
+                        <div class="list-input-field">
+                            <gl-input v-model="cretification" :placeholder="t('Optional')" @postValue="activeStatus=true"></gl-input>
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                    <span class="list-group-item text-center">
+                        <gl-btn type="purple" @click="portalSetting" :disabled="applystatus || !activeStatus">{{t('Apply')}}
+                            <span class="fa fa-spinner fa-pulse" v-if="applystatus"></span>
+                        </gl-btn>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    

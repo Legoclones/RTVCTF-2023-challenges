@@ -1,0 +1,622 @@
+<div id="idClientsPanel">
+    <!-- No WLAN -->
+    <div class="row" id="NoClientsPanel" :class="{hide:!(!wlan5g&&!wlan24g&&!wire)}">
+        <div class="col-lg-12">
+            <div class="panel panel-default panel-client">
+                <div class="panel-heading">
+                    <h4>
+                        <span class="circle active"></span>{{t($lang.clients.noWlanct)}}.
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Get WLAN -->
+    <div class="row" id="HasClientPanel" :class="{hide:(!wlan5g&&!wlan24g&&!wire)}">
+        <div class="col-lg-12">
+            <div class="panel panel-default panel-client">
+                <div class="panel-heading">
+                    <h4 style="text-transform: uppercase">
+                        <span class="circle active"></span>
+                        {{t($lang.clients.clients)}}
+                    </h4>
+                    <a type="button" class="btn btn-default gli-btn-dark pull-right disabled hide" href="#">
+                        {{t($lang.clients.applyAll)}}
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content Widthscreen">
+                        <div class="list-group-item alert-info mb10">
+                            <div style="padding-right: 10px;">
+                                {{t($lang.clients.Enablespeed)}}
+                            </div>
+                            <div class="translate3">
+                                <gl-toggle-btn theme="default" size="32px" v-model="speedShow" @change="openSpeed($event)"
+                                    timer="true" showTimer="true"  class="btn-toggler" showon="true" :disabled="disabledToggleBtn"></gl-toggle-btn>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead v-if="router.model != 'sf1200'">
+                                <tr class="headTitle" v-if="speedShow && !activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t($lang.clients.brand)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 wifi-mac  text-center hidden-xs hidden-sm">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-2 col-sm-2 wifi-mac thTitle hidden-xs hidden-sm" style="padding-left: 30px;">{{t($lang.clients.CurrentRate)}}</th>
+                                    <th class="col-lg-2 col-md-2 wifi-mac  hidden-xs hidden-sm text-center">{{t($lang.clients.Traffic)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-4 client-list-block qosLocation">QoS</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-3 wifi-mac text-center">{{t($lang.clients.block)}}</th>
+                                </tr>
+                                <tr class="headTitle" v-else-if="speedShow && activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t($lang.clients.brand)}}</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-3 col-xs-3 wifi-mac  text-center hidden-xs hidden-sm">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-2 col-sm-2 col-sm-3 col-xs-2 wifi-mac thTitle hidden-xs hidden-sm" style="padding-left: 30px;">{{t($lang.clients.CurrentRate)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 col-xs-2 wifi-mac  hidden-xs hidden-sm text-center">{{t($lang.clients.Traffic)}}</th>
+                                    <th class="col-lg-3 col-md-2 col-sm-2 col-xs-2 wifi-name  text-center">{{ t('Action') }}</th>
+                                </tr>
+                                <tr  v-else-if="activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t($lang.clients.brand)}}</th>
+                                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-4 col-md-4 col-sm-4 wifi-mac hidden-lg hidden-md text-center">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm ">IP</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm ">MAC</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 wifi-name tex-limited  text-center">{{ t('Action') }}</th>
+                                </tr>
+                                <tr v-else> 
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t($lang.clients.brand)}}</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 wifi-mac hidden-lg hidden-md text-center">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm " >IP</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm " >MAC</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-3 wifi-mac  text-center">{{t($lang.clients.block)}}</th>
+                                </tr>
+                            </thead>
+                            <thead v-else>
+                                <tr class="headTitle" v-if="speedShow && !activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t('Status')}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 wifi-mac  text-center hidden-xs hidden-sm">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-2 col-sm-2 wifi-mac thTitle hidden-xs hidden-sm" style="padding-left: 30px;">{{t($lang.clients.CurrentRate)}}</th>
+                                    <th class="col-lg-2 col-md-2 wifi-mac  hidden-xs hidden-sm text-center">{{t($lang.clients.Traffic)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-4 client-list-block qosLocation">QoS</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-4 col-xs-3 wifi-mac text-center">{{t($lang.clients.block)}}</th>
+                                </tr>
+                                <tr class="headTitle" v-else-if="speedShow && activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t('Status')}}</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-3 col-xs-3 wifi-mac  text-center hidden-xs hidden-sm">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-2 col-sm-2 col-sm-3 col-xs-2 wifi-mac thTitle hidden-xs hidden-sm" style="padding-left: 30px;">{{t($lang.clients.CurrentRate)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 col-xs-2 wifi-mac  hidden-xs hidden-sm text-center">{{t($lang.clients.Traffic)}}</th>
+                                    <th class="col-lg-3 col-md-2 col-sm-2 col-xs-2 wifi-name  text-center">{{ t('Action') }}</th>
+                                </tr>
+                                <tr  v-else-if="activeQosBlock">
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t('Status')}}</th>
+                                    <th class="col-lg-4 col-md-4 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-4 col-md-4 col-sm-4 wifi-mac hidden-lg hidden-md text-center">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm ">IP</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm ">MAC</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-2 col-xs-2 wifi-name tex-limited  text-center">{{ t('Action') }}</th>
+                                </tr>
+                                <tr v-else>
+                                    <th class=" hidden-sm wifi-rank hidden-xs text-center padding_left">{{t('Status')}}</th> 
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-5 wifi-name tex-limited text-center">{{t($lang.clients.name)}}</th>
+                                    <th class="col-lg-2 col-md-2 col-sm-3 wifi-mac hidden-lg hidden-md text-center">{{t($lang.clients.ip_mac)}}</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm " >IP</th>
+                                    <th class="col-lg-3 col-md-3 wifi-mac text-center hidden-xs hidden-sm " >MAC</th>
+                                    <th class="col-lg-3 col-md-3 col-sm-4 col-xs-3 wifi-mac  text-center">{{t($lang.clients.block)}}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="clsWifiClientsList text-center">
+                                <tr v-if="wire && wire.length!=0">
+                                    <td colspan="7" class="nav_tips" v-if="!meshjudge">
+                                        <h5>{{t($lang.clients.WiredDevice)}}</h5>
+                                    </td>
+                                    <td colspan="8" class="nav_tips" v-else>
+                                        <h5>{{t($lang.clients.WiredDevice)}}</h5>
+                                    </td>
+                                </tr>
+                                <!--LAN 有线-->
+                                <tr class="clsLanClientsItem" v-for="(item, index) in wire">
+                                    <td v-if="router.model!='sf1200'"class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                        <gl-tooltip :content="item.vendor == 'glinet'?'GL.iNet' : merchant(item.vendor)">
+                                            <span class="projeckIcon" :style="{'background': colorReturn(item.vendor)}">{{product(item.vendor)}}</span>
+                                        </gl-tooltip>
+                                    </td>
+                                    <td v-else class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                        <span class="projeckIcon" style="background:#2bbbad;vertical-align: middle;"></span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-5 wifi-client-name tex-limited">
+                                        <span class="nameStyle hidden-xs hidden-sm">{{item.name}}</span>
+                                        <span class="nameStyle hidden-lg hidden-md">{{truncation(item.name,10),merchant(item.vendor)}}
+                                            
+                                        </span>
+                                        <br>
+                                        <span v-if="speedShow" class="hidden-lg hidden-md">{{item.ip}}</span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm" v-if="speedShow">
+                                        <span class="betsyLoad">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2" v-else>
+                                        <span class="betsyLoad hidden-lg hidden-md">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                        <span class="betsyLoad hidden-xs hidden-sm">
+                                            <span>{{item.ip}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 hidden-sm col-sm-3 hidden-xs trTitle" v-if="speedShow" style="padding-left: 30px;">
+                                        <div class="betsyLoadList">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSize(item.up)}}</span>
+                                                <span>&nbsp;{{bytesToSize(item.down)}}</span>
+                                            </div>
+                                            <div v-if="item.qos_up != 0 ||item.qos_down!=0" class="tipsList">
+                                                <gl-tooltip :content="getContent(item)"
+                                                    direction="top">
+                                                    <span class="fa fa-info-circle waiting" style="font-size: 16px"></span>
+                                                </gl-tooltip>
+                                            </div>
+                                           
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm trTitle" v-if="speedShow">
+                                        <div class="betsyLoadList" style="justify-content:center;">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSizeList(item.total_up)}}</span>
+                                                <span>&nbsp;{{bytesToSizeList(item.total_down)}}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm " v-else>
+                                        <span class="betsyLoad">
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-4" v-show="speedShow" v-if="!activeQosBlock">
+                                        <div>
+                                            <span class="setting_ringht">
+                                                <span class="fa fa-spinner fa-pulse" v-if="loadingIndex == index && clientType == item.iface && loadStatus && offlineStatus"></span>
+                                                <span v-else>
+                                                    <a @click="modifyClient(index,item)" class="btnset hidden-sm  hidden-xs">{{t($lang.clients.Set)}}</a>
+                                                    <a @click="modifyClient(index,item,'type')" class="hidden-lg hidden-md btnset">{{t($lang.clients.Manage)}}</a>
+                                                </span>
+                                                <span class="fa fa-spinner fa-pulse" style="margin-left: 5px;" v-if="loadingIndex1 == index && clientType1 == item.iface && loadReset && offlineReset"></span>
+                                                <a style="margin-top: 3px" class="hidden-xs hidden-sm btnset" @click="cancelQos(item,index)"
+                                                    v-else v-show="item.qos_down !=0 || item.qos_up !=0">{{t($lang.clients.Reset)}}</a>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-3 line_height " v-if="!activeQosBlock">
+                                        <div style="transform: translateY(3px);margin: auto;display: inline-block" class="text-center">
+                                            <gl-tg-btn size="22px" class="btn-toggler pull-left" v-model="item.blocked" :disabled="item.remote"
+                                                @change="block(item, index, wlan5g)" theme="default"></gl-tg-btn>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- 2.4g-->
+                                <tr v-if="wlan24g && wlan24g.length!=0">
+                                    <td colspan="7" class="nav_tips" v-if="!meshjudge">
+                                        <h5>{{t('2.4G Wireless Device')}}</h5>
+                                    </td>
+                                    <td colspan="8" class="nav_tips" v-else>
+                                        <h5>{{t('2.4G Wireless Device')}}</h5>
+                                    </td>
+                                </tr>
+                                <tr class="clsLanClientsItem" v-for="(item, index) in wlan24g">
+                                    <td v-if="router.model != 'sf1200'" class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                            <gl-tooltip :content="item.vendor == 'glinet'?'GL.iNet' : merchant(item.vendor)">
+                                                <span class="projeckIcon" :style="{'background': colorReturn(item.vendor)}">{{product(item.vendor)}}</span>
+                                            </gl-tooltip>
+                                    </td>
+                                    <td v-else class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                        <span class="projeckIcon" style="background:#2bbbad;vertical-align: middle;"></span>
+                                    </td>             
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-5 wifi-client-name tex-limited">
+                                        <span class="nameStyle hidden-xs hidden-sm">
+                                            {{truncation(item.name,20)}}
+                                            <span v-if="item.iface == '2.4G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <span class="nameStyle hidden-lg hidden-md">{{truncation(item.name,10)}}
+                                            <span v-if="item.iface == '2.4G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <br>
+                                        <span v-if="speedShow" class="hidden-lg hidden-md">{{item.ip}}</span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm" v-if="speedShow">
+                                        <span class="betsyLoad">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2" v-else>
+                                        <span class="betsyLoad hidden-lg hidden-md">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                        <span class="betsyLoad hidden-xs hidden-sm">
+                                            <span>{{item.ip}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 hidden-sm col-sm-3 hidden-xs trTitle" v-if="speedShow" style="padding-left: 30px;">
+                                        <div class="betsyLoadList">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSize(item.up)}}</span>
+                                                <span>&nbsp;{{bytesToSize(item.down)}}</span>
+                                            </div>
+                                            <div v-if="item.qos_up != 0 ||item.qos_down!=0" class="tipsList">
+                                                <gl-tooltip :content="getContent(item)"
+                                                    direction="top">
+                                                    <span class="fa fa-info-circle waiting" style="font-size: 16px"></span>
+                                                </gl-tooltip>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm trTitle" v-if="speedShow">
+                                        <div class="betsyLoadList" style="justify-content:center;">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSizeList(item.total_up)}}</span>
+                                                <span>&nbsp;{{bytesToSizeList(item.total_down)}}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm " v-else>
+                                        <span class="betsyLoad">
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-4" v-show="speedShow" v-if="!activeQosBlock">
+                                        <div>
+                                            <span class="setting_ringht">
+                                                <span class="fa fa-spinner fa-pulse" v-if="loadingIndex == index && clientType == item.iface && loadStatus && offlineStatus"></span>
+                                                <span v-else>
+                                                    <a @click="modifyClient(index,item)" class="btnset hidden-sm  hidden-xs">{{t($lang.clients.Set)}}</a>
+                                                    <a @click="modifyClient(index,item,'type')" class="hidden-lg hidden-md btnset">{{t($lang.clients.Manage)}}</a>
+                                                </span>
+                                                <span class="fa fa-spinner fa-pulse" style="margin-left: 5px;" v-if="loadingIndex1 == index && clientType1 == item.iface && loadReset && offlineReset"></span>
+                                                <a style="margin-top: 3px" class="hidden-xs hidden-sm btnset" @click="cancelQos(item,index)"
+                                                    v-else v-show="item.qos_down !=0 || item.qos_up !=0">{{t($lang.clients.Reset)}}</a>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-3 line_height " v-if="!activeQosBlock">
+                                        <div style="transform: translateY(3px);margin: auto;display: inline-block" class="text-center">
+                                            <gl-tg-btn size="22px" class="btn-toggler pull-left" v-model="item.blocked" 
+                                                @change="block(item, index, wlan5g)" theme="default" :disabled="item.remote"></gl-tg-btn>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- 5g-->
+                                <tr v-if="wlan5g && wlan5g.length!=0">
+                                    <td colspan="7" class="nav_tips" v-if="!meshjudge">
+                                        <h5>{{t('5G Wireless Device')}}</h5>
+                                    </td>
+                                    <td colspan="8" class="nav_tips" v-else>
+                                        <h5>{{t('5G Wireless Device')}}</h5>
+                                    </td>
+                                </tr>
+                                <tr class="clsLanClientsItem" v-for="(item, index) in wlan5g">
+                                    <td v-if="router.model != 'sf1200'" class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                            <gl-tooltip :content="item.vendor == 'glinet'?'GL.iNet' : merchant(item.vendor)">
+                                                <span class="projeckIcon" :style="{'background': colorReturn(item.vendor)}">{{product(item.vendor)}}</span>
+                                                </gl-tooltip>
+                                    </td>
+                                    <td v-else class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                        <span class="projeckIcon" style="background:#2bbbad;vertical-align: middle;"></span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-5 wifi-client-name tex-limited">
+                                        <span class="nameStyle hidden-xs hidden-sm">{{truncation(item.name,10)}}
+                                                <span v-if="item.iface == '5G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <span class="nameStyle hidden-lg hidden-md">
+                                                {{truncation(item.name,10)}}
+                                                <span v-if="item.iface == '5G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <br>
+                                        <span v-if="speedShow" class="hidden-lg hidden-md">{{item.ip}}</span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm" v-if="speedShow">
+                                        <span class="betsyLoad">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2" v-else>
+                                        <span class="betsyLoad hidden-lg hidden-md">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                        <span class="betsyLoad hidden-xs hidden-sm">
+                                            <span>{{item.ip}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 hidden-sm col-sm-3 hidden-xs trTitle" v-if="speedShow" style="padding-left: 30px;">
+                                        <div class="betsyLoadList">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSize(item.up)}}</span>
+                                                <span>&nbsp;{{bytesToSize(item.down)}}</span>
+                                            </div>
+                                            <div v-if="item.qos_up != 0 ||item.qos_down!=0" class="tipsList">
+                                                <gl-tooltip :content="getContent(item)"
+                                                    direction="top">
+                                                    <span class="fa fa-info-circle waiting" style="font-size: 16px"></span>
+                                                </gl-tooltip>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm trTitle" v-if="speedShow">
+                                        <div class="betsyLoadList" style="justify-content:center;">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSizeList(item.total_up)}}</span>
+                                                <span>&nbsp;{{bytesToSizeList(item.total_down)}}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm " v-else>
+                                        <span class="betsyLoad">
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-4" v-show="speedShow" v-if="!activeQosBlock">
+                                        <div>
+                                            <span class="setting_ringht">
+                                                <span class="fa fa-spinner fa-pulse" style="margin-left: 5px;" v-if="loadingIndex == index && clientType == item.iface && loadStatus && offlineStatus"></span>
+                                                <span v-else>
+                                                    <a @click="modifyClient(index,item)" class="btnset hidden-sm  hidden-xs">{{t($lang.clients.Set)}}</a>
+                                                    <a @click="modifyClient(index,item,'type')" class="hidden-lg hidden-md btnset">{{t($lang.clients.Manage)}}</a>
+                                                </span>
+                                                <span class="fa fa-spinner fa-pulse" v-if="loadingIndex1 == index && clientType1 == item.iface && loadReset && offlineReset"></span>
+                                                <a style="margin-top: 3px" class="hidden-xs hidden-sm btnset" @click="cancelQos(item,index)"
+                                                    v-else v-show="item.qos_down !=0 || item.qos_up !=0">{{t($lang.clients.Reset)}}</a>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-3" v-if="!activeQosBlock">
+                                        <div style="transform: translateY(3px);margin: auto;display: inline-block" class="text-center">
+                                            <gl-tg-btn size="22px" class="btn-toggler pull-left" v-model="item.blocked"
+                                                @change="block(item, index, wlan5g)" theme="default" :disabled="item.remote"></gl-tg-btn>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-if="onlineClientList && onlineClientList.length!=0">
+                                        <td colspan="7" class="nav_tips remove-td" v-if="!meshjudge">
+                                            <h5>{{t('Offline Device')}}</h5>
+                                            <gl-btn class="clientBtn del" :class="{delOff:speedShow ? false : true}" v-if="onlineClientList.length > 1 && router.model != 'sf1200'" type="modify" @click="removeOfflineClient" :disabled="deleteAllStatus">{{ t('Delete All') }}</gl-btn>
+                                            <gl-btn :class="{delOff:speedShow ? false : true}" v-if="onlineClientList.length > 1 && router.model === 'sf1200'" type="modify" @click="removeOfflineClient" :disabled="deleteAllStatus">{{ t('Delete All') }}</gl-btn>
+                                        </td>
+                                        <td colspan="8" class="nav_tips remove-td" v-else>
+                                            <h5>{{t('Offline Device')}}</h5>
+                                            <gl-btn class="clientBtn del" :class="{delOff:speedShow ? false : true}" v-if="onlineClientList.length > 1 && router.model != 'sf1200'" type="modify" @click="removeOfflineClient" :disabled="deleteAllStatus">{{ t('Delete All') }}</gl-btn>
+                                            <gl-btn class="clientBtn" :class="{delOff:speedShow ? false : true}" v-if="onlineClientList.length > 1 && router.model === 'sf1200'" type="modify" @click="removeOfflineClient" :disabled="deleteAllStatus">{{ t('Delete All') }}</gl-btn>
+                                        </td>
+                                </tr>
+                                <!-- 离线列表 -->
+                                <tr class="clsLanClientsItem" v-for="(item, index) in onlineClientList">
+                                    <td v-if="router.model != 'sf1200'" class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                            <gl-tooltip :content="item.vendor == 'glinet'?'GL.iNet' : merchant(item.vendor)">
+                                                <span class="projeckIcon" style="background:#8B8CA6">{{product(item.vendor)}}</span>
+                                            </gl-tooltip>
+                                    </td>
+                                    <td v-else class=" hidden-sm wifi-client-rank hidden-xs padding_left" style="line-height: 45px;">
+                                        <span class="projeckIcon" style="background:#8B8CA6;vertical-align: middle;"></span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-5 wifi-client-name tex-limited">
+                                        <span class="nameStyle hidden-xs hidden-sm">{{truncation(item.name,10)}}
+                                                <span v-if="item.iface == '5G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <span class="nameStyle hidden-lg hidden-md">
+                                                {{truncation(item.name,10)}}
+                                                <span v-if="item.iface == '5G_Guest'" class="guesticon">{{t('Guest')}}</span>
+                                        </span>
+                                        <br>
+                                        <span v-if="speedShow" class="hidden-lg hidden-md">{{item.ip}}</span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm" v-if="speedShow">
+                                        <span class="betsyLoad">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2" v-else>
+                                        <span class="betsyLoad hidden-lg hidden-md">
+                                            <span>{{item.ip}}</span>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                        <span class="betsyLoad hidden-xs hidden-sm">
+                                            <span>{{item.ip}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 hidden-sm col-sm-3 hidden-xs trTitle" v-if="speedShow" style="padding-left: 30px;">
+                                        <div class="betsyLoadList">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSize(item.up)}}</span>
+                                                <span>&nbsp;{{bytesToSize(item.down)}}</span>
+                                            </div>
+                                            <div v-if="item.qos_up != 0 ||item.qos_down!=0" class="tipsList">
+                                                <gl-tooltip :content="getContent(item)" direction="top">
+                                                    <span class="fa fa-info-circle waiting" style="font-size: 16px"></span>
+                                                </gl-tooltip>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm trTitle" v-if="speedShow">
+                                        <div class="betsyLoadList" style="justify-content:center;">
+                                            <div class="iconList">
+                                                <span class="fa fa-arrow-up margin_bottom"></span>
+                                                <span class="fa fa-arrow-down"></span>
+                                            </div>
+                                            <div class="qosList">
+                                                <span>&nbsp;{{bytesToSizeList(item.total_up)}}</span>
+                                                <span>&nbsp;{{bytesToSizeList(item.total_down)}}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 hidden-xs hidden-sm " v-else>
+                                        <span class="betsyLoad">
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-4" v-show="speedShow" v-if="!activeQosBlock">
+                                        <div>
+                                            <span class="setting_ringht">
+                                                <span class="fa fa-spinner fa-pulse" style="margin-left: 5px;" v-if="loadingIndex == index && clientType == item.iface && loadStatus && !offlineStatus"></span>
+                                                <span v-else>
+                                                    <a @click="modifyClient(index,item)" class="btnset hidden-sm  hidden-xs">{{t($lang.clients.Set)}}</a>
+                                                    <a @click="modifyClient(index,item,'type')" class="hidden-lg hidden-md btnset">{{t($lang.clients.Manage)}}</a>
+                                                </span>
+                                                <span class="fa fa-spinner fa-pulse" v-if="loadingIndex1 == index && clientType1 == item.iface && loadReset && !offlineReset"></span>
+                                                <a style="margin-top: 3px" class="hidden-xs hidden-sm btnset" @click="cancelQos(item,index)"
+                                                    v-else v-show="item.qos_down !=0 || item.qos_up !=0">{{t($lang.clients.Reset)}}</a>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-3 col-xs-3 line_height " v-if="!activeQosBlock">
+                                        <div style="transform: translateY(3px)" class="text-center block-delete">
+                                            <gl-tg-btn size="22px" class="btn-toggler pull-left" v-model="item.blocked" 
+                                                @change="block(item, index, wlan5g)" theme="default" :disabled="item.remote"></gl-tg-btn>
+                                            <a @click="removeOfflineClient(item.mac)" class="pull-right"><span class="glyphicon glyphicon-trash side-icon delete-client"></span></a>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </td>
+                                    <td class="col-lg-2 col-md-2 col-sm-2 col-xs-2 line_height " v-if="activeQosBlock">
+                                        <div style="transform: translateY(3px)" class="text-center block-delete">
+                                            <a @click="removeOfflineClient(item.mac)" class="text-center"><span class="glyphicon glyphicon-trash side-icon delete-client"></span></a>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <gl-modal :title="this.$lang.clients.qosspeed" :modalStatus="showModal">
+                            <!-- body -->
+                            <div class="modal-body innerModal">
+                                <div class="tab-content">
+                                    <div>
+                                        <!-- Upload -->
+                                        <span class="list-group-item list-group-narrow clearfix" style="border-top: 0;margin-top: -13px">
+                                            <span class="ssclientLabel ss_left qosupdate">
+                                                <gl-label>{{t($lang.clients.Upload)}}</gl-label>
+                                            </span>
+                                            <span class="ssclientLabel pull-right qosupdate1">
+                                                <gl-input type="text" class="widht50" v-model="quload" @input="inputload"></gl-input>&nbsp;&nbsp;KB/s
+                                            </span>
+                                        </span>
+                                        <!-- Download -->
+                                        <span class="list-group-item list-group-narrow clearfix" style="border-bottom:none;">
+                                            <span class="ssclientLabel ss_left qosupdate">
+                                                <gl-label>{{t($lang.clients.Download)}}</gl-label>
+                                            </span>
+                                            <span class="ssclientLabel pull-right qosupdate1">
+                                                <gl-input type="text" class="widht50" v-model="qdload" @input="inputload"></gl-input>&nbsp;&nbsp;KB/s
+                                            </span>
+                                        </span>
+                                        <!-- speed -->
+                                        <span class="list-group-item list-group-narrow clearfix" v-if="speedShow">
+                                            <div class="flexbox">
+                                                <span>
+                                                    <gl-label>{{t($lang.clients.CurrentRate)}}</gl-label>
+                                                </span>
+                                                <div class="flexmid">
+                                                    <span class="flexinner">
+                                                        <span class="fa fa-arrow-up margin_bottom"><span>&nbsp;{{bytesToSize(speedUp)}}</span></span>
+                                                        <span class="fa fa-arrow-down"><span>&nbsp;{{bytesToSize(speedDown)}}</span></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </span>
+                                        <!-- Traffic -->
+                                        <span class="list-group-item list-group-narrow clearfix" v-if="speedShow">
+                                            <div class="flexbox">
+                                                <span>
+                                                    <gl-label>{{t($lang.clients.Traffic)}}</gl-label>
+                                                </span>
+                                                <div class="flexmid">
+                                                    <span class="flexinner">
+                                                        <span class="fa fa-arrow-up margin_bottom"><span>&nbsp;{{bytesToSizeList(responseTrafficUp)}}</span></span>
+                                                        <span class="fa fa-arrow-down"><span>&nbsp;{{bytesToSizeList(responseTrafficDown)}}</span></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- footer -->
+                            <div class="modal-footer">
+                                <gl-btn class="btnl clientBtn" @click="hideModal" type="modify" v-if="responseUp == 0 && responseDown == 0 && quload == 0 && qdload ==0">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn class="btnl clientBtn" @click="hideModal" type="modify" v-else>{{t($lang.clients.Clear)}}</gl-btn>
+                                <gl-btn class="btnr clientBtn" @click="applyQos" type="purple">{{t($lang.button.apply)}}</gl-btn>
+                            </div>
+                        </gl-modal>
+                        <gl-modal :title="this.$lang.clients.qosspeed" :modalStatus="showModalMoblie" class="TwoModal">
+                            <!-- body -->
+                            <div class="modal-body innerModal">
+                                <div class="tab-content">
+                                    <div>
+                                        <!-- user -->
+                                        <span class="list-group-item list-group-narrow clearfix" style="border-top: 0;margin-top: -13px">
+                                            <span class="ssclientLabel ss_left qosupdate">
+                                                <span class="fa fa-arrow-up">&nbsp;</span>
+                                                <gl-label class="fontfamily">{{t($lang.clients.Upload)}}</gl-label>
+                                            </span>
+                                            <span class="ssclientLabel pull-right qosupdate1" style="display: flex;align-items: center;">
+                                                <gl-input type="text" class="widht50" v-model="quload" @input="inputload"></gl-input>&nbsp;&nbsp;KB/s
+                                            </span>
+                                        </span>
+                                        <!-- password -->
+                                        <span class="list-group-item list-group-narrow clearfix" style="border-bottom: 0;margin-bottom: -13px">
+                                            <span class="ssclientLabel ss_left qosupdate">
+                                                <span class="fa fa-arrow-down">&nbsp;</span>
+                                                <gl-label class="fontfamily">{{t($lang.clients.Download)}}</gl-label>
+                                            </span>
+                                            <span class="ssclientLabel pull-right qosupdate1" style="display: flex;align-items: center;">
+                                                <gl-input type="text" class="widht50" v-model="qdload" @input="inputload"></gl-input>&nbsp;&nbsp;KB/s
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- footer -->
+                            <div class="modal-footer">
+                                <gl-btn class="btnl clientBtn" @click="hideModal('page')" type="modify">{{t($lang.button.cancel)}}</gl-btn>
+                                <gl-btn class="btnr clientBtn" @click="applyQos('pc')" type="purple">{{t($lang.button.apply)}}</gl-btn>
+                            </div>
+                        </gl-modal>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

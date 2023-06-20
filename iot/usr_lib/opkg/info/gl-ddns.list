@@ -1,0 +1,8 @@
+/etc/95-ddns
+/etc/dynamic_dns_updater.sh
+/etc/ddns_services
+/lib/upgrade/keep.d/gl-ddns
+/etc/dynamic_dns_functions.sh
+/usr/lib/libddnsapi.so
+/usr/lib/gl/libddnsapi.so
+/etc/ddns.init

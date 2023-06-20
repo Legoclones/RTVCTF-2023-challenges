@@ -1,0 +1,11 @@
+Package: cgi-io
+Version: 19
+Depends: libc, libubox20191228, libubus20210603
+Source: feeds/packages/net/cgi-io
+SourceName: cgi-io
+License: GPL-2.0-or-later
+Section: net
+Maintainer: John Crispin <blogic@openwrt.org>
+Architecture: mips_24kc
+Installed-Size: 7459
+Description:  This package contains an cgi utility that is useful for up/downloading files

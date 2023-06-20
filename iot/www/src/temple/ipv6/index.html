@@ -1,0 +1,148 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idMacClonePanel">
+            <div class="panel-heading">
+                <h4><span class="circle active"></span>
+                    IPv6
+                </h4>
+                <!-- <gl-btn type="purple" class="pull-right moblieBtnLate" >
+              {{t($lang.button.apply)}}
+              <span class="fa fa-spinner fa-pulse" ></span>
+            </gl-btn> -->
+            </div>
+            <div class="panel-body">
+                <div class="list-group panel-status">
+                    <div class="alert list-group-item alert alert-info" id="idSetIpAlertMsg">
+                        <div>
+                            <span>{{ t('The current version of the firewall, VPN, terminal list, cloud service, etc., may not support IPv6 for the time being. Therefore, the IPv6 function can only be used for configuration within this interface.') }}</span>
+                        </div>
+                        <div style="margin-top: 5px">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{ t("Note: If you use functions of both VPN and IPv6 at the same time, it's likely to cause IPv6 data leakage.") }} </strong>
+                        </div>
+                    </div>
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left force_dns">{{t('Enable')}} IPv6
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-switch size="22px" theme="default" v-model='enabled'
+                                :disabled='disabledIpv6 || loadingStatus'></gl-switch>
+                        </div>
+                    </span>
+                    <div v-if="enabled">
+
+                        <span class="networksplit">wan</span>
+                        <span class="list-group-item slider-btn-inlist " style="    padding-bottom: 5px;">
+                            <div class="text-left pull-left" style="margin-top: 4px;">{{ t('Network Interface') }}</div>
+                            <div class="list-input-field ">
+                                <gl-select :option='networkInterfaceList' input v-model="interfaceVal" :disabled='loadingStatus' @getval="getEnableIPv6Val" @input="getEnableIPv6Val"></gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist" style="padding-bottom: 5px;border-bottom: 0;">
+                            <div class="text-left pull-left" style="margin-top: 4px;">{{ t('Address Type') }}</div>
+                            <div class="list-input-field">
+                                <gl-select :option='addressTypeList' v-model='addressVal' @getval="changeType" :disabled='loadingStatus || isModemReadOnly'>
+                                </gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <span v-if='addressVal=="Manual"'>
+                            <span class="list-group-item slider-btn-inlist">
+                                <div class="text-left pull-left" style="margin-top: 4px;">IP</div>
+                                <div class="list-input-field">
+                                    <gl-input v-model='wanIp' :disabled='loadingStatus'></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <span class="list-group-item slider-btn-inlist" style="margin-bottom: -1px;">
+                                <div class="text-left pull-left" style="margin-top: 4px;">{{ t('Gateway') }}</div>
+                                <div class="list-input-field">
+                                    <gl-input v-model='wanGateway' :disabled='loadingStatus'></gl-input>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+
+                        </span>
+                        <span class="list-group-item slider-btn-inlist" style="    padding-bottom: 5px;">
+                            <div class="text-left pull-left" style="margin-top: 4px;">{{ t('DNS acquisition method') }}</div>
+                            <div class="list-input-field">
+                                <gl-select :option='wandnsList' v-model='wanDnsSelect' :disabled='loadingStatus || isModemReadOnly'></gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <span class="list-group-item" v-show='wanDnsSelect =="Manual"'>
+                            <p class="text-left alert-red">
+                                <!-- <span class="fa fa-info-circle"></span> -->
+                                {{t($lang.dns.dnsInstructions)}}.
+                            </p>
+                            <br />
+                            <!-- DNS Server1 -->
+                            <div class=" input-group " id="inputDNS1Check">
+                                <span class="input-group-addon"> {{t($lang.dns.dnsServer)}}1</span>
+                                <gl-input :error="!wanDnsInputStatus1" v-model="wanDnsInputVal1"
+                                    :disabled='loadingStatus'>
+                                </gl-input>
+                            </div>
+                            <br />
+                            <!-- DNS Server2 -->
+                            <div class=" input-group" id="inputDNS2Check">
+                                <span class="input-group-addon">{{t($lang.dns.dnsServer)}}2</span>
+                                <gl-input :error="!wanDnsInputStatus2" v-model="wanDnsInputVal2"
+                                    :disabled='loadingStatus'>
+                                </gl-input>
+                            </div>
+                        </span>
+                        <span class="networksplit">lan</span>
+                        <span class="list-group-item slider-btn-inlist" style="    padding-bottom: 5px;">
+                            <div class="text-left pull-left" style="margin-top: 4px;">{{ t('Mode') }}</div>
+                            <div class="list-input-field">
+                                <gl-select :option='modeList' v-model='mode' :disabled='loadingStatus'></gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <div class=" input-group " id="inputDNS1Check" style="margin: 15px 10px"
+                            v-if="mode=='Static IPv6'">
+                            <span class="input-group-addon">{{ t('IPv6 Address') }}</span>
+                            <gl-input v-model="lanIpv6Val" :disabled='loadingStatus'>
+                            </gl-input>
+                        </div>
+                        <span class="list-group-item slider-btn-inlist" style="    padding-bottom: 5px;">
+                            <div class="text-left pull-left" style="margin-top: 4px;">{{ t('DNS acquisition method') }}</div>
+                            <div class="list-input-field">
+                                <gl-select :option='addressTypeList' v-model='lanDnsSelect' :disabled='loadingStatus'></gl-select>
+                            </div>
+                            <div class="clearfix"></div>
+                        </span>
+                        <span class="list-group-item" v-show='lanDnsSelect =="Manual"'>
+                            <p class="text-left alert-red">
+                                <!-- <span class="fa fa-info-circle"></span> -->
+                                {{t($lang.dns.dnsInstructions)}}.
+                            </p>
+                            <br />
+                            <!-- DNS Server1 -->
+                            <div class=" input-group " id="inputDNS1Check">
+                                <span class="input-group-addon"> {{t($lang.dns.dnsServer)}}1</span>
+                                <gl-input :error="!dnsInputStatus1" v-model="dnsInputVal1"
+                                    :disabled='loadingStatus'>
+                                </gl-input>
+                            </div>
+                            <br />
+                            <!-- DNS Server2 -->
+                            <div class=" input-group" id="inputDNS2Check">
+                                <span class="input-group-addon">{{t($lang.dns.dnsServer)}}2</span>
+                                <gl-input :error="!dnsInputStatus2" v-model="dnsInputVal2"
+                                    :disabled='loadingStatus'>
+                                </gl-input>
+                            </div>
+                        </span>
+                    </div>
+                    <span class="list-group-item text-center">
+                        <gl-btn type="purple" @click="setIpv6Config" :disabled='loadingStatus'>{{t('Apply')}}
+                            <span class="fa fa-spinner fa-pulse" v-if='loadingStatus'></span>
+                        </gl-btn>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>

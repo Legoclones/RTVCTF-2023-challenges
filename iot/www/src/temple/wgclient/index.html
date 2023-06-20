@@ -1,0 +1,575 @@
+<div class="row first-row-margin">
+    <div class="col-lg-12">
+        <div class="panel panel-default " v-cloak>
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle" :class="circleClass"></span>
+                    <span>{{t($lang.wgclient.wgClient)}}</span>
+                </h4>
+            </div>
+            <div class="alert alert-info idScanWifiAlertMsg vpn-server" v-if="showClient">
+                <div class="text-left alert-red" style="color: chocolate;">
+                    <span class="fa-exclamation-circle fa"></span>
+                    <span>{{t($lang.vpnclient.vpnclienttip)}}</span>
+                    <br>
+                    <span style="padding-left: 15px;">{{t($lang.vpnclient.vpnclienttips)}}</span>
+                    <br>
+                    <span v-if="showIpv6Mode6Info">
+                        <span class="fa-exclamation-circle fa"></span>
+                        <span>{{ t('The ipv6 tunnel for VPN is disabled when using ipv6 Native mode and this may cause data leak, please change ipv6 mode if you want to use VPN with ipv6.') }}</span>
+                        <br>
+                    </span>
+                    <a @click="$router.push('policy')" style="padding-left: 15px;" v-if="policyStatus">VPN policy
+                        enabled.</a>
+                </div>
+            </div>
+            <div class="panel-body panel-status">
+                <!-- add A New OpenVpn configuration -->
+                <div id="defaultStatus" v-if="!showClient" v-cloak>
+                    <br />
+                    <p>{{t('WireGuard® is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography.')}}
+                    </p>
+                    <!-- <ol>
+                        <li>{{t($lang.wgclient.addNewConfig)}}.</li>
+                        <li>{{t($lang.wgclient.donewgInfo)}}.</li>
+                        <li>{{t($lang.wgclient.setConfiguration)}}.</li>
+                        <li>{{t($lang.wgclient.onConnectBtn)}}.</li>
+                    </ol> -->
+                    <!-- <span>{{t($lang.wgclient.addwgConfig)}}.</span>
+                    <br>
+                    <span>{{t($lang.wgclient.wireguardisFun)}}</span> -->
+                    <p>{{t('To use WireGuard, you need either subscribe to a commercial VPN service or set up your own WireGuard Server.')}}
+                    </p>
+                    <p>{{t('Here is a list of commercial WireGuard Services that you can set up directly on the router:')}}
+                    </p>
+                    <div>
+                        <gl-select :option="modeSelection" v-model="selectPolicy" @change="changeStatusPolicy"
+                            style="width: 50px!important;vertical-align: middle;"></gl-select>&emsp;<span
+                            @click="openModal" class="skip-modal" style="color:#337ab7;">{{t('Now set Up')}} -></span>
+                    </div>
+                    <br />
+                    <p>{{t('To find more supported commercial WireGuard Service providers, please go to')}} <a
+                            href="https://www.gl-inet.com/solutions/vpn/" target="_blank">{{t('VPN on Router')}}.</a>
+                    </p>
+                    <p>{{t('You can also set up your WireGuard manually.')}}</p>
+                    <div>
+                        <gl-btn type="modify" class="rec gl-border" id="ModifyConfigs" @click="openModal"
+                            :disabled="btnstatus || download_config" style="margin:0">
+                            <span class="fa fa-plus"></span>
+                            <span>{{t('Set up WireGuard Manually')}}</span>
+                            <span class="fa fa-spinner fa-pulse" v-show="btnstatus || download_config"></span>
+                        </gl-btn>
+                    </div>
+                    <br />
+                    <p>{{t('You can also download our')}}<a href="https://www.gl-inet.com/solutions/app/"
+                            target="_black"> {{t('smartphone app')}} </a>{{t('to simplify the setup process.')}}</p>
+                    <!-- <span class="list-group-item  list-btnblock text-center panel-status glGp" style="border-bottom: none;padding: 10px 0px">
+                        <gl-btn type="modify" class="rec gl-border" id="ModifyConfigs" @click="openModal" :disabled="btnstatus" style="margin:0">
+                            <span class="fa fa-plus"></span>
+                            <span>{{t($lang.wgclient.addProfile)}}</span>
+                            <span class="fa fa-spinner fa-pulse" v-show="btnstatus"></span>
+                        </gl-btn>
+                    </span> -->
+                </div>
+                <!-- content -->
+                <div v-else>
+                    <ul class="nav nav-tabs nav-ul">
+                        <li class="active">
+                            <a href="#wgclient-status" data-toggle="tab">
+                                {{t($lang.wgclient.status)}}
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#wgclient-manage" data-toggle="tab">
+                                {{t($lang.wgclient.manage)}}
+                                <span class="hidden-xs"></span>
+                            </a>
+                        </li>
+                    </ul>
+                    </br>
+                    <div class="tab-content">
+                        <div id="wgclient-status" class="tab-pane fade in active applit-box">
+                            <!-- 是否可以访问本地网络 -->
+                            <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix"
+                                style="padding-bottom: 0;">
+                                <span style="margin-top: 8px;float: left;">
+                                    {{t('Allow Access Local Network')}}
+                                    <gl-tooltip
+                                        :content="t('If you turn on this function, server will be able to access your local files. Please use with caution.')"
+                                        direction="top">
+                                        <span class="fa fa-exclamation-circle"></span>
+                                    </gl-tooltip>
+                                </span>
+                                <span class="pull-right" style="margin-top: 5px;">
+                                    <gl-switch size="22px" theme="default" :disabled="blockStatus" v-model="access"
+                                        @onclick="blockclient" style="display: inline-block;"></gl-switch>
+                                </span>
+                            </span>
+                            <!-- Server -->
+                            <span class="list-group-item list-group-narrow clearfix">
+                                <div class="text-left pull-left ">
+                                    <span>{{t($lang.wgclient.server)}}</span>
+                                </div>
+                                <div class="list-input-field">
+                                    <gl-select :option="wgclients" optionName="name" @getval="getCheck"
+                                        :disabled="checkVpn || isRest" v-model="sectName" showNum="10" checkLang>
+                                    </gl-select>
+                                </div>
+                            </span>
+                            <!-- end -->
+                            <span id="connectingMsgSpan" class="list-group-item  panel-status vpn-status"
+                                v-show="cltstatus.code == 0 &&cltstatus.enable">
+                                <span id="SSDataSpan">
+                                    <div id="vpnIpAddrSpan" v-if="ipAdr || ipAdrv6" class="clearfix">
+                                        <span class="text-left">{{t($lang.vpnclient.ipAddress)}}</span>
+                                        <span class="pull-right" id="vpnIpAddr" style="text-align: right;"> {{ipAdr}}
+                                            <br> {{ ipAdrv6 }}</span>
+                                    </div>
+                                    <span class="text-left">{{t($lang.wgclient.upload)}} /
+                                        {{t($lang.wgclient.download)}}</span>
+                                    <span id="vpnData" class="pull-right">{{cltstatus.tx}} / {{cltstatus.rx}}</span>
+                                </span>
+                            </span>
+                            <span class="list-group-item panel-status vpn-status"
+                                v-show="cltstatus.log && cltstatus.log != '' && cltstatus.code == -203">
+                                <div style="padding: 5px;color: chocolate">
+                                    <span class="fa fa-exclamation-circle">&nbsp;{{cltstatus.log}}</span>
+                                </div>
+                            </span>
+                            <!-- 启动/关闭 -->
+                            <div style="margin: 15px 0px 0px;text-align: center">
+                                <gl-btn :type="typename" @click="toggleClient"
+                                    :disabled="checkVpn || isRest || addState">
+                                    {{t(btnControl)}}
+                                    <span class="fa fa-spinner fa-pulse" v-show="checkVpn ||isRest"></span>
+                                </gl-btn>
+                                <gl-btn type="default" @click="toggleClient('check')"
+                                    v-show="btnControl != 'Connect' && checkServer">
+                                    {{t($lang.wgclient.changeServer)}}
+                                </gl-btn>
+                            </div>
+                        </div>
+                        <div id="wgclient-manage" class="tab-pane fade applit-box">
+                            <div class="panel-status">
+                                <span class="list-group-item  vpn-setting-heading gl-padding-five ">
+                                    <span class="text-left">{{t($lang.wgclient.wgServer)}}</span>
+                                    <div class="pull-right" id="displayClientNum" style="padding-right: 8px;">
+                                        {{wgclients.length}}</div>
+                                </span>
+                                <div class="list-group panel-status" v-for="(item, index) in wgclients">
+                                    <!-- description -->
+                                    <span class="list-group-item  vpn-manage-heading vpn-client-header gl-padding-five"
+                                        data-toggle="collapse" :href="'#'+item.id">
+                                        <span class="text-left pull-left vpn-online-status">
+                                            <span class="circle"
+                                                :class="[item.name==cltstatus.main_server?circleClass:null]"></span>
+                                            <span>{{item.description}}</span>
+                                        </span>
+                                        <button class="btn pull-right btn-xs">
+                                            <span class="fa fa-chevron-down"></span>
+                                        </button>
+                                    </span>
+                                    <!-- 3.Manage Input -->
+                                    <div class="vpn-manage-body panel-collapse collapse" :id="item.id">
+                                        <h5 class="client_state">{{t($lang.wgclient.interface)}}</h5>
+                                        <!-- address -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.address"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input
+                                                    v-model.trim="item.address_ipv6 ? item.address + ',' + item.address_ipv6 : item.address"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- private_key -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.privateKey"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.private_key"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- listen_port -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.listenPort"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.listen_port"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- dns -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.dns"
+                                                    style="text-transform: uppercase"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.dns"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- mtu -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label labelValue="MTU" style="text-transform: uppercase"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.mtu"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <h5 class="client_state">{{t($lang.wgclient.peer)}}</h5>
+                                        <!-- public_key -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.publicKey"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.public_key"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- end_point -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.endPoint"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.end_point"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- allowed_ips -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.allowedIps"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.allowed_ips"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- persistent_keepalive -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label :labelValue="$lang.label.keepAlive"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.persistent_keepalive"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- private_key -->
+                                        <a class="list-group-narrow list-group-item clearfix gl-padding-five ">
+                                            <span class="ssclientLabel ss_left">
+                                                <gl-label labelValue="PresharedKey"></gl-label>
+                                            </span>
+                                            <span class="ssclientLabel s_right">
+                                                <gl-input v-model.trim="item.preshared_key"
+                                                    :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                </gl-input>
+                                            </span>
+                                        </a>
+                                        <!-- btn -->
+                                        <span class="list-group-item btn-group text-center">
+                                            <gl-btn type="modify" @click="removeClient(index)"
+                                                :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                {{t($lang.button.remove)}}</gl-btn>
+                                            <gl-btn type="purple" @click="modifyClient(index, item.name)"
+                                                :disabled="item.name==cltstatus.main_server &&  cltstatus.code != -204">
+                                                {{t($lang.button.apply)}}</gl-btn>
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="list-group-item  list-btnblock text-center panel-status glGp"
+                                    style="border-bottom: none;padding: 10px 0">
+                                    <gl-btn type="default" class="rec" @click="openModal"
+                                        :disabled="btnstatus || rmStatus" style="border-radius: 3px">
+                                        <span class="fa fa-plus"></span>
+                                        <span>{{t($lang.wgclient.addProfile)}}</span>
+                                        <span class="fa fa-spinner fa-pulse" v-show="btnstatus"></span>
+                                    </gl-btn>
+                                </span>
+                                <span class="list-group-item  list-btnblock text-center panel-status glGp"
+                                    style="border-bottom: none;padding: 10px 0">
+                                    <gl-btn type="modify" class="rec" @click="removeClient('all')" :disabled="rmStatus"
+                                        style="border-radius: 3px">
+                                        <span class="fa fa-trash btn-icon"></span>
+                                        <span>{{t($lang.wgclient.purgeProfiles)}}</span>
+                                        <span class="fa fa-spinner fa-pulse" v-show="rmStatus"></span>
+                                    </gl-btn>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- modal -->
+            <gl-modal :title="$lang.wgserver.addwgClient" :modalStatus="showModal">
+                <!-- body -->
+                <div class="modal-body">
+
+                    <!-- 第一个弹框 -->
+                    <div v-if="nextState">
+                        <ul class="nav nav-tabs" style="margin-bottom: 5px;">
+                            <!-- 1.Providers -->
+                            <li ref="clientUser" @click="changeWay('user')">
+                                <a>
+                                    {{t('Providers')}}
+                                </a>
+                            </li>
+                            <!-- 2.Configuration -->
+                            <li class="active" ref="clientpaste" @click="changeWay('paste')">
+                                <a>
+                                    {{t($lang.wgclient.configuration)}}
+                                </a>
+                            </li>
+                            <!-- 3.Manual Input -->
+                            <li @click="changeWay('enter')" ref="clientent">
+                                <a>
+                                    {{t($lang.wgclient.manualInput)}}
+                                    <span class="hidden-xs"></span>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- content -->
+                        <div class="tab-content">
+
+                            <!-- 1.Providers -->
+                            <div v-show="wayState == 'one'">
+                                <!-- type -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.provider"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right Provider" style="width: 218px">
+                                        <div style="float: left;">
+                                            <gl-select :option="modeSelection" v-model="selectPolicy"
+                                                style="min-width: 0px"></gl-select>
+                                        </div>
+                                        <a :href="'https://www.gl-inet.com/solutions/vpn/'+selectPolicy+'/'"
+                                            target="_blank"
+                                            style="float: right;display: block;padding: 10px 0 0 16px;">{{t('Setup guide')}}</a>
+                                    </span>
+                                </span>
+                                <!-- user -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label
+                                            :labelValue="selectPolicy == 'azirevpn' ? $lang.label.userName : $lang.label.account">
+                                        </gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="user"></gl-input>
+                                    </span>
+                                </span>
+                                <!-- password -->
+                                <span class="list-group-item list-group-narrow clearfix"
+                                    v-show="selectPolicy == 'azirevpn'">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.psw"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="psw" inputShow
+                                            type="password"></gl-input>
+                                    </span>
+                                </span>
+                            </div>
+                            <!-- 2.Configuration -->
+                            <div v-show="wayState == 'two'">
+                                <div class="borderTop">
+                                    <textarea v-model="ctlist" id="sourcejson" v-focus="wayState"
+                                        :placeholder="t($lang.holdPlace.manuallyEnter)"></textarea>
+                                </div>
+                            </div>
+                            <!-- 3.Manual Input -->
+                            <div v-show="wayState == 'three'">
+                                <h4 class="client_state">{{t($lang.wgclient.interface)}}</h4>
+                                <!-- address -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.address"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="address"
+                                            @focusValue="serachip" @blurValue="serachip"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkip">
+                                            {{t($lang.wgclient.invalidip)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkip">{{t($lang.wgclient.invalidip)}}</span>
+                                </span>
+                                <!-- private_key -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.privateKey"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="prtKey"
+                                            :error="errorPrt" @focusValue="serachprikey" @blurValue="serachprikey">
+                                        </gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkprikey">
+                                            {{t($lang.wgclient.invalidprikey)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkprikey">{{t($lang.wgclient.invalidprikey)}}</span>
+                                </span>
+                                <!-- listen_port -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.listenPort"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input v-model="port" @focusValue="searchport" @blurValue="searchport"
+                                            :placeholder="$lang.timerzone.Optional"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkport">
+                                            {{t($lang.wgclient.invalidport)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkport">{{t($lang.wgclient.invalidport)}}</span>
+                                </span>
+                                <!-- dns -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.dns" style="text-transform: uppercase">
+                                        </gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input v-model="dns" @focusValue="searchdns" @blurValue="searchdns"
+                                            :placeholder="$lang.timerzone.Optional"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkdns">
+                                            {{t($lang.wgclient.invaliddns)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkdns">{{t($lang.wgclient.invaliddns)}}</span>
+                                </span>
+                                <!-- mtu -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label labelValue="MTU (Default:1420)"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input v-model="mtu" @focusValue="searchmtu" @blurValue="searchmtu"
+                                            :placeholder="$lang.timerzone.Optional"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkmtu">Invalid MTU</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkmtu">Invalid MTU</span>
+                                </span>
+                                <h4 class="client_state">{{t($lang.wgclient.peer)}}</h4>
+                                <!-- public_key -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.publicKey"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="pubKey"
+                                            :error="errorPub" @focusValue="serachpubkey" @blurValue="serachpubkey">
+                                        </gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkpubkey">
+                                            {{t($lang.wgclient.invalidpubkey)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkpubkey">{{t($lang.wgclient.invalidpubkey)}}</span>
+                                </span>
+                                <!-- end_point -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.endPoint"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="point"
+                                            @focusValue="serachpoint" @blurValue="serachpoint"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkpoint">
+                                            {{t($lang.wgclient.invalidpoint)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkpoint">{{t($lang.wgclient.invalidpoint)}}</span>
+                                </span>
+                                <!-- allowed_ips -->
+                                <span class="list-group-item list-group-narrow clearfix" id="allowedIpsAnimate">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label :labelValue="$lang.label.allowedIps"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.holdPlace.required" v-model="ips"
+                                            @focusValue="serachIPs" @blurValue="serachIPs"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checkIPs">
+                                            {{t($lang.wgclient.invalidips)}}</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checkIPs">{{t($lang.wgclient.invalidips)}}</span>
+                                </span>
+                                <!-- private_key -->
+                                <span class="list-group-item list-group-narrow clearfix">
+                                    <span class="ssclientLabel ss_left">
+                                        <gl-label labelValue="PresharedKey"></gl-label>
+                                    </span>
+                                    <span class="ssclientLabel s_right">
+                                        <gl-input :placeholder="$lang.timerzone.Optional" v-model="sharedKey"
+                                            :error="errorPrt" @focusValue="serachsharedKey"
+                                            @blurValue="serachsharedKey"></gl-input>
+                                        <div style="color: red;margin: 5px 0 -10px 0px;"
+                                            class="text-center visible-xs visible-sm" v-if="!checksharedKey">Invalid
+                                            PresharedKey</div>
+                                    </span>
+                                    <span class="pull-right visible-lg visible-md" style="padding: 10px;color: red"
+                                        v-if="!checksharedKey">Invalid PresharedKey</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 第二个弹框 -->
+                    <!-- name -->
+                    <span class="list-group-item list-group-narrow clearfix" v-else>
+                        <span class="ssclientLabel ss_left">
+                            <gl-label :labelValue="$lang.label.name"></gl-label>
+                        </span>
+                        <span class="ssclientLabel s_right">
+                            <gl-tooltip>
+                                <gl-input :placeholder="$lang.holdPlace.required" v-model="nmInput"></gl-input>
+                            </gl-tooltip>
+                        </span>
+                    </span>
+
+                </div>
+
+                <!-- footer -->
+                <div class="modal-footer">
+                    <gl-btn class="btnl clientBtn" type="modify" @click="closeModal">{{t($lang.button.cancel)}}</gl-btn>
+                    <gl-btn class="btnr clientBtn" type="purple" @click="addctList" v-show="nextState"
+                        :disabled="interStatus">
+                        {{t($lang.button.next)}}
+                        <span class="fa fa-spinner fa-pulse" v-show="interStatus"></span>
+                    </gl-btn>
+                    <gl-btn class="btnr clientBtn" type="purple" @click="addNext" v-show="!nextState"
+                        :disabled="nextSts">{{t($lang.button.add)}}</gl-btn>
+                </div>
+            </gl-modal>
+        </div>
+    </div>
+</div>

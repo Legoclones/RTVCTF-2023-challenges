@@ -1,0 +1,11 @@
+Package: libubus-lua
+Version: 2021-07-01-38c7fdd8-1
+Depends: libc, libubus20210603, liblua5.1.5
+Source: package/system/ubus
+SourceName: libubus-lua
+License: LGPL-2.1
+Section: libs
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 6508
+Description:  Lua binding for the OpenWrt RPC client

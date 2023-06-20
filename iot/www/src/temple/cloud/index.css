@@ -1,0 +1,258 @@
+#myCheck+label {
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #d3d3d3;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: text-bottom;
+    line-height: 20px;
+}
+
+#myCheck:checked+label {
+    background-color: #eee;
+}
+
+#myCheck:checked+label:after {
+    content: "\2714";
+}
+
+#myChecks+label {
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #d3d3d3;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: text-bottom;
+    line-height: 20px;
+}
+
+#myChecks:checked+label {
+    background-color: #eee;
+}
+
+#myChecks:checked+label:after {
+    content: "\2714";
+}
+
+#idCloudPanel .outBox .select-drop-down {
+    width: 0%;
+    margin: 10px 0px 0px 0px;
+}
+
+.btnApply {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 5px;
+}
+
+.openDsEn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer_btn {
+    border-top: none;
+    max-width: 620px;
+}
+
+.checkOpen {
+    transform: translateY(7px);
+    margin-left: 20px;
+}
+
+.tranfrom {
+    padding: 0;
+    transform: translateY(3px)
+}
+
+.checksections {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.pr_10 {
+    padding-right: 10px;
+}
+
+.checksection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.ptmb_5 {
+    padding-top: 5px;
+    margin-bottom: -5px;
+}
+
+.border-none {
+    border-bottom: none;
+}
+
+#idCloudPanel .list-group-item:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#idCloudPanel p {
+    color: #333 !important
+}
+
+#CloudForwards {
+    min-height: 243px;
+}
+
+#ddnsForwards {
+    min-height: 239px;
+}
+
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+
+.slide-fade-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+}
+.borderskyblue {
+    animation: glow 800ms ease-out infinite alternate;
+}
+
+@keyframes glow {
+    0% {
+        border-color: #ffffff;
+    }
+
+    100% {
+        border-color: skyblue
+    }
+}
+.gaojing{
+    color: rgb(222, 55, 25)
+}
+#idCloudPanel .modal-body{
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+#idCloudPanel .modal-body.log_modal{
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+#idCloudPanel .gl-modal{
+    max-width: 510px;
+}
+#idCloudPanel .main {
+    width: 100%;
+    height: auto;
+    padding-top: 140px;
+    
+}
+
+#idCloudPanel .loading {
+    width: 150px;
+    height: 15px;
+    margin: 0 auto;
+    margin-top: 90px;
+}
+
+#idCloudPanel .loading span {
+    display: inline-block;
+    width: 15px;
+    height: 100%;
+    /* border-radius: 20%;  */
+    /* transform-origin: right bottom; */
+    margin-right: 5px;
+    background: #66cccc;
+    animation: load 1.3s ease infinite;
+}
+#idCloudPanel .loading span:last-child {
+    margin-right: 0px;
+}
+
+@keyframes load {
+    0% {
+        opacity: 1;
+        transform: scale(1.2);
+        /*  */
+    }
+    
+    100% {
+        opacity: .2;
+        transform: scale(0);
+        /* opacity: 0; */
+        /* transform: rotate(90deg); */
+    }
+}
+
+#idCloudPanel .loading span:nth-child(1) {
+    -webkit-animation-delay: 0.13s;
+}
+
+#idCloudPanel .loading span:nth-child(2) {
+    -webkit-animation-delay: 0.26s;
+}
+
+#idCloudPanel .loading span:nth-child(3) {
+    -webkit-animation-delay: 0.39s;
+}
+
+#idCloudPanel .loading span:nth-child(4) {
+    -webkit-animation-delay: 0.52s;
+}
+
+#idCloudPanel .loading span:nth-child(5) {
+    -webkit-animation-delay: 0.65s;
+}
+#idCloudPanel .loading span:nth-child(6) {
+    -webkit-animation-delay: 0.78s;
+}
+.lookupip_fred {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+}
+.lookupip_img{
+    width: 100%;
+    min-height: 100px
+}
+.lookupip_img.analysiserror {
+    background: url(/src/static/images/network_map-Extender+WDS-03.jpg)  no-repeat center center;
+    background-size: 75%;
+}
+.lookupip_img.analysissuccess {
+    background: url(/src/static/images/network_map-router+WISP-01.jpg)  no-repeat center center;
+    background-size: 75%;
+}
+.cursor_fred{
+    cursor: no-drop;
+}
+#idCloudPanel .gl-loading::before{
+    margin-top: -20px
+}
+ .vodal-dialog > .vodal-dialogBody p:nth-child(2){
+    font-weight: 600
+}
+ .vodal-dialog > .vodal-dialogBody p:nth-child(3){
+    font-weight: 600
+ }
+/* 
+@media screen and (max-width: 768px){
+    #idCloudPanel .modal-body.log_modal {
+        max-height: 350px!important;
+    } 
+
+} */

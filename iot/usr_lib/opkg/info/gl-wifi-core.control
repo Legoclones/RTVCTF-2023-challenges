@@ -1,0 +1,9 @@
+Package: gl-wifi-core
+Version: 3.0.226-1
+Depends: libc, gl-util
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-wifi-core
+SourceName: gl-wifi-core
+Section: base
+Architecture: mips_24kc
+Installed-Size: 23693
+Description:  

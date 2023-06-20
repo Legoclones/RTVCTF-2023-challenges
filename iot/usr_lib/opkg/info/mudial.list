@@ -1,0 +1,5 @@
+/usr/lib/libmudial.so
+/etc/init.d/mudial
+/usr/lib/gl/libmudial.so
+/usr/share/mudial/mudial-mwan3.config
+/etc/config/mudial

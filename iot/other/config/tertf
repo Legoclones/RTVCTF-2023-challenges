@@ -1,0 +1,2 @@
+config service 'general'
+	option terminal_update_interval '14400'

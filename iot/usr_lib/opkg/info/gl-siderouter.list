@@ -1,0 +1,7 @@
+/usr/lib/libsiderouterapi.so
+/etc/siderouter.fw
+/etc/init.d/siderouter
+/etc/config/siderouter
+/etc/hotplug.d/iface/18-siderouter
+/usr/bin/lancover
+/usr/lib/gl/libsiderouterapi.so

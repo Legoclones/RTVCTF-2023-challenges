@@ -1,0 +1,11 @@
+Package: gl-crond
+Version: 3.0.4-1
+Depends: libc, libubox20191228, libubus20210603, libjson-c2, gl-util
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-crond
+SourceName: gl-crond
+Section: base
+Architecture: mips_24kc
+Installed-Size: 5556
+Description:  A framework for timing task, you can register or unregister their task to this
+ framework via ubus. Task can be written in shell or C, you just need to write 
+ task, glcrond will dispatch your task regularly when you register to it.

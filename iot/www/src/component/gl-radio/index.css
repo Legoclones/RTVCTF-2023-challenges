@@ -1,0 +1,38 @@
+.ui-radio{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #4693fe;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+  }
+  .ui-radio.disabled{
+    border-color: #ccc;
+  }
+  .ui-radio::after{
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    margin: -7px 0 0 -7px;
+    background-color: #4693fe;  
+    transition: all .5s ease;
+    opacity: 0;
+    transform: scale(0);
+  }
+  .ui-radio.disabled::after{
+    background-color: #ccc;
+  }
+  .ui-radio.checked::after {
+     opacity: 1;
+     transform: scale(1);
+  }
+  .ui-radio input[type=radio]{
+    opacity: 0;
+    margin: 0;
+  }

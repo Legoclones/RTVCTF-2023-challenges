@@ -1,0 +1,12 @@
+Package: lighttpd-mod-expire
+Version: 1.4.48-2
+Depends: libc, lighttpd
+Source: feeds/gli_pub/lighttpd
+SourceName: lighttpd-mod-expire
+License: BSD-3c
+LicenseFiles: COPYING
+Section: net
+Maintainer: W. Michael Petullo <mike@flyn.org>
+Architecture: mips_24kc
+Installed-Size: 3943
+Description:  Expire module

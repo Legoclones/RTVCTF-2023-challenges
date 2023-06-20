@@ -1,0 +1,114 @@
+<div class="row  col-lg-12" id="idPolicyPanel" v-cloak>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tabpolicyroute1">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>
+                        <span class="circle clsHasNewVersion" :class="{'active':activeStutas}"></span>
+                        {{t('VPN Policies')}}
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content panel-status">
+                        <div id="tabononepolicy">
+                            <!-- 开启策略路由 -->
+                            <span class="list-group-item slider-btn-inlist">
+                                <div class="text-left force_dns">{{t('Enable VPN Policy')}}
+                                </div>
+                                <div class="pull-right btn-toggler-right">
+                                    <gl-tg-btn size="22px" v-model="enablePolicy" theme="default" @change="ShowStatus=false"></gl-tg-btn>
+                                </div>
+                            </span>
+                            <span class="list-group-item slider-btn-inlist" v-if="enablePolicy">
+                                <div class="text-left force_dns">{{t('Use VPN for guest network')}}
+
+                                </div>
+                                <div class="pull-right btn-toggler-right">
+                                    <gl-tg-btn size="22px" v-model="guestPolicy"  theme="default" @change="ShowStatus=false"></gl-tg-btn>
+                                </div>
+                            </span>
+                            <!-- / -->
+                            <span class="list-group-item slider-btn-inlist" v-if="enablePolicy">
+                                <div class="text-left force_dns">{{t('Use VPN for all processes on the router')}}. <a href="https://docs.gl-inet.com/en/3/app/vpn_policies/" target="_blank">{{t('What is this')}}?</a></div>
+                                <div class="pull-right btn-toggler-right">
+                                    <gl-tg-btn size="22px" v-model="localPolicy" theme="default" @change="ShowStatus=false"></gl-tg-btn>
+                                </div>
+                            </span>
+                            <!-- /? -->
+                            <span class="list-group-item slider-btn-inlist selectPdb">
+                                <div class="text-left pull-left">{{t('Please Choose Policy')}}</div>
+                                <div class="list-input-field">
+                                    <gl-select :option="modeSelection" v-model="selectPolicy" @change="changeStatusPolicy"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+                            <span class="list-group-item slider-btn-inlist selectPdb">
+                                <div class="text-left pull-left">{{t('Please Choose Rules')}}</div>
+                                <div class="list-input-field">
+                                    <gl-select :option="whiteBlackList" v-model="whiteBlackVal" @change="changeStatus"></gl-select>
+                                </div>
+                                <div class="clearfix"></div>
+                            </span>
+
+                        </div>
+                        <span class="list-group-item panel-status" style="border: none;">
+                            <div class="Widthscreen ">
+                                <table class="table table-hover class table-bordered text-center tableStyle">
+                                    <thead class="headColor pre-scrollable ">
+                                        <tr>
+                                            <th class="text-center col-xs-6 col-lg-9 col-sm-6 col-md-6 theadThBorder">
+                                                {{isbypass}}    
+                                            </th>
+                                            <th class="text-center col-xs-6 col-lg-3 col-sm-6 col-md-6 theadThBorder">{{t('Action')}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="secondPort">
+                                        <tr class="add_input" >
+                                            <td class="col-lg-9 col-sm-6 col-md-6 col-xs-6" :class="{'selectPdb':checkMacOrDomain}">
+                                                <gl-select searchip showNum="5" v-if="checkMacOrDomain" v-model="macSelectVal" :option="clientList" input placeholder="e.g. 24:F0:94:5C:8E:F9"  @getval="getValue" @postValue="getValue" @keyup.enter.native="addListPolicy"></gl-select>
+                                                <gl-input placeholder="e.g. google.com | 192.168.1.1 | 192.168.1.0/24" v-model="domainInputVal" v-else  @postValue="ShowStatus = false" @keyup.enter.native="addListPolicy"></gl-input>
+                                            </td>
+                                            <td class="col-lg-9 col-sm-6 col-md-6 col-xs-6 pdPolicy text-center" :class="{'selectPdb':checkMacOrDomain}" >
+                                                <a class="btnset" @click="addListPolicy">{{t('Add')}}</a>
+                                            </td>
+                                        </tr>
+                                        <tr class="add_input" v-for="(item, index) in isRenderList">
+                                            <td class="policytd">
+                                                <span>{{item.item}}</span>
+                                                <span>{{item.name}}</span>
+                                            </td>
+                                            <td class="pdPolicy">
+                                                <a class="btnset" @click="delectItemVpn(index)">{{t('Delete')}}</a>
+                                            </td>
+                                        </tr>
+                                        <!-- <tr v-if="!isGoStatus">
+                                            <td colspan="7">
+                                                    Others
+                                            </td>
+                                        </tr> -->
+                                        <tr >
+                                            <td colspan="7" v-if="isRenderList.length == 0">
+                                                    {{checkMacOrDomain ? t('All Mac Address') : t('All Website')}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </span>
+                        <span class="list-group-item text-center bdbottom applyPolicy" >
+                            <div class="list-group-item alert-info" style="margin-bottom: 10px;word-wrap: break-word" v-if="!checkMacOrDomain">
+                                    <span>{{t('If you want your Domain-based policy take effect immediatelly, you need to clear your DNS cache.')}} <a href="https://docs.gl-inet.com/en/3/app/vpn_policies/#clear-dns-cache" target="_blank">Help?</a></span>
+                            </div>
+                            <gl-btn type="purple" @click='submitApplyList' :disabled="loadingStatus || ShowStatus">
+                                {{t('Apply')}}
+                                <span class="fa fa-spinner fa-pulse" v-if="loadingStatus">
+                            </gl-btn>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

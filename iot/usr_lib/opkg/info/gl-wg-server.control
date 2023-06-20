@@ -1,0 +1,9 @@
+Package: gl-wg-server
+Version: 3.0.99-2
+Depends: libc, libjson-c2, gl-util, wireguard, resolveip, curl, ca-bundle, ca-certificates
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-wg
+SourceName: gl-wg-server
+Section: base
+Architecture: mips_24kc
+Installed-Size: 16475
+Description:  wireguard endpoint api for gl-inet.

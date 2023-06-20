@@ -1,0 +1,46 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idDNSPanel">
+            <div class="panel-heading">
+                <h4 style="max-width: 57%">
+                    <span class="circle active"></span>
+                    {{ '旁路由模式' }}
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="applystatus" id="idApplyBtn"
+                    @click="applysiderouter">{{t($lang.button.apply)}}</gl-btn>
+            </div>
+            <div class="panel-body">
+                <div class="list-group panel-status">
+                    <div class="alert list-group-item alert alert-info" id="idSetIpAlertMsg">
+                    <div><span>{{ '旁路由模式是一种特殊的网络连接方式，在旁路由模式下，您只需要将路由器正常连接到一个已存在的局域网中即可对已存在的局域网进行扩展，而不需要对已存在的局域网做任何修改。' }}</span>
+                            <br>
+                            <br><strong>{{ "物理连接方式：" }} </strong>
+                            <span>{{ '将WAN口连接到主路由器的LAN口。' }}</span>
+                            <br><strong>{{ "连接测试：" }} </strong>
+                            <span>{{ '已存在局域网中的设备IP地址和DNS设置不会发生任何变化，但数据流会先经过旁路由，然后到达主路由，可以用tracerout等工具检查。' }}</span>
+                        
+                        <div style="margin-top: 10px">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{ "1. 该功能目前处于测试阶段，使用过程中遇到问题可以到"}}</strong>
+                            <strong><a href='https://forum.gl-inet.cn/forum.php?mod=viewthread&tid=116&extra=page%3D1' target="_black" >{{ 'GL.iNet中文论坛' }}</a></strong>
+                            <strong>{{ "请求帮助。" }} </strong>
+                            <br><span class="fa fa-exclamation-circle"></span>
+                            <strong>{{ "2. 启用旁路由模式后，设备的WAN口会处于完全开放状态，请确认已存在局域网的安全性。"}}</strong>
+                        </div>
+                    </div>
+                </div>
+                        <span class="list-group-item slider-btn-inlist">
+                            <div  style="margin-top: 20px" class="text-left ">{{ '启用旁路由模式' }}
+                                <gl-tooltip :content="t('是否启用旁路由模式')" direction="top">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </gl-tooltip>
+                            </div>
+                            <div class="pull-right btn-toggler-right">
+                                <gl-tg-btn size="22px" theme="default" v-model="Enable"
+                                    @onclick="checkBtn"></gl-tg-btn>
+                            </div>
+                        </span>
+            </div>
+        </div>
+    </div>
+</div>

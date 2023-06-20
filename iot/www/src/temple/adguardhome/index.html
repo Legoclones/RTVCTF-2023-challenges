@@ -1,0 +1,209 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idDNSPanel">
+            <div class="panel-heading">
+                <h4 style="max-width: 57%">
+                    <span class="circle active"></span>
+                    AdGuardHome
+                </h4>
+                <!-- <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="applystatus" id="idApplyBtn"
+                    @click="applyAGH">{{t($lang.button.apply)}}</gl-btn> -->
+                <!-- <gl-tg-btn size="39px" class="btn-toggler pull-right" theme="default"></gl-tg-btn> -->
+
+            </div>
+            <div class="panel-body" style="padding: 0;">
+                <div style="margin: 10px;">
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                        {{ t("AdGuard Home is a network-wide software for blocking ads & tracking.After you set it up, it'll cover ALL your home devices, and you don't need any client-side software for that.This page gets statistics through the API provided by AdguardHome.") }}
+                        <br>
+                        {{ t('If you need to do advanced configuration for AdguardHome, please go to the') }}
+
+                        <span><a :href="hostname" target="_black">
+                                &nbsp;{{ t('Settings Page') }}</a></span>.
+                    </div>
+                </div>
+                <div class="dashboardBox alert-info">
+                    <span style="display: flex;justify-content: space-between; align-items: center;flex: 1;">
+                        <span class="btn-outline-primary" @click="refresh" >{{ t('Refresh') }}</span>
+                        <span style="padding-right: 10px;">
+                            {{ t('Enable the AdGuardHome process') }}
+                        </span>
+                    </span>
+
+                    <div class="translate3">
+
+                        <gl-tg-btn theme="default" size="32px" class="btn-toggler" v-model="isEnable"
+                            @change='setConfig' :disabled="isDisabled"></gl-tg-btn>
+                    </div>
+                </div>
+                <div class="dashboardline"></div>
+                <div v-if="!isLoading" class="dashboardinfo">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-sm-12 col-lg-3 col-xs-12 col-md-6" style="padding: 0;">
+                                <div class="card card-full">
+                                    <div class="card-warp">
+                                        <div class="card-body-stats">
+                                            <div class="text-blue dashboardflex">
+                                                <span>{{numDnsQueries?numDnsQueries:'0'}}</span>
+                                                <span style="font-size: 14px;">&nbsp</span>
+                                            </div>
+                                            <div class="card-title-stats" style="font-size: 13px;color: #9aa0ac;">{{ t('DNS Queries') }}
+                                            </div>
+                                        </div>
+                                        <div class="card-body-bg">
+                                            <gl-chart :value="ChartValueDNS" id="ChartDns0" :labels="ChartLabels"
+                                                :backcolor="ChartColor0" :bordercolor="BorderColor0"></gl-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-3 col-xs-12 col-md-6" style="padding: 0;">
+                                <div class="card card-full">
+                                    <div class="card-warp">
+                                        <div class="card-body-stats">
+                                            <div class="text-red dashboardflex">
+                                                <span>{{numBlockedFiltering ?numBlockedFiltering : '0'}}</span>
+                                                <span
+                                                    style="font-size: 14px;">{{blockPercentage(controlStats.num_blocked_filtering)}}%</span>
+                                            </div>
+                                            <span class="card-title-stats"  style="font-size: 13px;color: #9aa0ac;">{{ t('Blocked by Filters') }}</span>
+                                        </div>
+                                        <div class="card-body-bg">
+                                            <gl-chart :value="ChartValueBlocked" id="ChartDns1" :labels="ChartLabels"
+                                                :backcolor="ChartColor1" :bordercolor="BorderColor1"></gl-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-3 col-xs-12 col-md-6" style="padding: 0;">
+                                <div class="card card-full">
+                                    <div class="card-warp">
+                                        <div class="card-body-stats">
+                                            <div class="text-green dashboardflex">
+                                                <span>{{controlStats.num_replaced_safebrowsing ? controlStats.num_replaced_safebrowsing : '0'}}</span>
+                                                <span
+                                                    style="font-size: 14px;">{{blockPercentage(controlStats.num_replaced_safebrowsing)}}%</span>
+                                            </div>
+                                            <div class="card-title-stats" style="font-size: 13px;color: #9aa0ac;">
+                                                {{ t('Blocked malware/phishing') }}</div>
+                                        </div>
+                                        <div class="card-body-bg">
+                                            <gl-chart :value="ChartValueSafe" id="ChartDns2" :labels="ChartLabels"
+                                                :backcolor="ChartColor2" :bordercolor="BorderColor2"></gl-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-3 col-xs-12 col-md-6" style="padding: 0;">
+                                <div class="card card-full">
+                                    <div class="card-warp">
+                                        <div class="card-body-stats">
+                                            <div class="text-yellow dashboardflex">
+                                                <span>{{controlStats.num_replaced_parental ? controlStats.num_replaced_parental : '0'}}</span>
+                                                <span
+                                                    style="font-size: 14px;">{{blockPercentage(controlStats.num_replaced_parental)}}%</span>
+                                            </div>
+                                            <div class="card-title-stats" style="font-size: 13px;color: #9aa0ac;">
+                                                {{ t('Blocked adult websites') }}</div>
+                                        </div>
+                                        <div class="card-body-bg">
+                                            <gl-chart :value="ChartValueParent" id="ChartDns3" :labels="ChartLabels"
+                                                :backcolor="ChartColor3" :bordercolor="BorderColor3"></gl-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12" style="padding: 0;">
+                        <div class="col-lg-6" style="padding: 0">
+                            <div class="description-header-box">
+                                <div class="descriptionbox">
+                                    <div>
+                                        <div style="color: #495057;font-size: 18px;">{{ t('Top queried domains') }}</div>
+                                        <div style="color: #9aa0ac;">{{ t('for the last') }} {{timeConversion()}}</div>
+                                    </div>
+                                    <div>
+                                        <span class="btn-outline-primary" @click="refresh">{{ t('Refresh') }}</span>
+                                    </div>
+                                </div>
+                                <div style="height: 300px;overflow-y: scroll;">
+                                    <ul class="list-group">
+                                        <li v-for="(item, index) in topQueriedDomains" :key="index"
+                                            class="descriptionbox-li">
+                                            <div class="descriptionbox-commit">
+                                                {{blockingTimes(item)}}
+                                            </div>
+                                            <div
+                                                style="display: flex; flex-direction: column;transform: translateY(10px);flex: 3;">
+                                                <div>
+                                                    <span
+                                                        style="padding: 0 20px 0 0 ;color: #495057;font-size: 20px;">{{interceptName(item)}}</span>
+                                                    <span
+                                                        style="color: #9aa0ac;font-size: 12px;">{{itemPercentage(item,controlStats.num_dns_queries)}}%</span>
+                                                </div>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar progress-bar-success" role="progressbar"
+                                                        :aria-valuenow="interceptName(item)" aria-valuemin="0"
+                                                        aria-valuemax="100"
+                                                        :style="{'width':(interceptName(item))+'%'}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" style="padding: 0">
+                            <div class="description-header-box">
+                                <div class="descriptionbox">
+                                    <div>
+                                        <div style="color: #495057;font-size: 18px;">{{ t('Top blocked domains') }}</div>
+                                        <div style="color: #9aa0ac;">{{ t('for the last') }} {{timeConversion()}}</div>
+                                    </div>
+                                    <div>
+                                        <span class="btn-outline-primary" @click="refresh">{{ t('Refresh') }}</span>
+                                    </div>
+                                </div>
+                                <div style="height: 300px;overflow-y: scroll;">
+                                    <ul class="list-group">
+                                        <li v-for="(item, index) in topBlockedDomains" :key="index"
+                                            class="descriptionbox-li">
+                                            <div class="descriptionbox-commit">
+                                                {{blockingTimes(item)}}
+                                            </div>
+                                            <div
+                                                style="display: flex; flex-direction: column;transform: translateY(10px);flex: 3;">
+                                                <div>
+                                                    <span
+                                                        style="padding: 0 20px 0 0 ;color: #495057;font-size: 20px;">{{interceptName(item)}}</span>
+                                                    <span
+                                                        style="color: #9aa0ac;font-size: 12px;">{{itemPercentage(item,controlStats.num_blocked_filtering)}}%</span>
+                                                </div>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar progress-bar-danger" role="progressbar"
+                                                        :aria-valuenow="itemPercentage(item,controlStats.num_blocked_filtering)"
+                                                        aria-valuemin="0" aria-valuemax="100"
+                                                        :style="{'width':(itemPercentage(item,controlStats.num_blocked_filtering))+'%'}">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else style="position: relative;height: 500px;" class="col-lg-12">
+                    <gl-loading></gl-loading>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

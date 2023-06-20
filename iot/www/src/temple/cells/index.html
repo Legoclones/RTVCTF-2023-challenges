@@ -1,0 +1,101 @@
+<div class="tab-content" id="meshClient">
+    <ol class="breadcrumb">
+        <li>
+            <a @click="$router.push('internet')" style="text-transform: uppercase">{{t($lang.knownWifi.internet)}}</a>
+        </li>
+        <li class="gl-active">{{t('Cells Info')}}</li>
+    </ol>
+    <div class="panel panel-default ">
+        <div class="panel-heading">
+            <h4>
+                <span class="circle active"></span>
+                {{t('Cells Info')}}
+            </h4>
+            <gl-btn type="purple" class="pull-right moblieBtnLate" @click="getCells" :disabled="btnStatus">
+                {{t('Refresh')}}
+                <span class="fa fa-spinner fa-pulse" v-if="btnStatus"></span>
+            </gl-btn>
+            <gl-btn type="modify" class="pull-right moblieBtnLate copyJson"
+                :data-clipboard-text="JSON.stringify(cells,null, 4)" @click="initClipboard">
+                {{t('Copy')}}
+            </gl-btn>
+        </div>
+        <div class="panel-body panel-status">
+            <div v-for="(item, index) in cells" :key="index">
+                <!-- Vpn list -->
+                <span class="list-group-item  gl-padding-five disflex" data-toggle="collapse" @click="retateShow(index)"
+                    :href="'#'+index+'gl_inet'">
+                    <span class="col-lg-4" style="color: #000">{{index}}</span>
+                    <span class="col-lg-7">{{item.type}}</span>
+                    <span class="col-lg-1">
+                        <button class="btn pull-right btn-xs retateshow"
+                            :class="{transretate:!isretate && index == cellIndex}">
+                            <span class="fa fa-chevron-down"></span>
+                        </button>
+                    </span>
+                </span>
+                <!-- change Vpn -->
+                <div class="vpn-manage-body collapse in" :id="index+'gl_inet'"
+                    v-if="item.type === 'servingcell' && index === 0">
+                    <ul class="meshconfig" v-for="(data, key,index) in item" :key="index">
+                        <li class="meshconfig" v-if="key == 'rssi'" :style="rssiColor">
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}} {{rssiText}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                        <li class="meshconfig" v-else-if="key == 'rsrq'" :style="rsrqColor">
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}} {{rsrqText}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                        <li class="meshconfig" v-else-if="key == 'rsrp'" :style="rsrpColor">
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}} {{rsrpText}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                        <li class="meshconfig" v-else-if="key == 'sinr'" :style="sinrColor">
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}} {{sinrText}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                        <li class="meshconfig" v-else-if="key == 'rat'" :style="isLTE">
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                        <li class="meshconfig" v-else>
+                            <span class="col-lg-4">{{key}}</span>
+                            <span class="col-lg-7">
+                                {{data}}
+                            </span>
+                            <span class="col-lg-1"></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="vpn-manage-body  collapse" :id="index+'gl_inet'" v-else>
+                    <span class="meshconfig" v-for="(data, key,index) in item" :key="index">
+                        <span class="col-lg-4">{{key}}</span>
+                        <span class="col-lg-7" v-if="item.type === 'servingcell' && key == 'rat'"
+                            :style="item.rat === 'LTE' ? '': 'color: chocolate'">
+                            {{data}}
+                        </span>
+                        <span class="col-lg-7" v-else>
+                            {{data}}
+                        </span>
+                        <span class="col-lg-1"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

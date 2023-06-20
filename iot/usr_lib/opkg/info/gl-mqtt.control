@@ -1,0 +1,9 @@
+Package: gl-mqtt
+Version: 3.1.64-1
+Depends: libc, libpthread, mqtt, libcurl4, libjson-c2, gl-util, gl-wifi-core
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-mqtt
+SourceName: gl-mqtt
+Section: base
+Architecture: mips_24kc
+Installed-Size: 41813
+Description:  MQTT common libary

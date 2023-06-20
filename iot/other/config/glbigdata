@@ -1,0 +1,10 @@
+config service 'bigdata'
+	option server_url 'https://telemetry.goodcloud.xyz'
+	option delay_time '30'
+	option wait_time '30'
+	option version 'v2'
+	option enable '0'
+	option upload_scan_aps '1'
+    option wifiassoclist '0'
+	list   ping_addr '8.8.8.8'
+

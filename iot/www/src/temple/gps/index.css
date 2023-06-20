@@ -1,0 +1,10 @@
+@media  (max-width: 768px){
+  #idGpsPanel .bt_toggle_status.mactext {
+    text-align: center;
+    padding: 0px;
+    }
+}
+.bt_toggle_status.mactext {
+    text-align: right;
+    padding: 0;
+}

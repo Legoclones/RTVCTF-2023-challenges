@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idTimezonePanel" v-cloak>
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle" :class="{active:activeStatus}"></span>
+                    Tor
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate"  :disabled="applyDisabled" @click="settor">{{t($lang.button.apply)}}
+                        <span class="fa fa-spinner fa-pulse" v-show="btnMove"></span>
+                </gl-btn>
+            </div>
+            <div class="panel-body panel-status">
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                            {{t('Tor (derived from "The Onion Router") is a free and open-source software for enabling anonymous communication. It helps users to explore the internet with privacy.')}}
+                            <br>
+                            <span>{{t('Learn more')}}:<a href="https://www.torproject.org" target="_blank"> &nbsp;https://www.torproject.org</a></span>
+                             <div >
+                                 <!-- <span class="fa fa-exclamation-circle"></span> -->
+                                 <p></p>
+                                 <span>{{t('You can also choose the country in which you want the trackers think where you are')}}</span>
+                             </div>
+                             <strong>{{t('This feature is currently in beta, and may be problematic in some countries.')}}</strong>
+                         </div>
+                <div class="list-group timezone-body">
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{t('Enable')}}
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="torEnable" @change="checkStatus" :disabled="btnMove"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <span class="list-group-item slider-btn-inlist alert-info routertime-reminder hide bg-danger"
+                        style="padding: 10px 15px;">
+                    </span>
+                  
+                    <span class="list-group-item slider-btn-inlist" style="padding-bottom: 0px;">
+                        <div class="text-left pull-left">{{t('Exit Node Country')}}</div>
+                        <div class="list-input-field" style="min-width: 220px;">
+                            <gl-select :option="dialCode" optionName="name" showNum="10" v-model="countryCode"
+                            class="idSelectCity"  @getval="getModel" :disabled="btnMove">
+                        </gl-select>
+                        </div>
+                        <div class="clearfix"></div>
+                    </span>
+                    <span class="list-group-item panel-status vpn-status" v-if="statusLog && activeStatus">
+                        <div style="padding: 5px;" :style="{color: statusLog =='The router is accessing the Internet through tor'? '#00838f' : 'chocolate' }">
+                            <span class="fa fa-exclamation-circle">&nbsp;{{statusLog}}</span>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

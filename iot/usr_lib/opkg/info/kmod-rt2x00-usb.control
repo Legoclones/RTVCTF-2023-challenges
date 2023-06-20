@@ -1,0 +1,10 @@
+Package: kmod-rt2x00-usb
+Version: 4.14.241+4.19.193-1-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-rt2x00-lib, kmod-usb-core
+Source: package/kernel/mac80211
+SourceName: kmod-rt2x00-usb
+Section: kernel
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 6257
+Description:  Ralink Drivers for RT2x00 cards (USB)

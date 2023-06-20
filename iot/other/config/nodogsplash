@@ -1,0 +1,18 @@
+
+config nodogsplash
+	option enabled '0'
+	option network 'guest'
+	option gatewayname 'WiFi Captive Portal'
+	option maxclients '250'
+	option clientidletimeout '5'
+	option clientforcetimeout '1440'
+	option redirecturl  'https://www.gl-inet.com'
+	list authenticated_users 'allow all'
+	list preauthenticated_users 'allow tcp port 53'
+	list preauthenticated_users 'allow udp port 53'
+	list users_to_router 'allow tcp port 53'
+	list users_to_router 'allow udp port 53'
+	list users_to_router 'allow udp port 67'
+	list fw_mark_authenticated '30000'
+	list fw_mark_trusted '20000'
+	list fw_mark_blocked '10000'

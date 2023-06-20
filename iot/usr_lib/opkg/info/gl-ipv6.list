@@ -1,0 +1,7 @@
+/etc/config/glipv6
+/etc/init.d/gl_ipv6
+/etc/firewall.nat6
+/usr/lib/libipv6api.so
+/usr/lib/gl/libipv6api.so
+/usr/bin/get_wan_interface
+/usr/bin/sipcalc

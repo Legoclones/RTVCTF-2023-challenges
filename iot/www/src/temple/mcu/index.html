@@ -1,0 +1,111 @@
+<div class="row ">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idDNSPanel">
+            <div class="panel-heading">
+                <h4 style="max-width: 57%">
+                    <span class="circle active"></span>
+                    {{ t('MCU Settings') }}
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="applystatus" id="idApplyBtn"
+                    @click="applyMCU">{{t($lang.button.apply)}}</gl-btn>
+            </div>
+  
+              <div class="panel-body panel-status">
+                <div class="list-group">
+                    <!-- show the WI-FI password -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the WIFI password') }}
+                            <gl-tooltip :content="t('Whether or not to show the WI-FI password in the OLED')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="ShowPsd"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- show the main screen -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the main screen') }}
+                            <gl-tooltip :content="t('Whether or not to show the first (main) screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="ShowMain"
+                                @onclick="checkBtn"></gl-tg-btn>
+                    </span>
+                    <!-- show the 2.4G WI-FI info -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the 2.4G WIFI info') }}
+                            <gl-tooltip :content="t('Whether or not to show the second (2.4G WIFI info) screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="Show24"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- show the 5G WI-FI info -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the 5G WIFI info') }}
+                            <gl-tooltip :content="t('Whether or not to show the third (5G WIFI info) screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="Show5"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- show the Gateway -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the LAN IP') }}
+                            <gl-tooltip :content="t('Whether or not to show the forth (LAN IP info) screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="ShowGw"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- show the VPN info -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show the VPN info') }}
+                            <gl-tooltip :content="t('Whether or not to show the fifth (VPN info) screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="ShowVPN"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <!-- Customized -->
+                    <span class="list-group-item slider-btn-inlist">
+                        <div class="text-left ">{{ t('Show customized') }}
+                            <gl-tooltip :content="t('The content of the user customized screen.')" direction="top">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </gl-tooltip>
+                        </div>
+                        <div class="pull-right btn-toggler-right">
+                            <gl-tg-btn size="22px" theme="default" v-model="ShowCust"
+                                @onclick="checkBtn"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <span class="list-group-item" v-show="ShowCust">
+                        <!-- customized content -->
+                        <div class=" input-group ">
+                            <span class="input-group-addon"> content</span>
+                            <gl-input v-model="Content" :error="ContentErr" @postValue="ContentCheck">
+                            </gl-input>
+                        </div>
+                        <br />
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

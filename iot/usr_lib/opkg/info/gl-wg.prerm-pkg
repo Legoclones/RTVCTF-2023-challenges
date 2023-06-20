@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ -z "${IPKG_INSTROOT}" ]; then
+	/etc/init.d/wireguard stop
+	uci set wireguard.@proxy[0].enable='0'
+	uci commit wireguard
+fi
+exit 0

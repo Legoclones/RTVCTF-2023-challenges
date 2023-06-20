@@ -1,0 +1,335 @@
+<div class="row col-lg-12" id="lanipDiv">
+    <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+        <li class="active" @click="Refresh()">
+            <a href="#lanipStaticBind" data-toggle="tab" class="uppercase">
+                    {{t($lang.lanip.LanIPtitle)}}
+            </a>
+        </li>
+        <li role="presentation" @click="Refresh()" v-if="!meshjudge || router.model != 'b2200'">
+            <a href="#guestipStaticBind" data-toggle="tab">
+                {{t('Guest')}} IP
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <!-- 局域网IP -->
+        <div class="tab-pane fade in active" id="lanipStaticBind">
+            <div class="panel panel-default ">
+                <div class="panel-heading">
+                    <h4 style="text-transform: uppercase">
+                        <span class="circle active"></span>
+                        {{t($lang.lanip.lanIP)}}
+                    </h4>
+                    <gl-btn type="purple" class="pull-right moblieBtnLate" @click="setLanIP"
+                        :disabled="(inputStatus == 'error' || lanEndInputStatus == 'error'|| lanStartInputStatus == 'error') || btnMove || initialStutas">
+                        {{t($lang.button.apply)}}
+                        <span class="fa fa-spinner fa-pulse" v-if="btnMove"></span>
+                    </gl-btn>
+                </div>
+                <div class="panel-body panel-status">
+                    <div class="list-group">
+                        <div class="alert list-group-item" id="idSetIpAlertMsg":class="{'alert-info':inputStatus==null,'alert-danger':inputStatus=='error','alert-success':inputStatus=='success'}">
+                            {{t(alertMsg)}}:192.168.x.x , 172.x(16-31).x.x or 10.x.x.x
+                            <div style="margin-top: 5px">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                    <strong>{{t('Note: The starting IP address and ending IP address must be in the range of 2~254, and the ending address should be greater than starting address.')}}</strong>
+                                </div>
+                        </div>
+                            
+                        <span class="list-group-item">
+                            <div id="idInputIp"
+                                :class="{'has-success':inputStatus=='success','has-error':inputStatus=='error'}">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span style="text-transform: uppercase">{{t($lang.lanip.lanIP)}}</span>
+                                    <input type="text" class="form-control" id="idSetIpInput"
+                                        style="max-width: 180px;border-radius: 4px;" maxlength="15" v-model="laninfo.ip"
+                                        @input="validate" :placeholder="$lang.holdPlace.required" />
+                                </div>
+                            </div>
+                        </span>
+                        <span class="list-group-item">
+                            <div id="idInputIp">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span>{{t('Start IP Address')}}</span>
+                                    <span class="startOrEndInputFlex":class="{'is-success':lanStartInputStatus=='success','is-error':lanStartInputStatus=='error'}">
+                                        <span>{{laninfoIPAdress+'.'}}</span>
+                                        <input type="text" class="form-control startOrEndInputWidth"
+                                            @input="lanStartVaildate" id="idSetIpInput" maxlength="3"
+                                            v-model="lanstart" />
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                        <span class="list-group-item">
+                            <div id="idInputIp">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span>{{t('End IP Address')}}</span>
+                                    <span class="startOrEndInputFlex"
+                                        :class="{'is-success':lanEndInputStatus=='success','is-error':lanEndInputStatus=='error'}">
+                                        <span>{{laninfoIPAdress+'.'}}</span>
+                                        <input type="text" class="form-control startOrEndInputWidth"
+                                            @input="lanEndVaildate" id="idSetIpInput" maxlength="3"
+                                            v-model="lanlimit" />
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 访客 IP -->
+        <div class="tab-pane fade" id="guestipStaticBind" v-if="!meshjudge || (router.model == 'b2200' && meshjudge)">
+            <div class="panel panel-default ">
+                <div class="panel-heading">
+                    <h4 style="text-transform: uppercase">
+                        <span class="circle active"></span>
+                        {{t($lang.lanip.Guestnetwork)}}
+                    </h4>
+                    <gl-btn type="purple" class="pull-right moblieBtnLate" @click="setGuestIP":disabled="(GuestStatus == 'error' || guestStartInputStatus == 'error' || guestEndInputStatus == 'error') || applyMove || guestinitialStutas">{{t($lang.button.apply)}}
+                        <span class="fa fa-spinner fa-pulse" v-if="applyMove"></span>
+                    </gl-btn>
+                </div>
+                <div class="panel-body panel-status">
+                    <div class="list-group">
+                        <div class="alert list-group-item" id="idSetIpAlertMsg"
+                            :class="{'alert-info':GuestStatus==null,'alert-danger':GuestStatus=='error','alert-success':GuestStatus=='success'}">
+                            {{t($lang.lanip.default9)}}:
+                            192.168.x.x , 172.x(16-31).x.x or 10.x.x.x
+                            <div style="margin-top: 5px">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                    <strong>{{t('Note: The starting IP address and ending IP address must be in the range of 2~254, and the ending address should be greater than starting address.')}}</strong>
+                                </div>                    
+                        </div>
+                        <span class="list-group-item">
+                            <div id="idInputIp"
+                                :class="{'has-success':GuestStatus=='success','has-error':GuestStatus=='error'}">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span style="text-transform: uppercase">{{t($lang.lanip.Guestip)}}</span>
+                                    <input type="text" class="form-control" id="idSetIpInput"
+                                        style="max-width: 180px;border-radius: 4px;" maxlength="15"
+                                        v-model="guestinfo.ip" @input="validates"
+                                        :placeholder="$lang.holdPlace.required" />
+                                </div>
+                            </div>
+                        </span>
+                        <span class="list-group-item">
+                            <div id="idInputIp">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span>{{t('Start IP Address')}}</span>
+                                    <span class="startOrEndInputFlex":class="{'is-success':guestStartInputStatus=='success','is-error':guestStartInputStatus=='error'}">
+                                        <span>{{guestinfoIPAdress + '.'}}</span>
+                                        <input type="text" class="form-control startOrEndInputWidth"
+                                            @input="guestStartVaildate" id="idSetIpInput" maxlength="3"
+                                            v-model="gueststart" />
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                        <span class="list-group-item">
+                            <div id="idInputIp">
+                                <div class="input-group setLanOrGuestFlexBox">
+                                    <span>{{t('End IP Address')}}</span>
+                                    <span class="startOrEndInputFlex"
+                                        :class="{'is-success':guestEndInputStatus=='success','is-error':guestEndInputStatus=='error'}">
+                                        <span>{{guestinfoIPAdress+'.'}}</span>
+                                        <input type="text" class="form-control startOrEndInputWidth"
+                                            @input="guestEndVaildate" id="idSetIpInput" maxlength="3"
+                                            v-model="gueslimit" />
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 静态ip绑定 -->
+    <div>
+        <div class="panel panel-default ">
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle active"></span>
+                    {{t($lang.lanip.Static)}}
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <div class="alert list-group-item alert alert-info" id="idSetIpAlertMsg">
+                        <div>
+                            <span>{{t($lang.lanip.Usually)}}</span>
+                        </div>
+                        <div style="margin-top: 5px">
+                            <span class="fa fa-exclamation-circle"></span>
+                            <strong>{{t($lang.lanip.Mind)}}</strong>
+                        </div>
+                    </div>
+                    <span class="list-group-item">
+                        <div style="margin: 15px 0" class="Widthscreen hidden-xs hidden-sm">
+                            <table class="table table-hover class table-bordered text-center">
+                                <thead class="headColor pre-scrollable ">
+                                    <tr>
+                                        <th class="text-center col-xs-2">MAC</th>
+                                        <th class="text-center col-xs-2">IP</th>
+                                        <th class="text-center col-xs-2">{{t($lang.firewall.Action)}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="secondPort">
+                                    <tr class="add_input">
+                                        <td class="col-sm-2 inputuppercase">
+                                            <!-- <gl-select></gl-select> -->
+                                            <gl-select :option="nameList" checkLang input v-model="mac" defaultShow @input="getmoInner_name" class="uppercase" showNum="6"></gl-select>
+                                        </td>
+                                        <td class="col-sm-1">
+                                            <gl-input v-model="ip"></gl-input>
+                                        </td>
+                                        <td class="col-sm-2" class="text-center" style="padding-top:17px">
+                                            <span class="fa fa-spinner fa-pulse" v-if="addStatus"></span>
+                                            <a @click="addListIp" class="btnset" v-else>{{t($lang.firewall.Add)}}</a>
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(item, index) in leasesList" class="add_input">
+                                        <td>
+                                            <span>{{item.name}}</span>
+                                            <br>
+                                            <span class="uppercase">{{item.mac}}</span>
+                                        </td>
+                                        <td style="line-height: 13px;">
+                                            <span v-if="index != currentIndex">
+                                                <br>
+                                                <span>{{item.ip}}</span>
+                                            </span>
+                                            <gl-input class="fire-animate2" v-else v-model="item.ip"></gl-input>
+                                        </td>
+                                        <td style="padding-top: 15px;" v-if="index != currentIndex">
+                                            <span class="fa fa-spinner fa-pulse"
+                                                v-if="modifyStatus && modifyIndex == index"></span>
+                                            <a class="btnset" @click="checkConfig(index)"
+                                                v-else>{{t($lang.button.modify)}}</a>
+                                            <span class="fa fa-spinner fa-pulse"
+                                                v-if="delStatus && delIndex == index"></span>
+                                            <a class="btnset" style="margin-left: 10px;"
+                                                @click="leasesDel(item.mac,index)"
+                                                v-else>{{t($lang.firewall.Delete)}}</a>
+                                        </td>
+                                        <td style="padding-top: 15px;" v-else>
+                                            <a class="btnset" @click="savemodify(item,index)">{{t($lang.button.apply)}}</a>
+                                            <a class="btnset" style="margin-left: 10px;" @click="cancelmodify">{{t($lang.button.cancel)}}</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <span class="list-group-item text-center bdbottom"
+                                v-if="leasesList && leasesList.length != 0">
+                                <gl-btn type="modify" @click="deleteAll">{{t($lang.firewall.DeleteAll)}}
+                                    <span class="fa fa-spinner fa-pulse" v-if="deleteAllStatus"></span>
+                                </gl-btn>
+                            </span>
+                        </div>
+                        <!-- moblie port -->
+                        <div id="PortConfigurationsPanel" class="hidden-lg hidden-md panel-status" v-cloak>
+                            <!-- Head -->
+                            <span class="list-group-item  vpn-setting-heading gl-padding-five"
+                                style="background-color: #fff">
+                                <span class="text-left" style="padding-left:10px">{{t($lang.lanip.Binding)}}</span>
+                                <div class="pull-right" id="displayClientNum" style="padding-right: 8px;">
+                                    {{leasesList.length}}</div>
+                            </span>
+                            <div class="list-group panel-status " v-for="(item,index) in leasesList">
+                                <!-- Vpn list -->
+                                <span
+                                    class="list-group-item panel-status vpn-manage-heading vpn-client-header gl-padding-five"
+                                    data-toggle="collapse" :href="'#'+index + 'glinet'">
+                                    <span class="text-left pull-left vpn-online-status ">
+                                        <span class="circle"></span>
+                                        <span class="clientName">{{item.name}}</span>
+                                    </span>
+                                    <button class="btn pull-right btn-xs">
+                                        <span class="fa fa-chevron-down"></span>
+                                    </button>
+                                </span>
+                                <div class="vpn-manage-body collapse" :id="index + 'glinet'"
+                                    v-if="leasesList.length!=0">
+                                    <!-- 名称 -->
+                                    <a class="list-group-item gl-padding-five displayFlex">
+                                        <span class="text-left flex">{{t($lang.firewall.Name)}}</span>
+                                        <span class="text-right pull-right typeName">{{item.name}}</span>
+                                    </a>
+                                    <!-- MAC -->
+                                    <a class="list-group-item gl-padding-five displayFlex">
+                                        <span class="text-left flex">MAC</span>
+                                        <span class="text-right pull-right uppercase">{{item.mac}}</span>
+                                    </a>
+                                    <!-- IP -->
+                                    <a class="list-group-item gl-padding-five displayFlex">
+                                        <span class="text-left flex">IP</span>
+                                        <span class="text-right pull-right"
+                                            v-if="index != currentIndex">{{item.ip}}</span>
+                                        <gl-input v-else v-model="item.ip" class="fire-animate4"></gl-input>
+                                    </a>
+
+                                    <!-- 按钮 -->
+                                    <span class="list-group-item btn-group text-center" v-if="index != currentIndex">
+                                        <gl-btn type="modify" @click="leasesDel(item.mac,index)">
+                                            {{t($lang.button.remove)}}</gl-btn>
+                                        <gl-btn type="purple" @click="checkConfig(index)">{{t($lang.button.modify)}}
+                                        </gl-btn>
+                                    </span>
+                                    <span class="list-group-item btn-group text-center" v-else>
+                                        <gl-btn type="modify" @click="cancelmodify">{{t($lang.button.cancel)}}</gl-btn>
+                                        <gl-btn type="purple" @click="savemodify(item,index)">{{t($lang.button.apply)}}
+                                        </gl-btn>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Add a New VPN Configuration -->
+                            <span class="list-group-item  list-btnblock text-center panel-status glGp"
+                                style="border-bottom: none;padding: 10px 0;">
+                                <gl-btn type="modify" class="rec" @click="showmodal">
+                                    <span class="fa fa-plus"></span>
+                                    <span>{{t($lang.firewall.AddData)}}</span>
+                                    <span class="fa fa-spinner fa-pulse" v-if="addStatus">
+                                </gl-btn>
+                            </span>
+                            <!-- remove all clients -->
+                            <span class="list-group-item  list-btnblock text-center panel-status glGp"
+                                style="border-bottom: none;padding: 10px 0;"
+                                v-if="leasesList && leasesList.length != 0">
+                                <gl-btn type="modify" class="rec" @click="deleteAll">
+                                    <span class="fa fa-trash btn-icon"></span>
+                                    <span>{{t($lang.firewall.DeleteAll)}}</span>
+                                    <span class="fa fa-spinner fa-pulse" v-if="deleteAllStatus"></span>
+                                </gl-btn>
+                            </span>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <gl-modal :modalStatus="modal" :title="$lang.lanip.AddStatic">
+        <div class="modal-body fw-body">
+            <span class="list-group-item clearfix">
+                <div class="screen-float-l pd-10">MAC</div>
+                <div class="screen-float-r inputuppercase" id="mobileMac">
+                    <gl-select :option="nameList" class="uppercase" id="mac" defaultShow checkLang input v-model="mobilemac" @input="getmoInner_name" showNum="6"></gl-select>
+                </div>
+            </span>
+            <span class="list-group-item clearfix">
+                <div class="screen-float-l pd-10">
+                    IP
+                </div>
+                <div class="screen-float-r">
+                    <gl-input v-model="ip"></gl-input>
+                </div>
+            </span>
+        </div>
+
+        <div class="modal-footer">
+            <gl-btn type="modify btnl clientBtn" @click="hideModal">{{t($lang.button.cancel)}}</gl-btn>
+            <gl-btn type="default btnr clientBtn" @click="addListIp">{{t($lang.button.apply)}}</gl-btn>
+        </div>
+    </gl-modal>
+</div>

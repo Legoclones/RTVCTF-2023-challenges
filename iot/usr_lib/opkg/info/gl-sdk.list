@@ -1,0 +1,12 @@
+/etc/uci-defaults/fix-non-admin-user
+/usr/bin/one_click_upgrade
+/etc/stubby/stubby_nextdns_default.yml
+/etc/stubby/stubby_nextdns.yml
+/usr/bin/firmware_cloud_upgrade
+/usr/bin/reload_routing_table
+/www/api
+/usr/lib/libglsdk.so
+/usr/lib/gl/libglsdk.so
+/etc/uci-defaults/fix-network-wan6
+/www/cgi-bin/api
+/usr/bin/get_client_list

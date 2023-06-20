@@ -1,0 +1,7 @@
+config servers 
+	option local_ip '10.0.0.1'
+	option local_port '51820'
+	option enable '0'
+	option access 'DROP'
+	option local_ipv6 'fd00:db8:0:abc::1'
+

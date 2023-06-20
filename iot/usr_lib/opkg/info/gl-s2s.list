@@ -1,0 +1,7 @@
+/etc/uci-defaults/gl-s2s.defaults
+/etc/config/gl_s2s
+/usr/libexec/glcrond/s2s_watcher
+/usr/lib/libs2sapi.so
+/usr/lib/gl/libs2sapi.so
+/usr/bin/echo_server
+/etc/init.d/gl_s2s

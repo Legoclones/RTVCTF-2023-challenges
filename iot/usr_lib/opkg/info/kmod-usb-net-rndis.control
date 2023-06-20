@@ -1,0 +1,10 @@
+Package: kmod-usb-net-rndis
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-usb-net, kmod-usb-net-cdc-ether
+Source: package/kernel/linux
+SourceName: kmod-usb-net-rndis
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 4446
+Description:  Kernel support for RNDIS connections

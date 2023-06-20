@@ -1,0 +1,5 @@
+/etc/config/tertf
+/etc/init.d/gl_tertf
+/etc/tertf/mac_vendor.db
+/lib/upgrade/keep.d/tertf
+/usr/bin/gltertf

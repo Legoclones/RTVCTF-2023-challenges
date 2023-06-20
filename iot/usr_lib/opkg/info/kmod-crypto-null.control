@@ -1,0 +1,10 @@
+Package: kmod-crypto-null
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-crypto-hash
+Source: package/kernel/linux
+SourceName: kmod-crypto-null
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 1714
+Description:  Null CryptoAPI module

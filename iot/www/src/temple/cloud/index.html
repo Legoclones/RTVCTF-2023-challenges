@@ -1,0 +1,267 @@
+<div class="" id="idCloudPanel">
+        <!-- 云控制界面 -->
+            <div class="row ">
+                <div class="col-lg-12">
+                    <div class="panel panel-default " id="idMacClonePanel">
+                        <div class="panel-heading">
+                            <!-- 标题 -->
+                            <h4>
+                                <span class="circle" :class="{active:cloudflag}"></span>
+                                {{t('Cloud Management')}}
+                            </h4>
+                        </div>
+                        <div class="panel-body  ">
+                            <div class="list-group panel-status">
+                                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                                    <!-- 展示信息 -->
+                                    <div v-if="!normalShow">
+                                        <p style="margin-bottom: 5px;">{{t("With GoodCloud, you can manage routers in groups, check live router status, set up routers remotely, operate routers in batch and monitor connected clients etc.")}}</p>
+                                        <p style="margin-bottom: 0px;">{{t('Your device ID is')}} <strong>{{msgURL}},</strong>  {{t('Please use the ID to add this device to your cloud account.')}}
+                                            <a href="https://www.goodcloud.xyz/docs/en/" target="_Blank" v-if="!is2BModel">
+                                                <span class="glyphicon glyphicon-question-sign" style="font-size: 15px">
+                                                </span>
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <!-- 绑定信息 -->
+                                    <div v-else>
+                                        <p style="margin-bottom: 5px;">{{t("With GoodCloud, you can manage routers in groups, check live router status, set up routers remotely, operate routers in batch and monitor connected clients etc.")}}</p>
+                                        <p style="margin-bottom: 0px;">{{t('The device is bound by')}} <gl-tooltip :content="useremail" direction="top"><strong class="info" style="cursor: pointer;">{{usernames}}</strong></gl-tooltip>&nbsp;{{t('on')}}&nbsp;<strong style="cursor: default;">{{bindtime}}.&nbsp;</strong><a @click="unbind">{{t('Unbind')}}</a>
+                                        </p>       
+                                    </div>
+                                </div>
+                                <!-- disabled /enabled -->
+                                <span class="list-group-item slider-btn-inlist">
+                                        <div class="text-left ">{{t('Enabled')}}<a :href="hrefUrl" target="_Blank"> GoodCloud</a></div>
+                                        <div class=" pull-right btn-toggler-right">
+                                             <gl-toggle-btn theme="default" v-model="CloudStatus" size="22px" @change="openCloud($event)"></gl-toggle-btn>
+                                        </div>
+                                </span>
+                                <!-- remote ssh -->
+                                <span class="list-group-item slider-btn-inlist" v-if="selectAreaShow">
+                                    <div class="text-left ">{{ t('Remote SSH') }}</div>
+                                    <div class=" pull-right btn-toggler-right">
+                                         <gl-toggle-btn theme="default" v-model="remoteSSHStatus" size="22px" @change="handleRemoteChange('ssh', $event)"></gl-toggle-btn>
+                                    </div>
+                                </span>
+                                <!-- remote http -->
+                                <span class="list-group-item slider-btn-inlist" v-if="selectAreaShow">
+                                    <div class="text-left ">{{ t('Remote Web') }}</div>
+                                    <div class=" pull-right btn-toggler-right">
+                                        <gl-toggle-btn theme="default" v-model="remoteHTTPStatus" size="22px" @change="handleRemoteChange('http', $event)"></gl-toggle-btn>
+                                    </div>
+                                </span>
+                                <!-- 设备ID -->
+                                <span class="list-group-item slider-btn-inlist clearfix " v-if="selectAreaShow">
+                                    <div class="text-left pull-left">
+                                        <span>{{t('Device ID')}}</span>
+                                    </div> 
+                                    <div class="list-input-field mactext">
+                                        <span class="uppercase" id="idFactoryMac">{{msgURL}}</span>
+                                    </div>
+                                </span>
+                                <!-- 区域选择 -->
+                                <span class="list-group-item slider-btn-inlist " style="padding-bottom: 2px;
+                                padding-top: 9px;" v-if="selectAreaShow">
+                                    <div class="text-left pull-left">{{t('Data Server')}}</div>
+                                    <div class="list-input-field">
+                                        <gl-select showNum="6" :option="serverList" :disabled="!selectAreaShow" v-model="serverOption" searchip @getval="serverName"
+                                            @postValue="serverName">
+                                        </gl-select>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </span>
+                                <!-- 条款reading -->
+                                <span class="list-group-item slider-btn-inlist" v-if="selectAreaShow && !is2BModel">
+                                        <div class="text-left "><strong style="font-size:12px">{{t('I have read and agreed')}}&nbsp;<a href="https://www.gl-inet.com/terms-of-service/"
+                                            target="_Blank">{{t('Terms of Service')}}</a>&nbsp;&&nbsp;<a href="https://www.gl-inet.com/privacy-policy/"
+                                            target="_Blank">{{t('Privacy Policy')}}</a></strong></div>
+                                        <div class=" pull-right btn-toggler-right">
+                                                <div class="clearfix" v-for="item of checkItem">
+                                                        <input type="checkbox" style="display:none;" id="myChecks" v-model="agree" @click="checkAgree(item)">
+                                                        <label for="myChecks" :class="{borderskyblue:!agree}"></label>
+                                                    </div>
+                                        </div>
+                                    </span>
+                                <!-- apply btn -->
+                                <div class="text-center" style="padding: 15px 0px 0px;">
+                                    <gl-btn v-if="is2BModel" type="purple" @click="applyCloud('cloud')" :disabled="ddnsApplyStatus || applyStatus || !applyBlock || (!CloudStatus && !getcloudinfo.cloud_enable)">{{t('Apply')}}
+                                        <span class="fa fa-spinner fa-pulse" v-if="applyStatus"></span>
+                                    </gl-btn>
+                                    <gl-btn v-else type="purple" @click="applyCloud('cloud')" :disabled="(!agree && CloudStatus) || ddnsApplyStatus || applyStatus || !applyBlock || (!CloudStatus && !getcloudinfo.cloud_enable)">{{t('Apply')}}
+                                        <span class="fa fa-spinner fa-pulse" v-if="applyStatus"></span>
+                                    </gl-btn>
+                                    <a style="float: right;" @click="logShow">{{t('View Logs')}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <!-- DDNS 控制 -->
+                <div class="col-lg-12">
+                    <div class="panel panel-default " id="idMacClonePanel">
+                        <div class="panel-heading">
+                            <!-- 标题 -->
+                            <h4>
+                                <span class="circle" :class="{active:ddnsflag}"></span>
+                                {{t('Dynamic DNS')}}
+                            </h4>
+                        </div>
+                        <div class="panel-body  ">
+                            <div class="list-group panel-status">
+                                <!-- 展示信息 -->
+                                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                                    <p>{{t('You can enable Dynamic DNS for this router and access this router remotely.')}} <a @click="analysisddns" :disabled="applyStatus || ddnsApplyStatus">{{t('DDNS Test')}}</a></p>
+                                    <p>{{t('Note: You have to have an Internet Public IP address to use the Dynamic DNS. If this router is behind NAT, you may need to set up port forward in your ISP router.')}}
+                                        <a href="https://docs.gl-inet.com/en/3/app/ddns/" v-if="!is2BModel"
+                                            target="_Blank"><span class="glyphicon glyphicon-question-sign" style="font-size: 15px"></span></a></p>
+                                </div>
+                                <!-- disabled / enabled -->
+                                <span class="list-group-item slider-btn-inlist">
+                                        <div class="text-left ">
+                                            <span>{{t('Enabled')}}
+                                                 <a :href="'http://' + msgURL+ '.glddns.com'" target="_Blank">DDNS</a>
+                                                 <gl-tooltip :content="msgURL + '.glddns.com'" direction="top">
+                                                        <span class="fa fa-info-circle" style="font-size: 16px"></span>
+                                                </gl-tooltip>
+                                            </span>
+                                        </div>
+                                        <div class=" pull-right btn-toggler-right">
+                                                <gl-toggle-btn theme="default" v-model="DDNSStatus" size="22px" @change="openDdns($event)"
+                                                :disabled="AccessStatus"></gl-toggle-btn>
+                                        </div>
+                                    </span>
+                                <!-- HTTP switch -->
+                                <span class="list-group-item slider-btn-inlist" v-if="httpAndSshShow">
+                                    <div class="text-left ">{{t('Enable HTTP Remote Access')}}
+                                    <gl-tooltip content="HTTP is not encrypted. Use at your own risk." direction="top">
+                                            <span class="fa fa-exclamation-circle gaojing" style="font-size: 16px"></span>
+                                    </gl-tooltip>
+                                    </div>
+                                    
+                                    <div class=" pull-right btn-toggler-right">
+                                        <gl-toggle-btn theme="default" v-model="HTTPStatus"  :disabled="!httpAndSshShow" size="22px" @change="openHTTP($event)"></gl-toggle-btn>
+                                    </div>
+                                </span>
+                                <!-- HTTPS switch -->
+                                <span class="list-group-item slider-btn-inlist" v-if="httpAndSshShow">
+                                        <div class="text-left ">{{t('Enable HTTPS Remote Access')}}
+                                        </div>
+                                        <div class=" pull-right btn-toggler-right">
+                                            <gl-toggle-btn theme="default" v-model="HTTPSStatus"  :disabled="!httpAndSshShow" size="22px"></gl-toggle-btn>
+                                        </div>
+                                    </span>
+                                <!-- SSH switch -->
+                                <span class="list-group-item slider-btn-inlist" v-if="httpAndSshShow">
+                                    <div class="text-left ">{{t('Enable SSH Remote Access')}}</div>
+                                    <div class=" pull-right btn-toggler-right">
+                                            <gl-toggle-btn theme="default" v-model="SSHStatus" :disabled="!httpAndSshShow" size="22px" @change="openSSH($event)"></gl-toggle-btn>
+                                    </div>
+                                </span>
+                                <!-- 条款reading -->
+                                <span class="list-group-item slider-btn-inlist" v-if="httpAndSshShow && !is2BModel">
+                                    <div class="text-left "><strong style="font-size:12px">{{t('I have read and agreed')}}&nbsp;<a href="https://www.gl-inet.com/terms-of-service/"
+                                        target="_Blank">{{t('Terms of Service')}}</a>&nbsp;&&nbsp;<a href="https://www.gl-inet.com/privacy-policy/"
+                                        target="_Blank">{{t('Privacy Policy')}}</a></strong></div>
+                                    <div class=" pull-right btn-toggler-right">
+                                            <div class="clearfix" v-for="item of checkStatus">
+                                                    <input type="checkbox" style="display:none;" id="myCheck" v-model="ddnsagree"
+                                                        @click="checkAgrees(item)">
+                                                    <label for="myCheck" :class="{borderskyblue:!ddnsagree}"></label>
+                                                </div>
+                                    </div>
+                                </span>
+                                <!-- Apply btn -->
+                                <div class="text-center" style="padding: 15px 0px 0px;">
+                                    <gl-btn v-if="is2BModel" type="purple" @click="applyCloud('ddns')" :disabled="applyStatus || ddnsApplyStatus || !DdnsBlock || (!DDNSStatus && !getddnsinfo.ddns_enable)">{{t('Apply')}}
+                                        <span class="fa fa-spinner fa-pulse" v-if="ddnsApplyStatus"></span>
+                                    </gl-btn>
+                                    <gl-btn v-else type="purple" @click="applyCloud('ddns')" :disabled="(!ddnsagree && DDNSStatus) ||applyStatus || ddnsApplyStatus || !DdnsBlock ||(!DDNSStatus && !getddnsinfo.ddns_enable)">{{t('Apply')}}
+                                        <span class="fa fa-spinner fa-pulse" v-if="ddnsApplyStatus"></span>
+                                    </gl-btn>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <gl-modal :title="t('DDNS Test')" :modalStatus="showModalMoblie">
+                    <!-- body -->
+                    <div class="modal-body">
+                        <div class="tab-content" style="min-width:230px">
+                            <div>
+
+                               <div style="text-align: center;font-size: 18px;" v-if="loadingStatus">
+                                   <div class="main" >
+                                         <div class="loading">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        </div>
+                                        <!-- <gl-loading></gl-loading> -->
+                                    </div>
+                                    <span>{{t('Detecting, Please wait')}}</span>
+                                    <div style="height: 50px;" class="text-center">
+                                    </div>
+                               </div>
+
+                               <div style="text-align: center; padding-top: 55px;" v-if="(checkip || analysisError) && !loadingStatus">
+                                   <div>
+                                        <h3>{{t('Your DDNS is not effective yet. Please try later.')}}</h3>
+                                   </div>
+                                   <div class="text-center" style="margin-top: 63px;">
+                                        <gl-btn @click="analysisddns" type="denger" style="margin-top: 10px;">{{t('Retry')}}</gl-btn>
+                                        <gl-btn @click="closeModal" type="modify" style="margin-top: 10px;">{{t('Cancel')}}</gl-btn>
+                                    </div>
+                               </div>
+
+                               <div v-if="lookupip && !loadingStatus">
+                                   <div class="lookupip_fred">
+                                       <div class="lookupip_img analysissuccess">
+                                       </div>
+                                       <span style="padding-top: 10px;">{{t('Your DDNS is resolved as')}} {{responseIp}}</span>
+                                       <h5 style="color:green;font-weight: 600">{{t('Your DDNS service is working.')}}</h5>
+                                   </div>
+                                   <div  class="text-center" style="margin-top:9px">
+                                        <gl-btn  @click="analysisddns" type="denger">{{t('Retry')}}</gl-btn>
+                                        <gl-btn  @click="closeModal" type="modify">{{t('OK')}}</gl-btn>
+                                   </div>
+                               </div>
+
+                               <div v-if="wanip && !loadingStatus">
+                                    <div class="lookupip_fred">
+                                            <div class="lookupip_img analysiserror">
+                                            </div>
+                                            <span style="padding-top: 10px;">{{t('Your DDNS is resolved as')}} {{responseIp}}</span>
+                                            <h5 style="color:#c9302c;font-weight: 600">{{t("But this router is behind NAT or you do not have a Public IP address.")}} <a href="https://docs.gl-inet.com/en/3/app/ddns/"
+                                                target="_Blank"><span class="glyphicon glyphicon-question-sign" style="font-size: 15px;color: #337ab7;"></span></a></h5>
+                                        </div>
+                                        <div  class="text-center" style="margin-top:9px">
+                                             <gl-btn  @click="analysisddns" type="denger">{{t('Retry')}}</gl-btn>
+                                             <span></span>
+                                             <gl-btn  @click="closeModal" type="modify">{{t('OK')}}</gl-btn>
+                                        </div>
+                               </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </gl-modal>
+                <gl-modal :modalStatus="showLogModal" :title="t('Cloud Operation Logs')">
+                    <div class="modal-body log_modal">
+                        <div style="word-wrap: break-word;">
+                            <p v-for="(item, index) in logList">
+                                {{item}}
+                            </p>
+                        </div>
+                    </div>
+                    <div  class="text-center" >
+                            <gl-btn  @click="showLogModal = !showLogModal" type="modify">{{t('Close')}}</gl-btn>
+                    </div>
+                </gl-modal>
+            </div>
+        </div>

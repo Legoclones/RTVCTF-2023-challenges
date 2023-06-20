@@ -1,0 +1,12 @@
+Package: lighttpd-mod-fastcgi
+Version: 1.4.48-2
+Depends: libc, lighttpd
+Source: feeds/gli_pub/lighttpd
+SourceName: lighttpd-mod-fastcgi
+License: BSD-3c
+LicenseFiles: COPYING
+Section: net
+Maintainer: W. Michael Petullo <mike@flyn.org>
+Architecture: mips_24kc
+Installed-Size: 6191
+Description:  FastCGI module

@@ -1,0 +1,9 @@
+Package: luci-proto-wireguard
+Version: git-21.189.23240-7b931da-1
+Depends: libc, kmod-wireguard, wireguard-tools
+Source: feeds/luci/protocols/luci-proto-wireguard
+SourceName: luci-proto-wireguard
+Section: luci
+Architecture: all
+Installed-Size: 1809
+Description:  Support for WireGuard VPN

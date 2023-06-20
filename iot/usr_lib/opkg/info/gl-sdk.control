@@ -1,0 +1,9 @@
+Package: gl-sdk
+Version: 3.0.675-1
+Depends: libc, libuuid1, libpthread, libuci20130104, libubus20210603, libubox20191228, libjson-c2, libiwinfo20181126, gl-util, fcgi, relayd, bridge, swconfig, gl-wan-detect, gl-wifi-core, dnscrypt-proxy
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-sdk3.0
+SourceName: gl-sdk
+Section: base
+Architecture: mips_24kc
+Installed-Size: 285036
+Description:  GL.iNet SDK3.0.

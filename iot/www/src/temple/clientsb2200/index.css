@@ -1,0 +1,411 @@
+@media (max-width:640px) {
+    .panel-client>.panel-heading>h4 {
+        min-width: 200px;
+    }
+
+    .panel-client>.panel-heading {
+        height: 65px;
+    }
+}
+
+.client-type {
+    border-radius: 0px !important;
+    padding-left: 15px;
+}
+
+ul.client-list-row>li.lan-client-ip-mac,
+ul.client-list-row>li.wifi-client-ip-mac,
+ul.client-list-row>li.black-client-ip-mac {
+    padding: 2px 0 0 0;
+    font-size: 12px;
+}
+
+.client-list span.list-group-item:first-child {
+    border-top-color: #fff;
+}
+
+.client-list span.list-group-item:last-child {
+    border-bottom-color: #fff;
+}
+
+.tex-limited {
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.leftIP,
+.rightMAC {
+    display: flex;
+    flex-direction: column;
+
+    /* align-items: center; */
+    width: 50%;
+}
+
+.center-center {
+    width: 100%;
+    display: flex;
+    font-size: 12px;
+    color: #949494;
+
+}
+
+.margin_bottom {
+    margin-bottom: 10px;
+}
+
+.modify_btn:hover {
+    color: #3cc5cb;
+    cursor: pointer;
+}
+
+.table>thead>tr.error>th {
+    border-bottom: none;
+}
+
+.tab-content>.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    vertical-align: middle;
+
+}
+
+label {
+    margin-bottom: 0;
+}
+
+.left_upload {
+    display: flex;
+    width: 65%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.left_upload input {
+    outline: none;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.right_setting {
+    display: flex;
+    width: 35%;
+    height: 45px;
+    flex-direction: column;
+    font-size: 14px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width:997px) {
+    .right_setting {
+        margin: 0px 50px;
+    }
+}
+
+.WifiList_Wan {
+    font-size: 18px;
+    font-weight: 700;
+    height: 50px;
+    background-color: #ccc;
+    padding-left: 20px;
+}
+
+.betsyLoad {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #595e7c;
+}
+
+.betsyLoadList {
+    display: flex;
+    color: #595e7c;
+    align-items: center;
+}
+
+.iconList,
+.qosList {
+    display: flex;
+    flex-direction: column;
+}
+
+.qosList {
+    flex-basis: 75px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.iconList {
+    flex-basis: 13px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.tipsList {
+    align-items: flex-start;
+    justify-content: space-between;
+    /* margin-left: 8px; */
+}
+
+.line_height {
+    vertical-align: middle;
+    line-height: 0px;
+}
+
+.mid_unset {
+    vertical-align: unset;
+    background: #cccccc
+}
+
+.nav_tips {
+    text-align: left;
+    background-color: #f5f5f5;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8b8c9f;
+    padding-left: 12px;
+}
+
+thead>.headTitle {
+    background-color: #e9f4f4;
+    font-size: 13px;
+    font-weight: bold
+}
+
+.padding_left {
+    padding-left: 15px;
+}
+
+thead>.headTitle>.qosLocation {
+    text-align: center;
+    line-height: 40px;
+}
+
+.clsWifiClientsList .clsLanClientsItem .nameStyle {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.setting_ringht {
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    font-size: 14px
+}
+
+.widht50 {
+    width: 50px
+}
+
+/* gulp */
+.ssclientLabel {
+    display: block;
+}
+
+.ss_left {
+    float: left;
+    height: 100%;
+    /* line-height: 100%; */
+    padding: 10px 5px;
+}
+
+.s_right {
+    float: right;
+}
+
+.ssclientLabel>.select-drop-down {
+    margin-right: 0;
+}
+
+.clientBtn.button {
+    width: 80px;
+}
+
+.Publickey {
+    word-break: break-all
+}
+
+#sourcejson {
+    resize: none;
+    width: 100%;
+    min-height: 300px;
+    max-height: 550px;
+    color: #000 !important;
+}
+
+.client_state {
+    background: #f5f5f5;
+    margin: 0;
+    padding: 10px;
+    color: #000 !important;
+}
+
+
+.borderTop {
+    /* border-top: 1px solid #777; */
+}
+
+.Provider .input-control {
+    border: none;
+    padding: 0 25px 0 10px;
+}
+
+.Provider .input-control.focus {
+    box-shadow: none;
+}
+
+.innerModal.modal-body {
+    max-height: 389px;
+}
+
+@media screen and (max-width: 325px) {
+    .modal-footer {
+        text-align: center;
+    }
+
+    .ssclientLabel {
+        padding: 5px;
+        float: none;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .ssclientLabel.Provider {
+        width: 100% !important;
+    }
+
+    .modal-body {
+        max-height: 389px;
+    }
+
+    .borderTop {
+        border-top: none;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .modal-body {
+        max-height: 230px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .qosupdate {
+        width: 100%;
+        text-align: center;
+        padding: 4px;
+    }
+
+    .qosupdate1 {
+        padding-bottom: 5px;
+    }
+}
+
+.thTitle {
+    transform: translateX(25px);
+    padding-left: 15px
+}
+
+.trTitle {
+    transform: translateX(15px)
+}
+
+.Widthscreen .table>thead>tr>th {
+    border: none
+}
+
+.btnSet {
+    border-radius: 20px;
+    border: none;
+    background: #00838f;
+    color: #fff;
+    width: 80px;
+    height: 25px;
+    outline: none;
+}
+
+.btnset {
+    border-radius: 20px;
+    border: 1px solid #c4cdd5;
+    color: #595e7c;
+    min-width: 80px;
+    height: 23px;
+    outline: none;
+    display: inline-block;
+    box-shadow: 0 1px 0 0 rgba(22, 29, 37, 0.05);
+    background: linear-gradient(to bottom, #fff, #f9fafb)
+}
+.mb10 {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px 10px;
+}
+
+.translate3 {
+    transform: translateY(6px);
+}
+
+.flexbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flexinner {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-start;
+}
+
+.flexmid {
+    flex-basis: 75px
+}
+
+.setting_ringht a:hover {
+    text-decoration: none;
+    color: #595e7c;
+    background: linear-gradient(to bottom, #f9fafb, #f4f6f8)
+}
+
+.TwoModal .modal-body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.pl15 {
+    padding-left: 30px;
+}
+
+.fontfamily {
+    font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+.guesticon {
+    color: #fff;
+    width: 50px;
+    height: 16px;
+    display: inline-block;
+    background-color: #cccccc;
+    border-radius: 8px;
+    font-size: 12px;
+}
+.projeckIcon{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #33b5e5;
+    display: inline-block;
+    text-align: center;
+    line-height: 31px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    /* box-shadow: -3px 2px 2px #888880; */
+}

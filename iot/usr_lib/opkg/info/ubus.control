@@ -1,0 +1,11 @@
+Package: ubus
+Version: 2021-07-01-38c7fdd8-1
+Depends: libc, libubus20210603, libblobmsg-json, ubusd
+Source: package/system/ubus
+SourceName: ubus
+License: LGPL-2.1
+Section: base
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 4905
+Description:  OpenWrt RPC client utility

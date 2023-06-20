@@ -1,0 +1,10 @@
+Package: luci-lib-ip
+Version: git-21.189.23240-7b931da-1
+Depends: libc, liblua5.1.5, libnl-tiny
+Source: feeds/luci/libs/luci-lib-ip
+SourceName: luci-lib-ip
+License: Apache-2.0
+Section: luci
+Architecture: mips_24kc
+Installed-Size: 10804
+Description:  Lua library for IP calculation and routing information

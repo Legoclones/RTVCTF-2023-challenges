@@ -1,0 +1,10 @@
+Package: kmod-usb2
+Version: 4.14.241-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-phy-ath79-usb, kmod-usb-ehci, kmod-usb-core
+Source: package/kernel/linux
+SourceName: kmod-usb2
+License: GPL-2.0
+Section: kernel
+Architecture: mips_24kc
+Installed-Size: 3872
+Description:  Kernel support for USB2 (EHCI) controllers

@@ -1,0 +1,9 @@
+Package: gl-vpn
+Version: 3.0.133-1
+Depends: libc, gl-util, openvpn-openssl, openssl-util, resolveip
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-vpn
+SourceName: gl-vpn
+Section: base
+Architecture: mips_24kc
+Installed-Size: 19205
+Description:  Openvpn server endpoint api for gl-inet.

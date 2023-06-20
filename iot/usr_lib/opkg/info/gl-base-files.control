@@ -1,0 +1,9 @@
+Package: gl-base-files
+Version: 3.0.558-1
+Depends: libc
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-base-files
+SourceName: gl-base-files
+Section: base
+Architecture: mips_24kc
+Installed-Size: 62856
+Description:  GL iNet base files

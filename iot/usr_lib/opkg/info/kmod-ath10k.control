@@ -1,0 +1,12 @@
+Package: kmod-ath10k
+Version: 4.14.241+4.19.193-1-1
+Depends: kernel (=4.14.241-1-05fa7e82a071f1ef387d47228067a82c), kmod-ath
+Source: package/kernel/mac80211
+SourceName: kmod-ath10k
+Section: kernel
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Architecture: mips_24kc
+Installed-Size: 180202
+Description:  This module adds support for wireless adapters based on
+ Atheros IEEE 802.11ac family of chipsets. For now only
+ PCI is supported.

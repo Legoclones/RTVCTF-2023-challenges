@@ -1,0 +1,144 @@
+<div class="tab-content" id="meshClient">
+    <ol class="breadcrumb">
+        <li>
+            <a @click="$router.push('internet')" style="text-transform: uppercase">{{t($lang.knownWifi.internet)}}</a>
+        </li>
+        <li class="gl-active">{{t('SMS Forward')}}</li>
+    </ol>
+    <!-- sms forward -->
+    <div class="panel panel-default ">
+        <div class="panel-heading">
+            <h4>
+                <span class="circle active"></span>
+                {{t('Forward To')}}
+            </h4>
+
+        </div>
+        <div class="panel-body panel-status">
+            <div class="list-group">
+                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                    {{ t('SMS FORWARD is a function which can forward SMS messages that the router received to phones and/or emails. Please set your phone numbers and email addresses below.\nRemember to add country code when you set the phone numbers. +\" could be omitted.\"') }}
+                    <br /> {{ t('Please separate phone numbers/emails with \"|\".') }}
+                </div>
+                <span class="list-group-item sms-forward-to">
+                    <div class="text-left pull-left phone-email" style="line-height: 41px;">{{t('Phone Number')}}</div>
+                    <div class="list-input-field input-group" id="OldAdminPwdCheck"
+                        style="line-height: 41px;min-width: 400px;">
+                        <gl-input type="text" @postValue='setApplyStatus' v-model="tel" :disabled="loadingStatus"
+                            placeholder="e.g. 19785847548|8615966253336"></gl-input>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <span class="list-group-item sms-forward-to" style="border-bottom: 0;">
+                    <div class="text-left pull-left phone-email" style="line-height: 41px">{{t('Email')}}</div>
+                    <div class="list-input-field input-group" id="OldAdminPwdCheck"
+                        style="line-height: 41px;min-width: 400px;">
+                        <gl-input type="text" @postValue='setApplyStatus' v-model="email" :disabled="loadingStatus"
+                            placeholder="e.g. glinet@gl-inet.com|gmail@gl-inet.com"></gl-input>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <span class="list-group-item text-center">
+                    <gl-btn type="purple" @click='setSmsForward' :disabled="applyStatus">
+                        {{t('Apply')}}
+                        <span class="fa fa-spinner fa-pulse" v-if="loadingStatus">
+                    </gl-btn>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- send account -->
+    <div class="panel panel-default ">
+        <div class="panel-heading">
+            <h4>
+                <span class="circle active"></span>
+                {{t('SMTP settings for outgoing email')}}
+            </h4>
+
+        </div>
+        <div class="panel-body panel-status smtp-setting">
+            <div class="list-group">
+                <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                    {{ t('Please set the outgoing email server first if you want to forward the SMS. This email account will be used as a sender to forward the SMS via email. ') }}
+                    {{ t('Please follow this') }} <a
+                        href="https://docs.gl-inet.com/en/3/app/sms_forward/"><b>{{ t('Guide') }}</b></a> if you need
+                    more details.
+                    <br />
+                    <b>{{ t('This Account can be used as both sender and receiver at the same time') }}</b>
+                </div>
+                <!-- Account -->
+                <span class="list-group-item ">
+                    <div class="text-left pull-left phone-email" style="line-height: 41px;">{{t('Account')}}</div>
+                    <div class="list-input-field input-group" id="OldAdminPwdCheck"
+                        style="line-height: 41px;;min-width: 300px;">
+                        <gl-input type="text" @postValue='setApplyAccountStatus' v-model="account"
+                            :disabled="accountLoadingStatus" placeholder="e.g. glinet@gmail.com"></gl-input>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <!-- Password -->
+                <span class="list-group-item ">
+                    <div class="text-left pull-left phone-email" style="line-height: 41px">{{t('Password')}}</div>
+                    <div class="list-input-field input-group" id="OldAdminPwdCheck"
+                        style="line-height: 41px;;min-width: 300px;">
+                        <gl-input type="password" @postValue='setApplyAccountStatus' v-model="password"
+                            :disabled="accountLoadingStatus" placeholder="e.g. tbbhhzqcvuwrfuky" id="sms-input-show"
+                            inputShow></gl-input>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <!-- SMTP -->
+                <span class="list-group-item input-text SSencryptionType list-group-narrow clearfix">
+                    <div class="text-left pull-left phone-email">
+                        <span>{{t('SMTP Server and Port')}}</span>
+                    </div>
+                    <div class="list-input-field input-group" style="width: 300px;border-top: 0;">
+                        <gl-select id="smtpInputFocus" input :option="SMTPList" showNum="5" v-model="smtp"
+                            :disabled="accountLoadingStatus" @getval="getSMTPSelectVal" @input="inputVal"></gl-select>
+                    </div>
+                </span>
+                <span class="list-group-item " style="border-bottom: 0;">
+                    <div class="text-left pull-left phone-email" style="line-height: 41px">{{t('Subject')}}</div>
+                    <div class="list-input-field input-group" id="OldAdminPwdCheck"
+                        style="line-height: 41px;width: 300px;">
+                        <span class="clearfix">
+                            <gl-input type="text" @postValue='setApplyAccountStatus' v-model="localTel"
+                                :disabled="accountLoadingStatus" placeholder="e.g. 852123456|Office MiFi"
+                                style="width: 280px;"></gl-input>
+                            <span style="margin-top: 0px;float: right;">
+                                <gl-tooltip
+                                    content="The full subject will be: 852123456|Office MiFi received a message from {sender}"
+                                    direction="top">
+                                    <span class="fa fa-exclamation-circle"></span>
+                                </gl-tooltip>
+                            </span>
+                            <!-- <span>received a message from {sender-number}</span> -->
+                        </span>
+                    </div>
+                    <div class="clearfix"></div>
+                </span>
+                <span class="list-group-item text-center">
+                    <gl-btn type="purple" @click='setAccountInfo' :disabled="applyAccountStatus">
+                        {{t('Apply')}}
+                        <span class="fa fa-spinner fa-pulse" v-if="accountLoadingStatus">
+                    </gl-btn>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- tip modal -->
+    <gl-modal title="Message" :modalStatus="showModal">
+        <div class="modal-body">
+            <!-- name -->
+            <div style="margin:10px 0; padding-left: 20px;">
+                {{ t('A verification mail has been sent to your email account.') }} <br />
+                {{ t("If you don't receive the email, please check your username/passwd and settings again.") }}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <gl-btn type="modify" @click="showModal = false">{{t($lang.button.close)}}
+            </gl-btn>
+        </div>
+    </gl-modal>
+</div>

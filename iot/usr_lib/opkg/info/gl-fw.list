@@ -1,0 +1,6 @@
+/etc/config/glfw
+/usr/lib/gl/libglfw.so
+/usr/lib/libglfw.so
+/usr/bin/glfw.sh
+/etc/uci-defaults/glfw
+/etc/init.d/glfw

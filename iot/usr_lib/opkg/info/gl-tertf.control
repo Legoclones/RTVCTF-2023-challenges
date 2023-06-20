@@ -1,0 +1,9 @@
+Package: gl-tertf
+Version: 4.0.46-1
+Depends: libc, libiwinfo20181126, gl-util, libjson-c2, gl-traffic, libsqlite3-0, ebtables
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-tertf
+SourceName: gl-tertf
+Section: base
+Architecture: mips_24kc
+Installed-Size: 407329
+Description:  Terminal traffic.

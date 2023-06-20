@@ -1,0 +1,9 @@
+Package: gl-ui
+Version: 3.0.844-1
+Depends: libc
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-ui3.0
+SourceName: gl-ui
+Section: base
+Architecture: mips_24kc
+Installed-Size: 2095105
+Description:  GL iNet web UI

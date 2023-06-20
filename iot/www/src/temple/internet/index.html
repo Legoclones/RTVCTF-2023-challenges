@@ -1,0 +1,17 @@
+<div class="internet" id="internet_wrapper">
+    <!-- Ththering 3/4G modem -->
+    <!-- <div class="row" id="internet-status">
+            <component :is="item" v-for="item in onlist" v-bind:key="item" class="col-lg-12 col-xs-12 internet-status uninternet" ></component>
+    </div>
+    <div class="row" id="internet-state" v-if="router.model != 'sf1200'">
+            <component :is="data" v-for="data in offlist" v-bind:key="data" :class="stateClass" class="col-xs-12 internet-state"></component>
+    </div>
+    <div class="row" id="internet-state" v-else>
+        <component :is="data" v-for="data in offlistSf1200" v-bind:key="data" :class="stateClass" class="col-xs-12 internet-state"></component>
+    </div> -->
+    <div  id="internet-cards">
+        <div class="normal-card" :class="{'small-card':!data.up && index!= 0}" id="internet-state"  v-for="(data, index) in cardList" :key="data.name">
+            <component :is="data.name" ></component>
+        </div>
+    </div>
+</div>

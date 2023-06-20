@@ -1,0 +1,4 @@
+/lib/modules/4.14.241/phy-ar7100-usb.ko
+/etc/modules.d/21-phy-ath79-usb
+/etc/modules-boot.d/21-phy-ath79-usb
+/lib/modules/4.14.241/phy-ar7200-usb.ko

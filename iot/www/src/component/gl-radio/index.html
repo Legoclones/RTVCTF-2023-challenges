@@ -1,0 +1,4 @@
+<!--这里设置了选中后的radio样式类,和禁用后的样式类-->
+<label class="ui-radio" :class="{'checked':model==value,'disabled':disabled}">
+    <input type="radio" ref="radio" :value="value" @click="updateVal" :disabled="disabled">
+</label>

@@ -1,0 +1,5 @@
+
+config service 'general'
+	option email ''
+	option phone ''
+	option subject ''

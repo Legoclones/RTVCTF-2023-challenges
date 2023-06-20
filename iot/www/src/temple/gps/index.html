@@ -1,0 +1,104 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default " id="idGpsPanel" v-cloak>
+            <div class="panel-heading">
+                <h4>
+                    <span class="circle active"></span>
+                    GPS
+                </h4>
+                <gl-btn type="purple" class="pull-right moblieBtnLate" :disabled="!GPS_btn_Status"
+                    @click="applyDataReport">{{t($lang.button.apply)}}</gl-btn>
+            </div>
+            <div class="panel-body  ">
+                <div class="list-group panel-status">
+                    <div class="list-group-item alert alert-info" id="idMacCloneAlertMsg">
+                        {{t($lang.gps.GPSinfo)}}
+                    </div>
+                    <span class="list-group-item slider-btn-inlist clearfix">
+                        <div class="text-left pull-left">
+                            <span>{{t('Enable')}} GPS</span>
+                        </div>
+                        <div class="list-input-field mactext bt_toggle_status" style="transform: translateY(7px)">
+                            <gl-tg-btn size="22px" theme="default" v-model="enabled" @change="enabledData"></gl-tg-btn>
+                        </div>
+                    </span>
+                    <template v-if="enabled">
+                        <span class="list-group-item slider-btn-inlist clearfix ">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.DeviceMAC)}}</span>
+                            </div>
+                            <div class="list-input-field mactext">
+                                <span class="uppercase" id="idFactoryMac">{{deviceMac}}</span>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix ">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.Status)}}</span>
+                            </div>
+                            <div class="list-input-field mactext">
+                                <span id="idFactoryMac">{{GPSStuttgart}}</span>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.UTCTime)}}</span>
+                            </div>
+                            <div class="list-input-field mactext">
+                                <span class="uppercase" id="idFactoryMac">{{utc_time}}</span>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.NorthLatitude)}}</span>
+                            </div>
+                            <div class="list-input-field mactext">
+                                <span class="uppercase" id="idFactoryMac">{{Nlatitude}}</span>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.EastLongitude)}}</span>
+                            </div>
+                            <div class="list-input-field mactext">
+                                <span class="uppercase" id="idFactoryMac">{{Etlongitude}}</span>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.DataReporting)}}</span>
+                            </div>
+                            <div class="list-input-field mactext bt_toggle_status" style="transform: translateY(7px)">
+                                <gl-tg-btn size="22px" theme="default" v-model="upload" @change="changeUpload">
+                                </gl-tg-btn>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix" style="padding: 8px 5px;"
+                            v-if="upload">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.HTTPPath)}}</span>
+                            </div>
+                            <div class="list-input-field">
+                                <gl-input type="text" :placeholder="$lang.holdPlace.required"
+                                    @postValue="GPS_btn_Status = true" v-model="report_path"></gl-input>
+                            </div>
+                        </span>
+                        <span class="list-group-item slider-btn-inlist clearfix" style="padding: 8px 5px;"
+                            v-if="upload">
+                            <div class="text-left pull-left">
+                                <span>{{t($lang.gps.TimeInterval)}}</span>
+                            </div>
+                            <div class="list-input-field">
+                                <gl-input type="text" :placeholder="$lang.holdPlace.required"
+                                    @postValue="GPS_btn_Status = true" v-model="report_interval"></gl-input>
+                            </div>
+                        </span>
+                    </template>
+                    <div class="alert alert-info idScanWifiAlertMsg vpn-server" v-if="GpsData_fred">
+                        <span class="fa fa-info-circle"></span>
+                        {{GpsData_fred}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+Package: luci-proto-qmi
+Version: git-21.189.23240-7b931da-1
+Depends: libc, uqmi
+Source: feeds/luci/protocols/luci-proto-qmi
+SourceName: luci-proto-qmi
+Section: luci
+Architecture: all
+Installed-Size: 1289
+Description:  Support for QMI

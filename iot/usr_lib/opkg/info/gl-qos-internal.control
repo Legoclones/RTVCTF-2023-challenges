@@ -1,0 +1,9 @@
+Package: gl-qos-internal
+Version: 3.0.38-1
+Depends: libc, gl-util, libjson-c2, tc, kmod-sched, kmod-sched-core, kmod-sched-connmark, kmod-ipt-ipmark, kmod-ipt-hashlimit, kmod-ipt-core, iptables, iptables-mod-conntrack-extra, iptables-mod-hashlimit, iptables-mod-ipopt, iptables-mod-u32
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-qos
+SourceName: gl-qos-internal
+Section: base
+Architecture: mips_24kc
+Installed-Size: 6718
+Description:  GL iNet Qos Function

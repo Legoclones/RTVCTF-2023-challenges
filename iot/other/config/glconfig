@@ -1,0 +1,31 @@
+
+config service 'general'
+		option port '83'
+		option model 'e750'
+		option factory_mac '94:83:c4:0f:ba:88'
+		option factory_sn 'c25e1eb8d5420718'
+		option factory_ddns 'apfba88'
+		option language 'EN'
+		option password 'c031b05d0b68752e2ddb5a6c72d2d9bdcba450328877dd6268a12929c7083559'
+
+config service 'ddns'
+	option enabled '0'
+
+config service 'download'
+
+config service 'adblock'
+	option enable '0'
+
+config service 'autoupdate'
+	option time '04:00'
+	option enable '0'
+
+config service 'samba'
+	option read_only 'yes'
+
+config service 'openvpn'
+	option enable '0'
+	option force '0'
+
+config service 'repeater'
+	option autoconnect '1'

@@ -1,0 +1,9 @@
+Package: gl-util
+Version: 3.0.230-1
+Depends: libc, libuci20130104, libjson-c2, libiwinfo20181126, libcurl4, libubox20191228, libubus20210603, libblobmsg-json
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-util
+SourceName: gl-util
+Section: base
+Architecture: mips_24kc
+Installed-Size: 34206
+Description:  GL.iNet SDK3.0.

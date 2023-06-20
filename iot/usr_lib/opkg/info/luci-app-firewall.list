@@ -1,0 +1,8 @@
+/www/luci-static/resources/view/firewall/zones.js
+/www/luci-static/resources/view/firewall/rules.js
+/www/luci-static/resources/view/firewall/snats.js
+/usr/lib/lua/luci/controller/firewall.lua
+/www/luci-static/resources/view/firewall/custom.js
+/usr/share/rpcd/acl.d/luci-app-openvpn.json
+/www/luci-static/resources/view/firewall/forwards.js
+/www/luci-static/resources/tools/firewall.js

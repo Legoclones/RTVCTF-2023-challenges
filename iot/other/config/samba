@@ -1,0 +1,6 @@
+config samba
+        option workgroup 'WORKGROUP'
+        option description 'GL-iNet'
+        option homes '1'
+        option name 'GL-iNet'
+

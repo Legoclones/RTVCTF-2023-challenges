@@ -1,0 +1,6 @@
+/lib/modules/4.14.241/nf_defrag_ipv4.ko
+/etc/modules.d/nf-conntrack
+/etc/sysctl.d/11-nf-conntrack.conf
+/lib/modules/4.14.241/nf_conntrack.ko
+/lib/modules/4.14.241/nf_conntrack_ipv4.ko
+/lib/modules/4.14.241/nf_conntrack_rtcache.ko

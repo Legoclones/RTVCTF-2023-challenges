@@ -1,0 +1,9 @@
+Package: gl-rtty
+Version: 1.0.0-2
+Depends: libc, rtty-openssl
+Source: /home/glinet/builds/zkXze51p/0/gl.router/gl-rtty
+SourceName: gl-rtty
+Section: base
+Architecture: mips_24kc
+Installed-Size: 394
+Description:  GL SDK3.0

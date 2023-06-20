@@ -1,0 +1,9 @@
+Package: luci-proto-relay
+Version: git-21.189.23240-7b931da-1
+Depends: libc, relayd
+Source: feeds/luci/protocols/luci-proto-relay
+SourceName: luci-proto-relay
+Section: luci
+Architecture: all
+Installed-Size: 1615
+Description:  Support for relayd pseudo bridges

@@ -1,0 +1,9 @@
+Package: gl-route-policy
+Version: 3.0.56-1
+Depends: libc, gl-util
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-route-policy
+SourceName: gl-route-policy
+Section: base
+Architecture: mips_24kc
+Installed-Size: 10108
+Description:  GL route policy

@@ -1,0 +1,49 @@
+.connected{
+  background-color: #22f4bb;
+  display: block;
+}
+.connecting{
+  background-color: #FFCC33;
+  display: block;
+}
+.off{
+  display: none;
+}
+#mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* height: 100%; */
+  width: 100%;
+  background-color: rgba(0, 0, 0, .4);
+  z-index: 99;
+}
+#mask .wifi-init-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 255px;
+  transform: translate(-50%,-50%);
+  z-index: 100;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.wifi-init-body {
+  padding: 20px 30px;
+  box-sizing: border-box;
+}
+
+.wifi-init-footer {
+  text-align: center;
+}
+
+.wifi-init-body .title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.wifi-init-body .wifi-init-ssid {
+  border-bottom: 1px solid #808080!important;
+}

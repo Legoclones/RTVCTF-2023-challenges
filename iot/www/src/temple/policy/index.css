@@ -1,0 +1,112 @@
+.panel-heading {
+    background: #f4f5f7;
+}
+
+.headColor {
+    background-color: #e9f4f4;
+    background: #95B0CA;
+}
+
+.add_input .gl-input {
+    min-width: 122px;
+}
+
+.add_input .gl-input input {
+    height: 30px !important;
+    padding: 0 0 0 12px;
+    outline: none;
+    border: 1px solid #cccccc
+}
+
+.add_input .select-drop-down {
+    min-width: 106px;
+}
+
+.add_input>.inner_ip .select-drop-down {
+    min-width: 110px;
+}
+
+.add_input>.inner_ip .gl-input {
+    min-width: 110px;
+}
+
+.add_input div.input-control {
+    line-height: 30px;
+    height: 30px;
+}
+
+.bdbottom {
+    border: none;
+    padding-top: 0;
+
+}
+
+.headColor th {
+    color: #fff
+}
+
+.btnset {
+    border-radius: 20px;
+    border: 1px solid #c4cdd5;
+    color: #595e7c;
+    min-width: 80px;
+    height: 23px;
+    outline: none;
+    line-height: 23px;
+    display: inline-block;
+    box-shadow: 0 1px 0 0 rgba(22, 29, 37, 0.05);
+    background: linear-gradient(to bottom, #fff, #f9fafb)
+}
+
+a.btnset:hover {
+    text-decoration: none;
+    color: #595e7c;
+    background: linear-gradient(to bottom, #f9fafb, #f4f6f8)
+}
+
+.applyPolicy {
+    border-top: none;
+    margin: 15px 0px 0px;
+    max-width: 620px;
+    padding: 0;
+}
+
+.pdPolicy {
+    padding-top: 11px
+}
+
+#idPolicyPanel .glyphicon {
+    top: 4px
+}
+
+#idPolicyPanel .glyphiocnSort {
+    font-size: 19px;
+}
+
+#idPolicyPanel .selectPdb {
+    padding-bottom: 3px
+}
+
+#idPolicyPanel .policytd {
+    line-height: 30px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#idPolicyPanel .tableStyle {
+    margin: 0;
+    table-layout: fixed;
+}
+#idPolicyPanel .theadThBorder{
+    border-bottom: 1px solid #ddd;
+}
+/* @media screen and (max-width:1200px){
+    #idPolicyPanel .tableStyle {
+        margin: 0;
+        table-layout: auto;
+    }
+} */
+#tabononepolicy .list-input-field{
+    width: 240px;
+}

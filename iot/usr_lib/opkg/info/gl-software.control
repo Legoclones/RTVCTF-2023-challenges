@@ -1,0 +1,9 @@
+Package: gl-software
+Version: 3.0.30-1
+Depends: libc, gl-util
+Source: /home/glinet/builds/uLXb__Vh/0/gl.router/gl-software
+SourceName: gl-software
+Section: base
+Architecture: mips_24kc
+Installed-Size: 5850
+Description:  Openvpn server endpoint api for gl-inet.
