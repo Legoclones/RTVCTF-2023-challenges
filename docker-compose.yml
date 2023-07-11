@@ -1,0 +1,29 @@
+version: "3"
+services:
+  iot:
+    container_name: homenetwork-iot
+    build: 
+      context: ./iot
+    ports:
+      - "80:80"
+      - "443:443"
+
+  web:
+    container_name: homenetwork-web
+    build:
+      context: ./web
+    restart: always
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: homenetwork-mysql
+    image: "mysql:latest"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: b0dbbaab0115eb0724c313e25c95d19c341eea086d6a1cc2
+
+networks:
+  homenetwork:
+    driver: bridge

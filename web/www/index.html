@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Taking Application</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Custom dark theme styles */
+        body {
+            background-color: #343a40;
+            color: white;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .note-card {
+            background-color: #212529;
+            border-color: #343a40;
+            color: white;
+        }
+        .note-card:hover {
+            border-color: #8e162d;
+        }
+        .error-message {
+            margin-top: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 10px;
+        }
+        .unauthorized-message {
+            margin-top: 20px;
+            background-color: #ffc107;
+            color: black;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Note Taking App</a>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Create Note</h2>
+                <form id="create-form">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Content</label>
+                        <textarea class="form-control" id="content" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h2>Your Notes</h2>
+                <div id="notes-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // API endpoints
+        const API_BASE_URL = '/api';
+        const CREATE_NOTE_ENDPOINT = `${API_BASE_URL}/create`;
+        const GET_NOTES_ENDPOINT = `${API_BASE_URL}/get`;
+
+        // Error message container
+        const errorMessageContainer = document.createElement('div');
+        errorMessageContainer.className = 'error-message';
+        document.body.prepend(errorMessageContainer);
+
+        // Unauthorized access message container
+        const unauthorizedMessageContainer = document.createElement('div');
+        unauthorizedMessageContainer.className = 'unauthorized-message';
+        document.body.prepend(unauthorizedMessageContainer);
+
+        // Create Note form submission
+        const createForm = document.getElementById('create-form');
+        createForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+            const title = titleInput.value;
+            const content = contentInput.value;
+
+            axios.post(CREATE_NOTE_ENDPOINT, { title, content })
+                .then(function (response) {
+                    titleInput.value = '';
+                    contentInput.value = '';
+                    handleResponse(response.data);
+                })
+                .catch(function (error) {
+                    handleResponseError(error);
+                });
+        });
+
+        // Load Notes
+        function loadNotes() {
+            axios.get(GET_NOTES_ENDPOINT)
+                .then(function (response) {
+                    handleResponse(response.data);
+                })
+                .catch(function (error) {
+                    handleResponseError(error);
+                });
+        }
+
+        // Handle API response
+        function handleResponse(response) {
+            if (response.error) {
+                errorMessageContainer.textContent = response.msg;
+                errorMessageContainer.style.display = 'block';
+            } else {
+                errorMessageContainer.style.display = 'none';
+
+                const notesList = document.getElementById('notes-list');
+                notesList.innerHTML = '';
+
+                const notes = response.data;
+                if (notes.length === 0) {
+                    notesList.innerHTML = '<p>No notes found.</p>';
+                } else {
+                    notes.forEach(function (note) {
+                        const noteCard = document.createElement('div');
+                        noteCard.className = 'card note-card mb-3';
+                        noteCard.innerHTML = `
+                            <div class="card-body">
+                                <h5 class="card-title">${note.title}</h5>
+                                <p class="card-text">${note.content}</p>
+                                <button class="btn btn-danger delete-btn" data-note-id="${note.id}">Delete</button>
+                            </div>
+                        `;
+                        notesList.appendChild(noteCard);
+                    });
+                }
+            }
+        }
+
+        // Handle API response error
+        function handleResponseError(error) {
+            if (error.response && error.response.status === 401) {
+                unauthorizedMessageContainer.textContent = 'You are not authorized to access this resource.';
+                unauthorizedMessageContainer.style.display = 'block';
+            } else {
+                errorMessageContainer.textContent = 'An error occurred while processing your request.';
+                errorMessageContainer.style.display = 'block';
+            }
+        }
+
+        // Delete Note
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('delete-btn')) {
+                const noteId = event.target.getAttribute('data-note-id');
+                const deleteEndpoint = `${API_BASE_URL}/delete/${noteId}`;
+
+                axios.delete(deleteEndpoint)
+                    .then(function (response) {
+                        handleResponse(response.data);
+                    })
+                    .catch(function (error) {
+                        handleResponseError(error);
+                    });
+            }
+        });
+
+        // Initial load of notes
+        loadNotes();
+    </script>
+</body>
+</html>
