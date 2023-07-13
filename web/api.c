@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 enum {
     NONE,
@@ -83,21 +84,45 @@ int check_valid_cookie(char* cookie) {
 }
 
 void get_notes() {
-    //
+    printf("Content-Type: application/json\r\n\r\n");
+    printf("{\"error\":false,\"notes\":[\"title\":\"Test note\",\"content\":\"MySQL hasn't been integrated, so notes aren't saved.\"]}");
 }
 
-void create_note() {
-    //
+void create_note(char* content_length) {
+    printf("\r\n\r\n");
+    char body[0x100];
+
+    puts(content_length);
+    int length = atoi(content_length);
+
+    read(0, body, length);
+    puts(body);
 }
 
-void delete_note() {
-    //
+void delete_note(char* path) {
+    int note_id = atoi(path);
+
+    // check if note id is valid
+    if ((note_id < 0) || (note_id > 0x100)) {
+        printf("Content-Type: application/json\r\n\r\n");
+        printf("{\"error\":true,\"msg\":\"Invalid note ID\"}\r\n");
+        return;
+    }
+
+    // check that note ID is valid number
+    if ((note_id == 0) && (strncmp("0",path,1))) {
+        printf("Content-Type: application/json\r\n\r\n");
+        printf("{\"error\":true,\"msg\":\"Invalid note ID\"}\r\n");
+        return;
+    }
+
+    printf("Content-Type: application/json\r\n\r\n");
+    printf("{\"error\":false,\"msg\":\"Your request has been successfully received.\"}");
 }
 
 int main() {
     char* PATH = getenv("PATH_INFO");
     char* METHOD = getenv("REQUEST_METHOD");
-    char* QUERY_STRING = getenv("QUERY_STRING");
     char* CONTENT_LENGTH = getenv("CONTENT_LENGTH");
     char* COOKIES = getenv("HTTP_COOKIE");
 
@@ -144,7 +169,7 @@ int main() {
             printf("{\"error\":true,\"msg\":\"You must be an admin to create notes\"}\r\n");
             return 0;
         }
-        puts("create");
+        create_note(CONTENT_LENGTH);
     }
 
     // delete
@@ -155,7 +180,7 @@ int main() {
             printf("{\"error\":true,\"msg\":\"You must be an admin to delete notes\"}\r\n");
             return 0;
         }
-        puts("delete");
+        delete_note(PATH+8);
     }
 
     else {

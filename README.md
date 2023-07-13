@@ -37,7 +37,7 @@ Once the user has admin access, they need to leverage that to get RCE on the und
 ### Category: Home Network
 ### Description:
 ```
-Great job on compromising the entrypoint! But I've heard of the hacker who owned this network, and I'm sure there's more inside the network. Using the machine you've broken into, pivot into the network and check out DNS NAME.
+Great job on compromising the entrypoint! But I've heard of the hacker who owned this network, and I'm sure there's more inside the network. Using the machine you've broken into, pivot into the network and see what's on there.
 
 Author: [@Legoclones](https://twitter.com/legoclones)
 ```
@@ -60,8 +60,6 @@ asdf
 ### Description:
 ```
 Nice job on the find! Can you find the credentials to break into the database it's using?
-
-http://HOST:PORT
 
 Author: [@Legoclones](https://twitter.com/legoclones)
 ```

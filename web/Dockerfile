@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 # install dependencies
 RUN apt update && apt upgrade -y && apt dist-upgrade -y
-RUN apt install -y lighttpd redis-tools default-libmysqlclient-dev
+RUN apt install -y lighttpd redis-tools
 
 # install latest redis version
 RUN apt install lsb-release curl gpg -y
