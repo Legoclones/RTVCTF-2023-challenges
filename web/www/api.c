@@ -3,6 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 
+// this ensures that you don't need to flush stdout when calling printf
+__attribute__((constructor)) void flush_buf() {
+    setbuf(stdin, NULL);
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
+}
+
 enum {
     NONE,
     USER,
@@ -83,11 +90,13 @@ int check_valid_cookie(char* cookie) {
     return 1;
 }
 
+// still need to implement and connect to MySQL db, gotta look that up
 void get_notes() {
     printf("Content-Type: application/json\r\n\r\n");
     printf("{\"error\":false,\"notes\":[\"title\":\"Test note\",\"content\":\"MySQL hasn't been integrated, so notes aren't saved.\"]}");
 }
 
+// debugging
 void create_note(char* content_length) {
     printf("\r\n\r\n");
     char body[0x100];
@@ -96,6 +105,7 @@ void create_note(char* content_length) {
     int length = atoi(content_length);
 
     read(0, body, length);
+    // print out body to ensure it was transmitted right
     puts(body);
 }
 
@@ -116,8 +126,30 @@ void delete_note(char* path) {
         return;
     }
 
+    // todo - actually delete
+
     printf("Content-Type: application/json\r\n\r\n");
     printf("{\"error\":false,\"msg\":\"Your request has been successfully received.\"}");
+}
+
+// debug
+void debug() {
+    // open and print out creds.txt
+    FILE* flag_file;
+    char c;
+
+    flag_file = fopen("/creds.txt", "r");
+
+    if (flag_file != NULL) {
+        printf("Creds: ");
+        while ((c = getc(flag_file)) != EOF) {
+            printf("%c", c);
+        }
+        printf("\n");
+    }
+    else {
+        printf("Could not find /creds.txt\n");
+    }
 }
 
 int main() {

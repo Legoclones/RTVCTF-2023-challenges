@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 # install dependencies
 RUN apt update && apt upgrade -y && apt dist-upgrade -y
-RUN apt install -y qemu qemu-user qemu-user-static 'binfmt*' lighttpd lua5.4 curl
+RUN apt install -y qemu qemu-user qemu-user-static 'binfmt*' lighttpd lua5.4 curl netcat
 
 # copy files
 COPY www/ /www/

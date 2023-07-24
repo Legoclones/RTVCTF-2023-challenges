@@ -9,4 +9,7 @@ redis-cli < /redis.start
 rm /redis.start
 
 # sleep
-sleep infinity
+while true; do (
+    ps -aux | grep 'lighttpd -f /etc/lighttpd/lighttpd.conf' | grep -v grep || lighttpd -f /etc/lighttpd/lighttpd.conf;
+    sleep 4;
+); done

@@ -1,5 +1,4 @@
 -- Setup database and unpriv user
-CREATE DATABASE ctf;
 CREATE USER 'ctf'@'%' IDENTIFIED BY 'b6ee647c25a29b03e6cdb94a84cd1f9b93299e14a698b7ae' FAILED_LOGIN_ATTEMPTS 0;
 GRANT SELECT ON ctf.* TO 'ctf'@'%';
 FLUSH PRIVILEGES;

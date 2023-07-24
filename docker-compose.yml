@@ -23,6 +23,9 @@ services:
       - ./database:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: b0dbbaab0115eb0724c313e25c95d19c341eea086d6a1cc2
+      MYSQL_DATABASE: ctf
+      MYSQL_USER: d83a86af4d5744a3e375b4c736406b
+      MYSQL_PASSWORD: 91cb126b17ceffedb63d7a3eef45eefeaf411031a9e759c2302e30e927e4
 
 networks:
   homenetwork:
